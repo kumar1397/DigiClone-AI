@@ -1,10 +1,13 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, } from "lucide-react";
 import { FaInstagram, FaLinkedinIn, FaDiscord } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="flex flex-col w-full min-h-screen font-poppins">
       {/* Hero Section */}
@@ -38,7 +41,8 @@ export default function Home() {
             <h1 className="text-4xl md:text-5xl font-bold leading-tight text-black">
               Mentor
             </h1>
-            <button className="bg-[#000000] text-white px-6 py-3 rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <button className="bg-[#000000] text-white px-6 py-3 rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity"
+            onClick={() => router.push('/chat')}>
               Try now <ArrowRight className="h-5 w-5" />
             </button>
           </div>
@@ -70,23 +74,24 @@ export default function Home() {
         </h2>
         <div className="max-w-3xl mx-auto">
           <div className="bg-[#ff7a59] text-white rounded-3xl overflow-hidden">
-            <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-6">
+            <div className="pl-8 pr-8 pt-8 h-68 flex flex-col md:flex-row items-center gap-6">
               <div className="space-y-2">
                 <h3 className="text-2xl md:text-3xl font-bold">
                   Learn the Power of AI
                 </h3>
                 <p className="text-lg">with Suman Acharya</p>
-                <button className="mt-4 bg-black text-white px-6 py-2 rounded-full hover:opacity-90 transition-opacity">
+                <button className="mt-4 bg-black text-white px-6 py-2 rounded-full hover:opacity-90 transition-opacity" 
+                onClick={() => router.push('/chat')}>
                   Talk with Suman
                 </button>
               </div>
-              <div className="md:ml-auto">
+              <div className="md:ml-auto pt-14">
                 <Image
                   src="/reading.svg"
                   alt="Suman Acharya"
                   width={300}
                   height={300}
-                  className="object-cover"
+                  className="object-cover "
                 />
               </div>
             </div>
