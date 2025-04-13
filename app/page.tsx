@@ -14,7 +14,6 @@ export default function Home() {
       <section className="flex flex-col gap-8 items-center w-full bg-[url('/first.svg')] bg-cover bg-center">
         <header className="flex w-full justify-between items-center px-6 py-4">
           <span className=" text-black text-3xl font-semibold">
-            <Image src="/logo.png" alt="logo" width={20} height={20} />
             DigiClone AI
           </span>
           <nav className="flex gap-8 text-gray-700 text-lg font-medium pr-12">
