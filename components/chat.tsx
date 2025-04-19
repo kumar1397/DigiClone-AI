@@ -2,7 +2,6 @@
 
 import {
   Home,
-  Settings,
   ArrowRight,
   Download,
   CircleArrowLeft,
