@@ -13,8 +13,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="flex flex-col gap-8 items-center w-full bg-[url('/first.svg')] bg-cover bg-center">
         <header className="flex w-full justify-between items-center px-6 py-4">
-          <span className="text-black text-xl lg:text-3xl font-semibold flex flex-row items-center">
-            <Image src="/logo.png" alt="logo" width={50} height={40}/> DigiClone AI
+          <span className="text-black text-xl lg:text-3xl font-semibold flex flex-row items-center gap-2">
+            <Image src="/logo.png" alt="logo" width={50} height={40} />{" "}
+            DigiClone AI
           </span>
           <nav className="hidden md:flex gap-8 text-gray-700 text-lg font-medium pr-12">
             <Link
@@ -32,20 +33,20 @@ export default function Home() {
           </nav>
         </header>
 
-        <div className="flex flex-col md:flex-row justify-between items-center w-full mt-3 px-6 md:px-24">
-          <div className="space-y-6 text-center md:text-left ">
-            <div className="text-3xl md:text-3xl lg:text-5xl font-bold leading-tight text-black space-y-2 text-center md:text-left">
+        <div className="flex flex-col md:flex-row justify-between items-center w-full mt-3 px-4 md:px-8 lg:px-16">
+          <div className="space-y-6 text-center md:text-left sm:w-full md:w-1/2">
+            <div className="text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight text-black space-y-2">
               <h1>Meet your AI-Powered</h1>
               <h1>Mentor</h1>
             </div>
             <button
-              className="bg-[#000000] text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mx-auto md:mx-0"
+              className="bg-[#000000] text-white px-6 py-3 mb-4 lg:mb-0 rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mx-auto md:mx-0"
               onClick={() => router.push("/chat")}
             >
               Try now <ArrowRight className="h-5 w-5" />
             </button>
           </div>
-          <div className="hidden lg:flex justify-center mt-8 md:mt-0 ">
+          <div className="hidden md:flex justify-end mt-8 md:mt-0 w-1/2">
             <Image
               src="/teacher.svg"
               alt="AI Mentor Illustration"
@@ -72,10 +73,10 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-12 ">
           Engage with people of your intrest
         </h2>
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto sm:px-20 md:px-10 lg:px-0">
           <div className="bg-[#ff7a59] text-white rounded-3xl overflow-hidden">
             <div className="pl-8 pr-8 pt-8 h-68 flex flex-row justify-between items-center gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 sm:flex sm:justify-center sm:items-center sm:gap-4 md:block">
                 <h3 className="text-2xl md:text-3xl font-bold">
                   Learn the Power of AI
                 </h3>

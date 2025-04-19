@@ -95,7 +95,7 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-32 bg-[#fed9c5] flex flex-col items-center justify-between py-5">
+      <div className="w-32 bg-[#fed9c5] hidden md:flex md:flex-col md:items-center md:justify-between py-5 ">
         <div className="flex flex-col gap-4">
           <button className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors">
             <CircleArrowLeft className="w-6 h-6 text-[#0e0000]" />
@@ -107,9 +107,6 @@ export default function ChatPage() {
         <div className="flex flex-col gap-6">
           <button className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors">
             <Download className="w-6 h-6 text-[#0e0000]" />
-          </button>
-          <button className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors">
-            <Settings className="w-6 h-6 text-[#0e0000]" />
           </button>
         </div>
       </div>
