@@ -12,7 +12,7 @@ export default function AccountCreation() {
         <p className="text-[#666666] mb-12">
           Already have an account?{" "}
           <Link href="/login" className="text-[#333333] underline">
-            Log in
+            Log in now
           </Link>
         </p>
 
