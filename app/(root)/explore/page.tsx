@@ -10,8 +10,16 @@ export default function ExplorePage() {
 
   return (
     <div className="mt-24">
-     <div style={{ width: '100%', position: 'relative', height: '300px' }}>
+     <div style={{ width: '100%', position: 'relative', height: '500px' }}>
       <Image src="/bg1 1.svg" alt="bgimg" fill style={{ objectFit: 'cover' }} />
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-left">
+        <h1 className="text-4xl md:text-5xl font-bold text-black mb-4 drop-shadow-lg">
+          Explore Your Digital World
+        </h1>
+        <p className="text-xl md:text-2xl text-black/90 max-w-2xl px-4 drop-shadow-md">
+          Discover, learn, and interact with AI-powered insights
+        </p>
+      </div>
      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
