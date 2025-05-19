@@ -5,149 +5,97 @@
       "title": "Learn the Power of AI",
       "subtitle": "Suman Acharya",
       "image": "/person1.jpg",
-      "buttonText": "Talk with Suman"
+      "buttonText": "Talk with Suman",
+      "clone_id": "clone_u_f446953eafd7"
     },
     {
       "id": 2,
       "title": "Master Digital Marketing",
-      "subtitle": "Sarah Johnson",
+      "subtitle": "Dr.Prafull Ku. Acharya & Mrs. Sarala Acharya",
       "image": "/person2.jpg",
-      "buttonText": "Connect with Sarah"
+      "buttonText": "Connect with Sarah",
+      "clone_id": "clone_u_e999b77f57ce"
     },
     {
       "id": 3,
       "title": "Data Science Fundamentals",
-      "subtitle": "Dr. Michael Chen",
+      "subtitle": "Dr. A. P. J. Abdul Kalam",
       "image": "/person3.jpg",
-      "buttonText": "Learn from Michael"
+      "buttonText": "Learn from Michael",
+      "clone_id": "clone_u_66db1af34bee"
     },
     {
       "id": 4,
       "title": "UX Design Principles",
-      "subtitle": "Emma Wilson",
+      "subtitle": "Mahatma Gandhi",
       "image": "/person4.jpg",
-      "buttonText": "Design with Emma"
+      "buttonText": "Design with Emma",
+      "clone_id": "clone_u_3a6e003fd84d"
     },
     {
       "id": 5,
       "title": "Blockchain Development",
-      "subtitle": "Alex Rivera",
+      "subtitle": "Dhirubhai Ambani",
       "image": "/person5.jpg",
-      "buttonText": "Code with Alex"
+      "buttonText": "Code with Alex",
+      "clone_id": "clone_u_b83bcae2af7d"
     },
     {
       "id": 6,
       "title": "Cloud Architecture",
-      "subtitle": "Priya Sharma",
+      "subtitle": "Ratan Tata",
       "image": "/person6.jpg",
-      "buttonText": "Build with Priya"
+      "buttonText": "Build with Priya",
+      "clone_id": "clone_u_c0c6b7e40f36"
     },
     {
       "id": 7,
       "title": "Mobile App Development",
-      "subtitle": "James Wilson",
+      "subtitle": "Srinivasa Ramanujan",
       "image": "/person7.jpg",
-      "buttonText": "Develop with James"
+      "buttonText": "Develop with James",
+      "clone_id": "clone_u_732231557f73"
     },
     {
       "id": 8,
       "title": "Cybersecurity Essentials",
-      "subtitle": "Dr. Lisa Chen",
+      "subtitle": "Albert Einstein",
       "image": "/person8.jpg",
-      "buttonText": "Secure with Lisa"
+      "buttonText": "Secure with Lisa",
+      "clone_id": "clone_u_6054eb9c5f44"
     },
     {
       "id": 9,
       "title": "DevOps Best Practices",
       "subtitle": "Carlos Martinez",
       "image": "/person9.jpg",
-      "buttonText": "Deploy with Carlos"
+      "buttonText": "Deploy with Carlos",
+      "clone_id": "clone_u_95556488a2a5"
     },
     {
       "id": 10,
       "title": "Machine Learning Basics",
-      "subtitle": "Dr. Wei Zhang",
+      "subtitle": "Nikola Tesla",
       "image": "/person10.jpg",
-      "buttonText": "Learn with Wei"
+      "buttonText": "Learn with Wei",
+      "clone_id": "clone_u_6039e8b8a00d"
     },
     {
       "id": 11,
       "title": "Web Development Mastery",
-      "subtitle": "Maya Patel",
+      "subtitle": "Steve Jobs",
       "image": "/person11.jpg",
-      "buttonText": "Code with Maya"
+      "buttonText": "Code with Maya",
+      "clone_id": "clone_u_fbae91c08abd"
     },
     {
       "id": 12,
       "title": "Database Design",
-      "subtitle": "Robert Kim",
+      "subtitle": "Charlie Munger",
       "image": "/person12.jpg",
-      "buttonText": "Design with Robert"
-    },
-    {
-      "id": 13,
-      "title": "UI/UX Animation",
-      "subtitle": "Sofia Rodriguez",
-      "image": "/person13.jpg",
-      "buttonText": "Animate with Sofia"
-    },
-    {
-      "id": 14,
-      "title": "API Development",
-      "subtitle": "David Kumar",
-      "image": "/person14.jpg",
-      "buttonText": "Build with David"
-    },
-    {
-      "id": 15,
-      "title": "Game Development",
-      "subtitle": "Lucas Anderson",
-      "image": "/person15.jpg",
-      "buttonText": "Create with Lucas"
-    },
-    {
-      "id": 16,
-      "title": "System Architecture",
-      "subtitle": "Dr. Aisha Khan",
-      "image": "/person16.jpg",
-      "buttonText": "Design with Aisha"
-    },
-    {
-      "id": 17,
-      "title": "Product Management",
-      "subtitle": "Thomas Lee",
-      "image": "/person17.jpg",
-      "buttonText": "Manage with Thomas"
-    },
-    {
-      "id": 18,
-      "title": "Quality Assurance",
-      "subtitle": "Maria Garcia",
-      "image": "/person18.jpg",
-      "buttonText": "Test with Maria"
-    },
-    {
-      "id": 19,
-      "title": "Agile Methodologies",
-      "subtitle": "John Smith",
-      "image": "/person19.jpg",
-      "buttonText": "Learn with John"
-    },
-    {
-      "id": 20,
-      "title": "Cloud Security",
-      "subtitle": "Dr. Raj Patel",
-      "image": "/person20.jpg",
-      "buttonText": "Secure with Raj"
-    },
-   
-    {
-      "id": 21,
-      "title": "Big Data Analytics",
-      "subtitle": "Dr. Chen Wei",
-      "image": "/person21.jpg",
-      "buttonText": "Analyze with Chen"
+      "buttonText": "Design with Robert",
+      "clone_id": "clone_u_9125791ad717"
     }
-    
+  
   ]
 } 

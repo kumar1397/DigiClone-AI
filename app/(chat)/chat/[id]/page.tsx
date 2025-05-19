@@ -12,9 +12,10 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 export default function ChatPage() {
+  const params = useParams();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -22,6 +23,19 @@ export default function ChatPage() {
     { user: string; bot: { content: string; sources: string } }[]
   >([]);
   const [loading, setLoading] = useState(false);
+
+  const id = params?.id as string;
+
+  if (!id) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600">Invalid Chat ID</h2>
+          <p className="mt-2">Please ensure you have a valid chat ID in the URL.</p>
+        </div>
+      </div>
+    );
+  }
 
   const getFaviconUrl = (link: string) => {
     try {
@@ -35,7 +49,7 @@ export default function ChatPage() {
   const getDomainName = (link: string) => {
     try {
       const url = new URL(link);
-      return url.hostname.replace("www.", ""); // remove www.
+      return url.hostname.replace("www.", "");
     } catch {
       return "";
     }
@@ -45,12 +59,11 @@ export default function ChatPage() {
     if (!prompt.trim()) return;
     setLoading(true);
 
-    // Step 1: Append user prompt to chat history
     const newChatHistory = [
       ...chatHistory,
       {
         user: prompt,
-        bot: { content: "", sources: "" }, // structure for future update
+        bot: { content: "", sources: "" },
       },
     ];
     setChatHistory(newChatHistory);
@@ -63,28 +76,23 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           process_query: prompt,
-          folder: "Suman",
+          folder: id,
         }),
       });
 
       if (!res.ok) throw new Error("Failed to fetch from backend.");
       const data = await res.json();
-      console.log(data);
-      console.log(data.sources)
-      console.log(typeof(data.sources))
 
-      // Step 2: Update last entry in chat history with full bot object
       const updatedChatHistory = [...newChatHistory];
       updatedChatHistory[updatedChatHistory.length - 1].bot = {
         content: data.response || "No content received.",
-        sources: data.sources || [], // <-- Important
+        sources: data.sources || [],
       };
 
       setChatHistory(updatedChatHistory);
     } catch (err) {
       console.error("API error:", err);
 
-      // Step 3: Graceful degradation on error
       const updatedChatHistory = [...newChatHistory];
       updatedChatHistory[updatedChatHistory.length - 1].bot = {
         content: "Something went wrong. Please try again later.",
