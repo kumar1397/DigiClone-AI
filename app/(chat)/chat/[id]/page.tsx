@@ -9,22 +9,51 @@ import {
   ArrowLeftFromLine ,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+
+interface EngageCard {
+  id: number;
+  title: string;
+  subtitle: string;
+  image: string;
+  buttonText: string;
+  clone_id: string;
+}
 
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [chatHistory, setChatHistory] = useState<
     { user: string; bot: { content: string; sources: string } }[]
   >([]);
   const [loading, setLoading] = useState(false);
 
   const id = params?.id as string;
+
+  useEffect(() => {
+    const fetchSubtitle = async () => {
+      try {
+        const response = await fetch('/data/engage-cards.json');
+        const data = await response.json();
+        const card = data.cards.find((card: EngageCard) => card.clone_id === id);
+        if (card) {
+          setSubtitle(card.subtitle);
+        }
+      } catch (error) {
+        console.error('Error fetching subtitle:', error);
+      }
+    };
+
+    if (id) {
+      fetchSubtitle();
+    }
+  }, [id]);
 
   if (!id) {
     return (
@@ -162,7 +191,7 @@ export default function ChatPage() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center" />
             <span className="text-lg font-medium text-[#0e0000]">
-              Suman Acharya
+              {subtitle || "Loading..."}
             </span>
           </div>
           <div className="w-64 relative">
