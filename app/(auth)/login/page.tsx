@@ -16,11 +16,24 @@ export default function LoginPage() {
 
   const isFormFilled = email.trim() !== "" && password.trim() !== "";
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === "abcd@gmail.com" && password === "password") {
-      router.push("/home");
-    } else {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Store token if needed
+        localStorage.setItem('token', data.token);
+        router.push('/home');
+      } else {
+        setIsInvalid(true);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setIsInvalid(true);
     }
   };

@@ -1,7 +1,33 @@
 import Link from "next/link"
-
+import { useState } from "react";
 
 export default function AccountCreation() {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Redirect or show success message
+        console.log('Signup successful:', data);
+      } else {
+        setError(data.error || 'Signup failed');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('An error occurred during signup');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center p-4 md:p-8">
       {/* Logo */}
@@ -20,7 +46,7 @@ export default function AccountCreation() {
         <div className="w-full flex justify-between mb-8">
           <div className="flex flex-col items-center flex-1">
             <div className="w-8 h-8 rounded-full bg-[#333333] text-white flex items-center justify-center mb-2">1</div>
-            <p className="text-sm text-[#333333]">Enter your email adress</p>
+            <p className="text-sm text-[#333333]">Enter your email address</p>
           </div>
           <div className="flex-1 flex items-center">
             <div className="h-[1px] w-full bg-[#eeeeee]"></div>
@@ -40,7 +66,7 @@ export default function AccountCreation() {
 
         {/* Form */}
         <div className="w-full">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="block text-[#333333] mb-2">
                 What&apos;s your email?
@@ -48,11 +74,39 @@ export default function AccountCreation() {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
               />
             </div>
-
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-[#333333] mb-2">
+                Your name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+                className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-[#333333] mb-2">
+                Create a password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button
               type="submit"
               className="w-full bg-[#c4c4c4] text-white py-4 rounded-lg mt-4 hover:bg-opacity-90 transition-all"
