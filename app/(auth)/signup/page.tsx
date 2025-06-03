@@ -17,9 +17,13 @@ export default function AccountCreation() {
     }
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('http://localhost:4000/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
         body: JSON.stringify({ name, email, password }),
       });
       const data = await response.json();

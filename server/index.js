@@ -1,11 +1,45 @@
-import express from 'express';
-import userRoutes from './routes/user.js';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import user from "./routes/user.js";
+import bodyParser from "body-parser";
+import dbConnect from "./config/database.js";
 
+dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 4000;
+
+
+// Use CORS middleware
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "UPDATE", "DELETE"],
+  })
+);
 
 app.use(express.json());
-app.use('/user', userRoutes);
 
-app.listen(4000, () => {
-  console.log('Server running at http://localhost:4000');
+// Connect to the database
+dbConnect();
+
+// Cloudinary configuration
+
+// Parse URL-encoded data
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+// Import and mount routes
+app.use("/", user);
+
+// Start the Express server
+app.listen(PORT, () => {
+  console.log(`Express server started at port ${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("<h1>Hello</h1>");
 });
