@@ -1,8 +1,10 @@
 "use client"
 import Link from "next/link"
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AccountCreation() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +19,7 @@ export default function AccountCreation() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/auth/signup', {
+      const response = await fetch('http://localhost:4000/signup', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -29,6 +31,7 @@ export default function AccountCreation() {
       const data = await response.json();
       if (response.ok) {
         console.log('Signup successful:', data);
+        router.push('/login');
       } else {
         setError(data.error || 'Signup failed');
       }
