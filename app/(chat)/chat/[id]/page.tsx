@@ -5,30 +5,20 @@ import {
   Download,
   CircleArrowLeft,
   Search,
-  ArrowRightFromLine ,
-  ArrowLeftFromLine ,
+  ArrowRightFromLine,
+  ArrowLeftFromLine,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
-
-interface EngageCard {
-  id: number;
-  title: string;
-  subtitle: string;
-  image: string;
-  buttonText: string;
-  clone_id: string;
-}
 
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const [subtitle, setSubtitle] = useState("");
   const [chatHistory, setChatHistory] = useState<
     { user: string; bot: { content: string; sources: string } }[]
   >([]);
@@ -36,24 +26,6 @@ export default function ChatPage() {
 
   const id = params?.id as string;
 
-  useEffect(() => {
-    const fetchSubtitle = async () => {
-      try {
-        const response = await fetch('/data/engage-cards.json');
-        const data = await response.json();
-        const card = data.cards.find((card: EngageCard) => card.clone_id === id);
-        if (card) {
-          setSubtitle(card.subtitle);
-        }
-      } catch (error) {
-        console.error('Error fetching subtitle:', error);
-      }
-    };
-
-    if (id) {
-      fetchSubtitle();
-    }
-  }, [id]);
 
   if (!id) {
     return (
@@ -87,6 +59,7 @@ export default function ChatPage() {
   const handleSend = async () => {
     if (!prompt.trim()) return;
     setLoading(true);
+    console.log('Sending message:', prompt);
 
     const newChatHistory = [
       ...chatHistory,
@@ -95,13 +68,16 @@ export default function ChatPage() {
         bot: { content: "", sources: "" },
       },
     ];
+    console.log('New chat history before API call:', newChatHistory);
     setChatHistory(newChatHistory);
 
     try {
+      console.log('Making API call to save message...');
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           process_query: prompt,
@@ -111,6 +87,7 @@ export default function ChatPage() {
 
       if (!res.ok) throw new Error("Failed to fetch from backend.");
       const data = await res.json();
+      console.log('Backend response for message save:', data);
 
       const updatedChatHistory = [...newChatHistory];
       updatedChatHistory[updatedChatHistory.length - 1].bot = {
@@ -118,16 +95,15 @@ export default function ChatPage() {
         sources: data.sources || [],
       };
 
+      console.log('Updated chat history after API response:', updatedChatHistory);
       setChatHistory(updatedChatHistory);
     } catch (err) {
       console.error("API error:", err);
-
       const updatedChatHistory = [...newChatHistory];
       updatedChatHistory[updatedChatHistory.length - 1].bot = {
         content: "Something went wrong. Please try again later.",
         sources: "",
       };
-
       setChatHistory(updatedChatHistory);
     } finally {
       setLoading(false);
@@ -135,6 +111,36 @@ export default function ChatPage() {
     }
   };
 
+  const handleFinishSession = async () => {
+    try {
+      console.log('Finishing session for clone:', id);
+      // Save the final conversation state
+      const res = await fetch(`http://localhost:${process.env.PORT}/conversation/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          process_query: "Session ended",
+          response: "Session completed",
+          folder: id
+        }),
+      });
+
+      const data = await res.json();
+      console.log('Session completion response:', data);
+
+      if (!res.ok) throw new Error("Failed to save final conversation state");
+      
+      // Redirect to explore page
+      router.push('/explore');
+    } catch (error) {
+      console.error('Error finishing session:', error);
+      // Still redirect even if save fails
+      router.push('/explore');
+    }
+  };
 
   return (
     <div className="flex h-screen">
@@ -166,7 +172,7 @@ export default function ChatPage() {
           </button>
           <button
             className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors flex items-center gap-3"
-            onClick={() => router.back()}
+            onClick={() => router.push('/explore')}
           >
             <Home className="w-6 h-6 text-[#0e0000] flex-shrink-0" />
             {isSidebarOpen && (
@@ -175,10 +181,13 @@ export default function ChatPage() {
           </button>
         </div>
         <div className="flex flex-col gap-6 mt-auto w-full px-4">
-          <button className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors flex items-center gap-3">
+          <button 
+            className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors flex items-center gap-3"
+            onClick={handleFinishSession}
+          >
             <Download className="w-6 h-6 text-[#0e0000] flex-shrink-0" />
             {isSidebarOpen && (
-              <span className="text-[#0e0000] whitespace-nowrap">Download</span>
+              <span className="text-[#0e0000] whitespace-nowrap">Finish Session</span>
             )}
           </button>
         </div>
@@ -191,7 +200,7 @@ export default function ChatPage() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center" />
             <span className="text-lg font-medium text-[#0e0000]">
-              {subtitle || "Loading..."}
+              Name
             </span>
           </div>
           <div className="w-64 relative">
