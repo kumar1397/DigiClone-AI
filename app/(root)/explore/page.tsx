@@ -2,12 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 import engageCardsData from "@/app/data/engage-cards.json";
 
 export default function ExplorePage() {
   const router = useRouter();
-
   return (
     <div className="mt-24">
      <div style={{ width: '100%', position: 'relative', height: '500px' }}>

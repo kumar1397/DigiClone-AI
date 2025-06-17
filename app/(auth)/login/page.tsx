@@ -19,20 +19,21 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4000/signin', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/signin`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'include', // ⬅️ important for cookies!
         body: JSON.stringify({ email, password }),
       });
+  
       const data = await response.json();
       console.log(data);
+  
       if (response.ok) {
-        // Store token if needed
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         router.push('/home');
       } else {
         setIsInvalid(true);
@@ -42,6 +43,7 @@ export default function LoginPage() {
       setIsInvalid(true);
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

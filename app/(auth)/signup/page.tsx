@@ -19,7 +19,7 @@ export default function AccountCreation() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/signup', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/signup`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

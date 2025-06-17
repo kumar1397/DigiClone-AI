@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,64 +10,142 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { X, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Upload, Link, Plus, Trash2 } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  file: File;
+}
 
 export default function UploadOptions() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [links, setLinks] = useState([{ id: 1, value: '' }]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      name: file.name,
+      size: file.size,
+      type: file.type.split('/')[1].toUpperCase(),
+      file: file
+    }));
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    maxSize: 1024 * 1024 * 1024, // 1GB
+  });
+
+  const removeFile = (id: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.id !== id));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const addLink = () => {
+    setLinks([...links, { id: links.length + 1, value: '' }]);
+  };
+
+  const removeLink = (id: number) => {
+    setLinks(links.filter(link => link.id !== id));
+  };
+
+  const updateLink = (id: number, value: string) => {
+    setLinks(links.map(link => 
+      link.id === id ? { ...link, value } : link
+    ));
+  };
+
+  const handleUpload = async () => {
+    try {
+      const formData = new FormData();
+      uploadedFiles.forEach((file) => {
+        formData.append('files', file.file);
+      });
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      console.log('Upload successful:', data);
+      setIsDialogOpen(false);
+      setUploadedFiles([]);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      // You might want to add proper error handling here
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center w-full h-screen">
-      <div className="h-[90%] w-[90%] flex items-center justify-center">
-        <div className="p-8 ">
-          <h1>Upload Your Files</h1>
-          <div className="flex items-center space-x-6">
-            {/* Photo Box */}
-            <div 
-              onClick={() => setIsDialogOpen(true)}
-              className="h-[25rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-300 rounded-md cursor-pointer hover:border-gray-400 hover:text-gray-400 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5h2l.4 1M7 5h10l1 2H5.4M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="text-sm">Files</span>
+    <div className="flex items-center justify-center w-full min-h-screen bg-gray-50">
+      <div className="container max-w-6xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Upload Your Files</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Choose how you want to share your content. Upload files directly or share via links.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center gap-8">
+          {/* File Upload Box */}
+          <div
+            onClick={() => setIsDialogOpen(true)}
+            className="group h-[25rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 rounded-xl cursor-pointer hover:border-blue-500 hover:text-blue-500 transition-all duration-300 bg-white shadow-sm hover:shadow-md"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-4 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
+                <Upload className="h-8 w-8" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">Upload Files</h3>
+                <p className="text-sm text-gray-500">Share files directly from your device</p>
+              </div>
             </div>
+          </div>
 
-            {/* OR Text */}
-            <span className="text-gray-400 text-sm">or</span>
+          {/* OR Text */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-gray-50 px-4 text-sm text-gray-500">or</span>
+            </div>
+          </div>
 
-            {/* Video Box */}
-            <div 
-              onClick={() => setIsDialogOpen(true)}
-              className="h-[25rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-300 rounded-md cursor-pointer hover:border-gray-400 hover:text-gray-400 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 6h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
-                />
-              </svg>
-              <span className="text-sm">Links</span>
+          {/* Link Box */}
+          <div
+            onClick={() => setIsShareDialogOpen(true)}
+            className="group h-[25rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 rounded-xl cursor-pointer hover:border-green-500 hover:text-green-500 transition-all duration-300 bg-white shadow-sm hover:shadow-md"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-4 bg-green-50 rounded-full group-hover:bg-green-100 transition-colors">
+                <Link className="h-8 w-8" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">Share Links</h3>
+                <p className="text-sm text-gray-500">Share content via URLs</p>
+              </div>
             </div>
           </div>
         </div>
@@ -81,7 +161,13 @@ export default function UploadOptions() {
           </DialogHeader>
 
           {/* Dropzone Area */}
-          <div className="border-2 border-dashed border-gray-300 rounded-md py-10 text-center text-sm text-gray-500">
+          <div 
+            {...getRootProps()} 
+            className={`border-2 border-dashed border-gray-300 rounded-md py-10 text-center text-sm text-gray-500 cursor-pointer transition-colors ${
+              isDragActive ? 'border-blue-500 bg-blue-50' : ''
+            }`}
+          >
+            <input {...getInputProps()} />
             <div className="flex flex-col items-center">
               <svg
                 className="w-6 h-6 text-gray-400 mb-2"
@@ -97,8 +183,14 @@ export default function UploadOptions() {
                 />
               </svg>
               <p>
-                Drop your files here or{" "}
-                <span className="underline cursor-pointer">browse</span>
+                {isDragActive ? (
+                  "Drop the files here..."
+                ) : (
+                  <>
+                    Drop your files here or{" "}
+                    <span className="underline">browse</span>
+                  </>
+                )}
               </p>
               <p className="text-xs text-gray-400 mt-1">
                 Max file size up to 1 GB
@@ -108,60 +200,82 @@ export default function UploadOptions() {
 
           {/* Uploaded Files */}
           <div className="space-y-3 mt-4">
-            {/* File 1 */}
-            <div className="flex items-center justify-between bg-gray-50 p-2 px-3 rounded-md border">
-              <div className="flex items-center gap-3">
-                <div className="bg-gray-200 text-xs text-gray-700 px-2 py-1 rounded">
-                  PDF
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Product Catalog.pdf</p>
-                  <p className="text-xs text-gray-500">20 MB</p>
-                </div>
-              </div>
-              <Trash2 className="text-gray-400 hover:text-red-500 w-4 h-4 cursor-pointer" />
-            </div>
-
-            {/* File 2 */}
-            <div className="flex items-center justify-between bg-gray-50 p-2 px-3 rounded-md border">
-              <div className="flex items-center gap-3">
-                <div className="bg-gray-200 text-xs text-gray-700 px-2 py-1 rounded">
-                  PDF
-                </div>
-                <div>
-                  <p className="text-sm font-medium">
-                    Cinema 4D Project File.zip
-                  </p>
-                  <p className="text-xs text-gray-500">20 MB</p>
-                </div>
-              </div>
-              <Trash2 className="text-gray-400 hover:text-red-500 w-4 h-4 cursor-pointer" />
-            </div>
-
-            {/* Uploading File */}
-            <div className="flex items-center justify-between bg-gray-50 p-2 px-3 rounded-md border">
-              <div className="flex items-center gap-3 w-full">
-                <div className="bg-gray-200 text-xs text-gray-700 px-2 py-1 rounded">
-                  ZIP
-                </div>
-                <div className="w-full">
-                  <p className="text-sm font-medium">
-                    Blender Project File.zip
-                  </p>
-                  <p className="text-xs text-gray-500">150 MB of 300 MB</p>
-                  <div className="w-full bg-gray-200 rounded mt-1 h-1">
-                    <div className="bg-black h-1 rounded w-1/2"></div>
+            {uploadedFiles.map((file) => (
+              <div key={file.id} className="flex items-center justify-between bg-gray-50 p-2 px-3 rounded-md border">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-200 text-xs text-gray-700 px-2 py-1 rounded">
+                    {file.type}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{file.name}</p>
+                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                   </div>
                 </div>
+                <Trash2 
+                  className="text-gray-400 hover:text-red-500 w-4 h-4 cursor-pointer" 
+                  onClick={() => removeFile(file.id)}
+                />
               </div>
-              <X className="text-gray-400 hover:text-red-500 w-4 h-4 cursor-pointer ml-2" />
-            </div>
+            ))}
           </div>
 
           <DialogFooter className="mt-6 flex justify-between">
-            <Button variant="outline">Back</Button>
-            <Button>Next</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Back</Button>
+            <Button 
+              onClick={handleUpload}
+              disabled={uploadedFiles.length === 0}
+            >
+              Next
+            </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="sm:max-w-[450px] p-6 text-center">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Add Links</DialogTitle>
+            <DialogDescription className="text-gray-500 text-sm">
+              Add the links you want to share
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-6">
+            {links.map((link) => (
+              <div key={link.id} className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter link URL"
+                  value={link.value}
+                  onChange={(e) => updateLink(link.id, e.target.value)}
+                />
+                {links.length > 1 && (
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeLink(link.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            
+            <Button
+              onClick={addLink}
+              variant="outline"
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Another Link
+            </Button>
+          </div>
+
+          <Button
+            className="mt-6 bg-green-500 hover:bg-green-600 w-full py-6 text-base font-medium"
+          >
+            Submit 
+          </Button>
         </DialogContent>
       </Dialog>
     </div>
