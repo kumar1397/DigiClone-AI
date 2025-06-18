@@ -25,7 +25,7 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        credentials: 'include', // ⬅️ important for cookies!
+        credentials: 'include', 
         body: JSON.stringify({ email, password }),
       });
   
