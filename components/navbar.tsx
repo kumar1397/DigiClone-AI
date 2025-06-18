@@ -31,7 +31,7 @@ export default function Navbar() {
       <span className="text-black text-xl lg:text-3xl font-semibold flex flex-row items-center gap-2">
         <Image src="/logo.png" alt="logo" width={50} height={40} /> DigiClone AI
       </span>
-      <nav className="hidden md:flex gap-8 text-gray-700 text-lg font-medium pr-12 backdrop-blur-sm bg-white/20 rounded-full px-6 py-2">
+      <nav className="hidden md:flex gap-8 text-gray-700 text-lg font-medium pr-12 backdrop-blur-sm px-6 py-2">
         <Link
           href="/home"
           className="hover:text-blue-600 transition-colors duration-200"
@@ -45,11 +45,12 @@ export default function Navbar() {
           Explore
         </Link>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-md"
           onClick={handleLogout}
+          className="hover:text-blue-600 transition-colors duration-200"
         >
-          Logout
+          LogIn
         </button>
+        
       </nav>
     </header>
   );

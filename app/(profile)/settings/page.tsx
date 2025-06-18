@@ -1,44 +1,12 @@
-import { ArrowLeft, Home, Bell, Calendar, TrendingUp, User, Settings, Check } from "lucide-react"
+import { ArrowLeft, Bell, Settings, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
+import Image from "next/image"
 export default function Component() {
   return (
     <div className="flex min-h-screen bg-white">
-      {/* Sidebar */}
-      <div className="w-24 bg-[#ffc297] flex flex-col items-center py-6">
-        {/* Logo */}
-        <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-8">
-          <span className="text-white font-bold text-lg">Pd</span>
-        </div>
-
-        {/* Navigation Icons */}
-        <div className="flex flex-col gap-6 flex-1">
-          <div className="w-12 h-12 flex items-center justify-center">
-            <Home className="w-6 h-6 text-[#ff7008]" />
-          </div>
-          <div className="w-12 h-12 flex items-center justify-center">
-            <Bell className="w-6 h-6 text-[#ff7008]" />
-          </div>
-          <div className="w-12 h-12 flex items-center justify-center">
-            <Calendar className="w-6 h-6 text-[#ff7008]" />
-          </div>
-          <div className="w-12 h-12 flex items-center justify-center">
-            <TrendingUp className="w-6 h-6 text-[#ff7008]" />
-          </div>
-          <div className="w-12 h-12 flex items-center justify-center">
-            <User className="w-6 h-6 text-[#ff7008]" />
-          </div>
-        </div>
-
-        {/* Settings Icon at Bottom */}
-        <div className="w-12 h-12 bg-[#ff7008] rounded-xl flex items-center justify-center">
-          <Settings className="w-6 h-6 text-white" />
-        </div>
-      </div>
-
       {/* Settings Sidebar */}
       <div className="w-80 bg-white border-r border-[#d9d9d9] p-6">
         <div className="flex items-center gap-3 mb-8">
@@ -86,10 +54,12 @@ export default function Component() {
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-[#1c1c1c]">Edit profile</h1>
             <div className="w-20 h-20 rounded-full overflow-hidden">
-              <img
-                src="/placeholder.svg?height=80&width=80"
+              <Image
+                src="/placeholder.svg"
                 alt="Profile picture"
                 className="w-full h-full object-cover"
+                width={80}
+                height={80}
               />
             </div>
           </div>
