@@ -4,14 +4,28 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 export default function Navbar() {
   const router = useRouter();
+
   const handleLogout = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/logout`, {
-      method: "GET",
-      credentials: "include",
-    });
-    localStorage.removeItem("user");
-    router.push("/login");
+  
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/logout`, {
+        method: "GET", // or POST if your backend prefers
+        credentials: "include", // needed if cookie-based auth is still used
+      });
+  
+      if (response.ok) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        router.push("/login");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
+
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex w-full justify-between items-center px-6 py-4 backdrop-blur-md bg-white/30 rounded-b-2xl shadow-lg">
       <span className="text-black text-xl lg:text-3xl font-semibold flex flex-row items-center gap-2">

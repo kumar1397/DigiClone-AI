@@ -33,8 +33,9 @@ export default function LoginPage() {
       console.log(data);
   
       if (response.ok) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        router.push('/home');
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+        router.push("/home");
       } else {
         setIsInvalid(true);
       }
