@@ -41,5 +41,14 @@ export async function middleware(req: NextRequest) {
 
 // ✅ Make sure matcher matches all subpaths
 export const config = {
-  matcher: ['/chat/:path*', '/profile/:path*', '/home/:path*', '/explore/:path*'],
+  matcher: [
+    '/home',
+    '/home/:path*',
+    '/chat',
+    '/chat/:path*',
+    '/profile',
+    '/profile/:path*',
+    '/explore',
+    '/explore/:path*',
+  ],
 };
