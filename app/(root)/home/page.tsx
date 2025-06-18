@@ -1,19 +1,29 @@
+// pages/home.tsx
 "use client";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CardCarousel } from "@/components/ImageCarousel";
 import engageCardsData from "@/app/data/engage-cards.json";
+import { GetServerSideProps } from "next";
+import jwt from "jsonwebtoken";
+import cookie from "cookie";
 
-export default function Home() {
+interface Props {
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
+
+export default function Home({ user }: Props) {
   const router = useRouter();
-  
 
   return (
     <div className="flex flex-col w-full min-h-screen font-poppins">
       {/* Hero Section */}
       <section className="flex flex-col gap-8 items-center w-full bg-[url('/first.svg')] bg-cover bg-center">
-      
         <div className="pt-24 w-full">
           <div className="flex flex-row justify-between items-center w-[90vw] mx-auto px-4">
             <div className="space-y-6 text-center md:text-left sm:w-full md:w-1/2">
@@ -55,7 +65,7 @@ export default function Home() {
       <section className="bg-[#f6f6f6] py-8">
         <div className="flex justify-center w-full">
           <h2 className="text-3xl font-bold text-center mb-12 backdrop-blur-sm bg-white/30 rounded-full px-8 py-2">
-            Engage with people of your intrest
+            Engage with people of your interest
           </h2>
         </div>
         <CardCarousel cards={engageCardsData.cards} />
@@ -104,3 +114,45 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req } = context;
+  const cookies = req.headers.cookie;
+
+  if (!cookies) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  const { token } = cookie.parse(cookies);
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    return {
+      props: {
+        user: decoded,
+      },
+    };
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+};
