@@ -9,7 +9,7 @@ import {
   ArrowLeftFromLine,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect} from "react";
+import { useState} from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
@@ -26,16 +26,7 @@ export default function ChatPage() {
 
   const id = params?.id as string;
 
-  useEffect(() => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1];
-
-    if (!token) {
-      router.replace("/login");
-    }
-  }, [router]);
+ 
 
   if (!id) {
     return (
