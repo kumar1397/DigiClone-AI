@@ -1,101 +1,101 @@
 {
-  "cards": [
-    {
-      "id": 1,
-      "title": "Learn the Power of AI",
-      "subtitle": "Suman Acharya",
-      "image": "/person1.jpg",
-      "buttonText": "Talk with Suman",
-      "clone_id": "clone_u_f446953eafd7"
-    },
-    {
-      "id": 2,
-      "title": "Master Digital Marketing",
-      "subtitle": "Dr.Prafull Ku. Acharya & Mrs. Sarala Acharya",
-      "image": "/person2.jpg",
-      "buttonText": "Connect with Sarah",
-      "clone_id": "clone_u_e999b77f57ce"
-    },
-    {
-      "id": 3,
-      "title": "Data Science Fundamentals",
-      "subtitle": "Dr. A. P. J. Abdul Kalam",
-      "image": "/person3.jpg",
-      "buttonText": "Learn from Michael",
-      "clone_id": "clone_u_66db1af34bee"
-    },
-    {
-      "id": 4,
-      "title": "UX Design Principles",
-      "subtitle": "Mahatma Gandhi",
-      "image": "/person4.jpg",
-      "buttonText": "Design with Emma",
-      "clone_id": "clone_u_3a6e003fd84d"
-    },
-    {
-      "id": 5,
-      "title": "Blockchain Development",
-      "subtitle": "Dhirubhai Ambani",
-      "image": "/person5.jpg",
-      "buttonText": "Code with Alex",
-      "clone_id": "clone_u_b83bcae2af7d"
-    },
-    {
-      "id": 6,
-      "title": "Cloud Architecture",
-      "subtitle": "Ratan Tata",
-      "image": "/person6.jpg",
-      "buttonText": "Build with Priya",
-      "clone_id": "clone_u_c0c6b7e40f36"
-    },
-    {
-      "id": 7,
-      "title": "Mobile App Development",
-      "subtitle": "Srinivasa Ramanujan",
-      "image": "/person7.jpg",
-      "buttonText": "Develop with James",
-      "clone_id": "clone_u_732231557f73"
-    },
-    {
-      "id": 8,
-      "title": "Cybersecurity Essentials",
-      "subtitle": "Albert Einstein",
-      "image": "/person8.jpg",
-      "buttonText": "Secure with Lisa",
-      "clone_id": "clone_u_6054eb9c5f44"
-    },
-    {
-      "id": 9,
-      "title": "DevOps Best Practices",
-      "subtitle": "Carlos Martinez",
-      "image": "/person9.jpg",
-      "buttonText": "Deploy with Carlos",
-      "clone_id": "clone_u_95556488a2a5"
-    },
-    {
-      "id": 10,
-      "title": "Machine Learning Basics",
-      "subtitle": "Nikola Tesla",
-      "image": "/person10.jpg",
-      "buttonText": "Learn with Wei",
-      "clone_id": "clone_u_6039e8b8a00d"
-    },
-    {
-      "id": 11,
-      "title": "Web Development Mastery",
-      "subtitle": "Steve Jobs",
-      "image": "/person11.jpg",
-      "buttonText": "Code with Maya",
-      "clone_id": "clone_u_fbae91c08abd"
-    },
-    {
-      "id": 12,
-      "title": "Database Design",
-      "subtitle": "Charlie Munger",
-      "image": "/person12.jpg",
-      "buttonText": "Design with Robert",
-      "clone_id": "clone_u_9125791ad717"
-    }
-  
-  ]
-} 
+    "cards": [
+      {
+        "id": 1,
+        "title": "Learn the Power of AI",
+        "subtitle": "Suman Acharya",
+        "image": "/person1.jpg",
+        "buttonText": "Talk with Suman",
+        "clone_id": "clone_u_f446953eafd7"
+      },
+      {
+        "id": 2,
+        "title": "Master Digital Marketing",
+        "subtitle": "Dr.Prafull Ku. Acharya & Mrs. Sarala Acharya",
+        "image": "/person2.jpg",
+        "buttonText": "Connect with Sarah",
+        "clone_id": "clone_u_e999b77f57ce"
+      },
+      {
+        "id": 3,
+        "title": "Data Science Fundamentals",
+        "subtitle": "Dr. A. P. J. Abdul Kalam",
+        "image": "/person3.jpg",
+        "buttonText": "Learn from Michael",
+        "clone_id": "clone_u_66db1af34bee"
+      },
+      {
+        "id": 4,
+        "title": "UX Design Principles",
+        "subtitle": "Mahatma Gandhi",
+        "image": "/person4.jpg",
+        "buttonText": "Design with Emma",
+        "clone_id": "clone_u_3a6e003fd84d"
+      },
+      {
+        "id": 5,
+        "title": "Blockchain Development",
+        "subtitle": "Dhirubhai Ambani",
+        "image": "/person5.jpg",
+        "buttonText": "Code with Alex",
+        "clone_id": "clone_u_b83bcae2af7d"
+      },
+      {
+        "id": 6,
+        "title": "Cloud Architecture",
+        "subtitle": "Ratan Tata",
+        "image": "/person6.jpg",
+        "buttonText": "Build with Priya",
+        "clone_id": "clone_u_c0c6b7e40f36"
+      },
+      {
+        "id": 7,
+        "title": "Mobile App Development",
+        "subtitle": "Srinivasa Ramanujan",
+        "image": "/person7.jpg",
+        "buttonText": "Develop with James",
+        "clone_id": "clone_u_732231557f73"
+      },
+      {
+        "id": 8,
+        "title": "Cybersecurity Essentials",
+        "subtitle": "Albert Einstein",
+        "image": "/person8.jpg",
+        "buttonText": "Secure with Lisa",
+        "clone_id": "clone_u_6054eb9c5f44"
+      },
+      {
+        "id": 9,
+        "title": "DevOps Best Practices",
+        "subtitle": "Carlos Martinez",
+        "image": "/person9.jpg",
+        "buttonText": "Deploy with Carlos",
+        "clone_id": "clone_u_95556488a2a5"
+      },
+      {
+        "id": 10,
+        "title": "Machine Learning Basics",
+        "subtitle": "Nikola Tesla",
+        "image": "/person10.jpg",
+        "buttonText": "Learn with Wei",
+        "clone_id": "clone_u_6039e8b8a00d"
+      },
+      {
+        "id": 11,
+        "title": "Web Development Mastery",
+        "subtitle": "Steve Jobs",
+        "image": "/person11.jpg",
+        "buttonText": "Code with Maya",
+        "clone_id": "clone_u_fbae91c08abd"
+      },
+      {
+        "id": 12,
+        "title": "Database Design",
+        "subtitle": "Charlie Munger",
+        "image": "/person12.jpg",
+        "buttonText": "Design with Robert",
+        "clone_id": "clone_u_9125791ad717"
+      }
+    
+    ]
+  } 

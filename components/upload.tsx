@@ -77,7 +77,7 @@ export default function UploadOptions() {
         formData.append('files', file.file);
       });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/upload`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/files`, {
         method: 'POST',
         body: formData,
       });
@@ -96,8 +96,40 @@ export default function UploadOptions() {
     }
   };
 
+  const handleLinks = async () => {
+    try {
+      // Filter out empty links
+      const validLinks = links.filter(link => link.value.trim() !== '');
+      
+      if (validLinks.length === 0) {
+        alert('Please add at least one valid link');
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/links`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ links: validLinks })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit links');
+      }
+
+      const data = await response.json();
+      console.log('Links submitted successfully:', data);
+      setIsShareDialogOpen(false);
+      setLinks([{ id: 1, value: '' }]); // Reset to initial state
+    } catch (error) {
+      console.error('Error submitting links:', error);
+      // You might want to add proper error handling here
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center w-full min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center w-full min-h-screen">
       <div className="container max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Upload Your Files</h1>
@@ -273,6 +305,7 @@ export default function UploadOptions() {
 
           <Button
             className="mt-6 bg-green-500 hover:bg-green-600 w-full py-6 text-base font-medium"
+            onClick={handleLinks}
           >
             Submit 
           </Button>
