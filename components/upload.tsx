@@ -117,7 +117,6 @@ export default function UploadOptions() {
       if (!response.ok) {
         throw new Error('Failed to submit links');
       }
-
       const data = await response.json();
       console.log('Links submitted successfully:', data);
       setIsShareDialogOpen(false);
