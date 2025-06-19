@@ -41,7 +41,7 @@ export default function UploadOptions() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: 1024 * 1024 * 1024, // 1GB
+    maxSize: 1024 * 1024 * 1024, 
   });
 
   const removeFile = (id: string) => {
