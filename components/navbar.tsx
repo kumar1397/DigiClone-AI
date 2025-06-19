@@ -4,16 +4,9 @@ import Link from "next/link";
 // import { useRouter } from "next/navigation";
 export default function Navbar() {
   // const router = useRouter();
-  // const router = useRouter();
 
   // const handleLogout = async () => {
-  // const handleLogout = async () => {
   
-  //   try {
-  //     const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/logout`, {
-  //       method: "GET", // or POST if your backend prefers
-  //       credentials: "include", // needed if cookie-based auth is still used
-  //     });
   //   try {
   //     const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/logout`, {
   //       method: "GET", // or POST if your backend prefers
