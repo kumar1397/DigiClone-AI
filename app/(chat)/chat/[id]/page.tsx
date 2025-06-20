@@ -26,8 +26,6 @@ export default function ChatPage() {
 
   const id = params?.id as string;
 
- 
-
   if (!id) {
     return (
       <div className="flex h-screen items-center justify-center">
