@@ -19,13 +19,11 @@ export default function UserFiles() {
   useEffect(() => {
     const fetchFiles = async () => {
       const userId = localStorage.getItem("userId");
-      console.log(userId);
       if (!userId) return;
 
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/files/${userId}`);
         const data = await res.json();
-        console.log(data);
         setFiles(data);
       } catch (err) {
         console.error("Failed to fetch user files", err);
