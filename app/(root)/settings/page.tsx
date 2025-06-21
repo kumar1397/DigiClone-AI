@@ -28,7 +28,7 @@ export default function Settings() {
           <span className="text-[#858585] text-lg">settings</span>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 flex flex-col justify-center">
           <div 
             className={`flex items-center gap-3 cursor-pointer transition-colors ${
               activeSection === 'profile' ? 'text-[#1c1c1c]' : 'text-[#858585] hover:text-[#1c1c1c]'
@@ -50,7 +50,6 @@ export default function Settings() {
             <span>User Files</span>
           </div>
 
-
           <div 
             className={`flex items-center gap-3 cursor-pointer transition-colors ${
               activeSection === 'upload' ? 'text-[#1c1c1c]' : 'text-[#858585] hover:text-[#1c1c1c]'
@@ -62,8 +61,6 @@ export default function Settings() {
               Upload Files
             </span>
           </div>
-
-         
 
           <div className="flex items-center gap-3 text-[#858585] cursor-pointer hover:text-[#1c1c1c] transition-colors">
             <div className="w-5 h-5 flex items-center justify-center">
