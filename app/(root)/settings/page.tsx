@@ -4,7 +4,7 @@ import { PenLine } from 'lucide-react';
 import { useState } from 'react';
 import Profile from "@/components/profile"
 import UploadOptions from "@/components/upload"
-
+import UserFiles from "@/components/display";
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('profile');
 
@@ -14,6 +14,8 @@ export default function Settings() {
         return <Profile />;
       case 'upload':
         return <UploadOptions />;
+      case 'files':
+        return <UserFiles />;
       default:
         return <Profile />;
     }
@@ -43,7 +45,12 @@ export default function Settings() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3 text-[#858585] cursor-pointer hover:text-[#1c1c1c] transition-colors">
+          <div 
+            className={`flex items-center gap-3 cursor-pointer transition-colors ${
+              activeSection === 'files' ? 'text-[#1c1c1c]' : 'text-[#858585] hover:text-[#1c1c1c]'
+            }`}
+            onClick={() => setActiveSection('files')}
+          >
             <div className="w-5 h-5 flex items-center justify-center">
               <span>🔒</span>
             </div>

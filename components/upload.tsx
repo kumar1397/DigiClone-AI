@@ -76,25 +76,51 @@ export default function UploadOptions() {
       uploadedFiles.forEach((file) => {
         formData.append('files', file.file);
       });
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/files`, {
+  
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+      
+      console.log("Debug - userId:", userId);
+      console.log("Debug - token:", token);
+      console.log("Debug - localStorage keys:", Object.keys(localStorage));
+      
+      if (!userId) {
+        alert('User ID not found. Please log in again.');
+        return;
+      }
+      
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/files?userId=${userId}`, {
         method: 'POST',
         body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
-
+  
       if (!response.ok) {
-        throw new Error('Upload failed');
+        if (response.status === 401) {
+          alert('Unauthorized. Please log in again.');
+        } else {
+          throw new Error(`Upload failed: ${response.status}`);
+        }
+        return;
       }
-
+  
       const data = await response.json();
       console.log('Upload successful:', data);
       setIsDialogOpen(false);
       setUploadedFiles([]);
     } catch (error) {
       console.error('Error uploading files:', error);
-      // You might want to add proper error handling here
+      alert('Upload failed. Please try again.');
     }
   };
+  
 
   const handleLinks = async () => {
     try {

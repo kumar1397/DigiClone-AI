@@ -35,6 +35,7 @@ export default function Navbar() {
 
       if (response.ok) {
         localStorage.removeItem("user");
+        localStorage.removeItem("userId");
         localStorage.removeItem("token");
         router.push("/login");
       } else {

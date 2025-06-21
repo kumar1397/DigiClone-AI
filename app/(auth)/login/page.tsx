@@ -25,16 +25,20 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        credentials: 'include', 
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
   
       const data = await response.json();
-      console.log(data);
+      console.log("Login response data:", data);
   
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
+        const { user, token } = data;
+        console.log("User object from login:", user);
+        console.log("User ID to be stored:", user?._id);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("userId", user._id); // ✅ so it's easy to use
+        localStorage.setItem("token", token);
         router.push("/home");
       } else {
         setIsInvalid(true);
