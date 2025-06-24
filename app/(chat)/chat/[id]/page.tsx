@@ -195,7 +195,7 @@ export default function ChatPage() {
             <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center" />
             <span className="text-lg font-medium text-[#0e0000]">Name</span>
           </div>
-          <div className="w-64 relative">
+          <div className="w-64 relative hidden md:block">
             <Search className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <Input
               className="bg-white border-none rounded-full h-10 pl-10"
