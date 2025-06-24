@@ -11,9 +11,8 @@ export default function Home() {
     <div className="flex flex-col w-full min-h-screen font-poppins">
       {/* Hero Section */}
       <section className="flex flex-col gap-8 items-center w-full bg-[url('/first.svg')] bg-cover bg-center">
-      
-        <div className="pt-24 w-full">
-          <div className="flex flex-row justify-between items-center w-[90vw] mx-auto px-4">
+        <div className="w-full h-[50vh] pt-24">
+          <div className="flex flex-row justify-center items-center w-[90vw] mx-auto px-4">
             <div className="space-y-6 text-center md:text-left sm:w-full md:w-1/2">
               <div className="text-3xl lg:text-5xl font-bold leading-tight text-black space-y-2">
                 <h1>Meet your AI-Powered</h1>
@@ -25,15 +24,6 @@ export default function Home() {
               >
                 Try now <ArrowRight className="h-5 w-5" />
               </button>
-            </div>
-            <div className="hidden md:flex justify-end mt-8 md:mt-0 w-1/2">
-              <Image
-                src="/teacher.svg"
-                alt="AI Mentor Illustration"
-                width={400}
-                height={300}
-                className="object-contain"
-              />
             </div>
           </div>
         </div>
@@ -50,7 +40,7 @@ export default function Home() {
       </section>
 
       {/* Engage Section */}
-      <section className="bg-[#f6f6f6] py-8">
+      <section className="bg-[#ffffff] py-8">
         <div className="flex justify-center w-full">
           <h2 className="text-3xl font-bold text-center mb-12 backdrop-blur-sm bg-white/30 rounded-full px-8 py-2">
             Engage with people of your intrest

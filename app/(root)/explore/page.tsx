@@ -7,10 +7,10 @@ import engageCardsData from "@/app/data/engage-cards.json";
 export default function ExplorePage() {
   const router = useRouter();
   return (
-    <div className="mt-24">
+    <div>
      <div style={{ width: '100%', position: 'relative', height: '500px' }}>
       <Image src="/bg1 1.svg" alt="bgimg" fill style={{ objectFit: 'cover' }} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-left">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center md:text-left">
         <h1 className="text-4xl md:text-5xl font-bold text-black mb-4 drop-shadow-lg">
           Explore Your Digital World
         </h1>

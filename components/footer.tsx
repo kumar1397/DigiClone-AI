@@ -5,7 +5,7 @@ import { FaDiscord } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 export default function Footer() {
   return (
-    <footer className="bg-[#282828] text-white mt-auto backdrop-blur-md bg-opacity-90">
+    <footer className="bg-[#282828] text-white mt-auto backdrop-blur-md bg-opacity-90 hidden md:block">
       <div className="container mx-auto px-6 py-12">
         <div className="mb-12">
           <h2 className="text-2xl font-bold">DigiClone AI</h2>
