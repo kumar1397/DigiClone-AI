@@ -3,8 +3,9 @@ import { ArrowLeft, Bell} from "lucide-react"
 import { PenLine } from 'lucide-react';
 import { useState } from 'react';
 import Profile from "@/components/profile"
-import UploadOptions from "@/components/upload"
+// import UploadOptions from "@/components/upload"
 import UserFiles from "@/components/display";
+import CloneProfileForm from "@/components/clone";
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('profile');
 
@@ -12,8 +13,8 @@ export default function Settings() {
     switch (activeSection) {
       case 'profile':
         return <Profile />;
-      case 'upload':
-        return <UploadOptions />;
+      case 'clone':
+        return <CloneProfileForm />;
       case 'files':
         return <UserFiles />;
       default:
@@ -59,13 +60,13 @@ export default function Settings() {
 
           <div 
             className={`flex items-center gap-3 cursor-pointer transition-colors ${
-              activeSection === 'upload' ? 'text-[#1c1c1c]' : 'text-[#858585] hover:text-[#1c1c1c]'
+              activeSection === 'clone' ? 'text-[#1c1c1c]' : 'text-[#858585] hover:text-[#1c1c1c]'
             }`}
-            onClick={() => setActiveSection('upload')}
+            onClick={() => setActiveSection('clone')}
           >
             <Bell className="w-5 h-5" />
-            <span className={`font-medium ${activeSection === 'upload' ? 'font-semibold' : ''}`}>
-              Upload Files
+            <span className={`font-medium ${activeSection === 'clone' ? 'font-semibold' : ''}`}>
+              Clone Profile
             </span>
           </div>
 
