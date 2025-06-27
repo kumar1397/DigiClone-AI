@@ -117,26 +117,12 @@ export default function CloneProfileForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("handleSubmit");
     try {
       const submitFormData = new FormData();
       const { cloneName, catchphrases, dos, donts, description } = formData;
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
       const validLinks = links.filter((link) => link.value.trim() !== "");
-      
-      // Debug logging
-      console.log("=== DEBUG INFO ===");
-      console.log("Environment variable:", process.env.NEXT_PUBLIC_DATA_BACKEND_URL);
-      console.log("Form data:", formData);
-      console.log("Selected tone:", selectedTone);
-      console.log("Selected style:", selectedStyle);
-      console.log("Selected values:", selectedValues);
-      console.log("User ID:", userId);
-      console.log("Token exists:", !!token);
-      console.log("Valid links:", validLinks);
-      console.log("Uploaded files count:", uploadedFiles.length);
-      console.log("Clone image exists:", !!cloneImage);
       
       const hasRequiredData = cloneName && 
         selectedTone !== "Set yours tone" && 
@@ -179,12 +165,6 @@ export default function CloneProfileForm() {
       // Add links as JSON string
       submitFormData.append('links', JSON.stringify(validLinks));
       
-      // Debug FormData contents
-      console.log("=== FORMDATA CONTENTS ===");
-      for (let [key, value] of submitFormData.entries()) {
-        console.log(`${key}:`, value);
-      }
-      
       if (!userId) {
         alert("User ID not found. Please log in again.");
         return;
@@ -196,13 +176,12 @@ export default function CloneProfileForm() {
       }
       
       const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/create`;
-      console.log("Making request to:", url);
       
       if (!process.env.NEXT_PUBLIC_DATA_BACKEND_URL) {
         alert("Backend URL not configured. Please check your environment variables.");
         return;
       }
-      console.log("submitFormData", submitFormData);
+      
       const response = await fetch(url, {
         method: "POST",
         body: submitFormData,
@@ -211,12 +190,8 @@ export default function CloneProfileForm() {
         },
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Error response body:", errorText);
         
         if (response.status === 401) {
           alert("Unauthorized. Please log in again.");
@@ -229,7 +204,6 @@ export default function CloneProfileForm() {
       }
 
       const data = await response.json();
-      console.log("Clone profile created successfully:", data);
       
       // Reset form state
       resetForm();
