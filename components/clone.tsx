@@ -202,9 +202,6 @@ export default function CloneProfileForm() {
         }
         return;
       }
-
-      const data = await response.json();
-      
       // Reset form state
       resetForm();
       
