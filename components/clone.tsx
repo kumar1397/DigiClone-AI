@@ -30,7 +30,8 @@ interface UploadedFile {
 }
 
 export default function CloneProfileForm() {
-  const [cloneImage, setCloneImage] = useState<string | null>(null);
+  const [cloneImage, setCloneImage] = useState<File | null>(null);
+  const [cloneImagePreview, setCloneImagePreview] = useState<string | null>(null);
   const [selectedTone, setSelectedTone] = useState("Set yours tone");
   const [selectedStyle, setSelectedStyle] = useState("Set yours style");
   const [selectedValues, setSelectedValues] = useState("Set yours values");
@@ -59,21 +60,21 @@ export default function CloneProfileForm() {
   };
 
   // Reset form data
-  const resetForm = () => {
-    setFormData({
-      cloneName: "",
-      catchphrases: "Enter upto 5 signature phrases that the clone should use (optional)",
-      dos: "Things the clone should always do while answering",
-      donts: "Things the clone should avoid while answering",
-      description: "Describe in your own words how the clone should behave, think and guide others"
-    });
-    setCloneImage(null);
-    setSelectedTone("Set your tone");
-    setSelectedStyle("Set your style");
-    setSelectedValues("Set your values");
-    setUploadedFiles([]);
-    setLinks([{ id: 1, value: "" }]);
-  };
+  // const resetForm = () => {
+  //   setFormData({
+  //     cloneName: "",
+  //     catchphrases: "Enter upto 5 signature phrases that the clone should use (optional)",
+  //     dos: "Things the clone should always do while answering",
+  //     donts: "Things the clone should avoid while answering",
+  //     description: "Describe in your own words how the clone should behave, think and guide others"
+  //   });
+  //   setCloneImage(null);
+  //   setSelectedTone("Set your tone");
+  //   setSelectedStyle("Set your style");
+  //   setSelectedValues("Set your values");
+  //   setUploadedFiles([]);
+  //   setLinks([{ id: 1, value: "" }]);
+  // };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -120,7 +121,6 @@ export default function CloneProfileForm() {
     try {
       const submitFormData = new FormData();
       const { cloneName, catchphrases, dos, donts, description } = formData;
-      const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
       const validLinks = links.filter((link) => link.value.trim() !== "");
       
@@ -128,7 +128,6 @@ export default function CloneProfileForm() {
         selectedTone !== "Set yours tone" && 
         selectedStyle !== "Set yours style" && 
         selectedValues !== "Set yours values" &&
-        userId && 
         token;
       
       if (!hasRequiredData) {
@@ -147,14 +146,11 @@ export default function CloneProfileForm() {
       submitFormData.append('description', description);
       
       // Add userId to FormData as well
-      submitFormData.append('userId', userId || '');
       
       // Add clone image if exists
       if (cloneImage) {
-        // Convert base64 to blob if needed
-        const response = await fetch(cloneImage);
-        const blob = await response.blob();
-        submitFormData.append('cloneImage', blob, 'clone-image.jpg');
+        submitFormData.append('cloneImage', cloneImage);
+        console.log('Image file added:', cloneImage);
       }
       
       // Add uploaded files
@@ -164,11 +160,6 @@ export default function CloneProfileForm() {
       
       // Add links as JSON string
       submitFormData.append('links', JSON.stringify(validLinks));
-      
-      if (!userId) {
-        alert("User ID not found. Please log in again.");
-        return;
-      }
 
       if (!token) {
         alert("Authentication token not found. Please log in again.");
@@ -203,7 +194,7 @@ export default function CloneProfileForm() {
         return;
       }
       // Reset form state
-      resetForm();
+      // resetForm();
       
       alert("Clone profile created successfully!");
       
@@ -255,9 +246,12 @@ export default function CloneProfileForm() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setCloneImage(file);
+      
+      // Create preview URL for display
       const reader = new FileReader();
       reader.onload = (e) => {
-        setCloneImage(e.target?.result as string);
+        setCloneImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -304,9 +298,9 @@ export default function CloneProfileForm() {
                 onClick={handleImageClick}
                 className="w-24 h-24 bg-gray-200 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors overflow-hidden"
               >
-                {cloneImage ? (
+                {cloneImagePreview ? (
                   <Image
-                    src={cloneImage}
+                    src={cloneImagePreview}
                     alt="Clone preview"
                     width={96}
                     height={96}
