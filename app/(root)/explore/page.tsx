@@ -20,13 +20,6 @@ export default function ExplorePage() {
     const fetchClones = async () => {
       try {
         const token = localStorage.getItem("token");
-        
-        if (!token) {
-          setError("Please log in to view clones");
-          setLoading(false);
-          return;
-        }
-
         const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/all`, {
           method: "GET",
           headers: {
