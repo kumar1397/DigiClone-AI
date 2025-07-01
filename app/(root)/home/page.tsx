@@ -20,7 +20,7 @@ export default function Home() {
               </div>
               <button
                 className="bg-[#000000] text-white px-6 py-3 mb-4 lg:mb-0 rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-300 mx-auto md:mx-0 transform hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)] active:shadow-[0_5px_10px_rgba(0,0,0,0.2)] shadow-[0_5px_15px_rgba(0,0,0,0.2)]"
-                onClick={() => router.push("/chat")}
+                onClick={() => router.push("/explore")}
               >
                 Try now <ArrowRight className="h-5 w-5" />
               </button>

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 interface Clone {
   _id: string;
+  clone_id: string;
   clone_name: string;
   image?: string;
 }
@@ -106,7 +107,7 @@ export default function ExplorePage() {
               <div
                 key={clone._id}
                 className="bg-white overflow-hidden duration-300 rounded-xl group cursor-pointer shadow-lg hover:shadow-xl transition-all"
-                onClick={() => router.push(`/chat/${clone._id}`)}
+                onClick={() => router.push(`/chat/${clone.clone_id}`)}
               >
                 {/* Image container */}
                 <div className="relative h-48 w-full">

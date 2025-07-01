@@ -9,10 +9,23 @@ import {
   ArrowLeftFromLine,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+
+interface Clone {
+  _id: string;
+  clone_name: string;
+  image?: string;
+  tone: string;
+  style: string;
+  values: string[];
+  catchphrases: string[];
+  dos: string;
+  donts: string;
+  freeform_description: string;
+}
 
 export default function ChatPage() {
   const params = useParams();
@@ -23,8 +36,51 @@ export default function ChatPage() {
     { user: string; bot: { content: string; sources: string } }[]
   >([]);
   const [loading, setLoading] = useState(false);
+  const [cloneData, setCloneData] = useState<Clone | null>(null);
+  const [cloneLoading, setCloneLoading] = useState(true);
 
   const id = params?.id as string;
+
+  // Fetch clone data
+  useEffect(() => {
+    const fetchCloneData = async () => {
+      if (!id) return;
+
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          setCloneLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to fetch clone data");
+          setCloneLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        setCloneData(data.data);
+        setCloneLoading(false);
+      } catch (error) {
+        console.error("Error fetching clone data:", error);
+        setCloneLoading(false);
+      }
+    };
+
+    fetchCloneData();
+  }, [id]);
 
   if (!id) {
     return (
@@ -83,6 +139,16 @@ export default function ChatPage() {
         body: JSON.stringify({
           process_query: trimmedPrompt,
           folder: id,
+          clone_profile: {
+            clone_name: cloneData?.clone_name,
+            tone: cloneData?.tone,
+            style: cloneData?.style,
+            catchphrases: cloneData?.catchphrases,
+            values: cloneData?.values,
+            dos: cloneData?.dos,
+            donts: cloneData?.donts,
+            freeform_description: cloneData?.freeform_description,
+          },
         }),
       });
 
@@ -97,11 +163,8 @@ export default function ChatPage() {
 
       setChatHistory(updatedChatHistory);
 
-      // Save conversation after successful response
-      console.log('Save API URL:', `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`);
-      // Get only the latest message pair
-      const latestMessagePair = updatedChatHistory[updatedChatHistory.length - 1];
-      console.log('Sending latest message pair:', JSON.stringify(latestMessagePair, null, 2));
+      const latestMessagePair =
+        updatedChatHistory[updatedChatHistory.length - 1];
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`,
         {
@@ -192,8 +255,42 @@ export default function ChatPage() {
         {/* Header */}
         <div className="bg-[#f1f1f1] px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center" />
-            <span className="text-lg font-medium text-[#0e0000]">Name</span>
+            {cloneLoading ? (
+              <>
+                <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center animate-pulse" />
+                <span className="text-lg font-medium text-[#0e0000] animate-pulse">
+                  Loading...
+                </span>
+              </>
+            ) : cloneData ? (
+              <>
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  {cloneData.image ? (
+                    <Image
+                      src={cloneData.image}
+                      alt={cloneData.clone_name}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#d9d9d9] flex items-center justify-center">
+                      <span className="text-xs text-gray-500">No Image</span>
+                    </div>
+                  )}
+                </div>
+                <span className="text-lg font-medium text-[#0e0000]">
+                  {cloneData.clone_name}
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="w-12 h-12 rounded-full bg-[#d9d9d9] flex items-center justify-center" />
+                <span className="text-lg font-medium text-[#0e0000]">
+                  Clone Not Found
+                </span>
+              </>
+            )}
           </div>
           <div className="w-64 relative hidden md:block">
             <Search className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -210,7 +307,7 @@ export default function ChatPage() {
             <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
               <div className="max-w-2xl space-y-6">
                 <h2 className="text-4xl font-bold text-[#0e0000]">
-                  Welcome to DigiClone AI
+                  Hello, I am {cloneData?.clone_name}
                 </h2>
                 <p className="text-xl text-gray-600">
                   I&apos;m here to help you learn and grow. How can I assist you
