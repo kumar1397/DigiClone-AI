@@ -64,6 +64,20 @@ export default function Home() {
         </div>
       )}
 
+      {error && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg text-center">
+            <p className="text-red-500 text-lg mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col w-full min-h-screen font-poppins">
         {/* Hero Section */}
         <section className="flex flex-col gap-8 items-center w-full bg-[url('/second.svg')] bg-cover bg-center relative">
