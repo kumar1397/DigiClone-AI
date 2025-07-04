@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+import Spinner from "@/components/spinner";
 
 interface Clone {
   _id: string;
@@ -201,7 +202,18 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen">
+    <>
+      {cloneLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Spinner />
+        </div>
+      )}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Spinner />
+        </div>
+      )}
+      <div className="flex h-screen">
       {/* Sidebar */}
       <div
         className={`bg-[#f1f1f1] hidden md:flex md:flex-col md:items-center py-5 transition-all duration-300 ${
@@ -230,7 +242,7 @@ export default function ChatPage() {
           </button>
           <button
             className="p-4 hover:bg-[#f9f9f9]/10 rounded-full transition-colors flex items-center gap-3"
-            onClick={() => router.back()}
+            onClick={() => router.push('/home')}
           >
             <Home className="w-6 h-6 text-[#0e0000] flex-shrink-0" />
             {isSidebarOpen && (
@@ -435,5 +447,6 @@ export default function ChatPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 interface Card {
-  id: number;
-  image: string;
-  title: string;
-  subtitle: string;
-  buttonText: string;
+  _id: string;
   clone_id: string;
+  clone_name: string;
+  image?: string;
 }
 
 export const CardCarousel = ({ cards }: { cards: Card[] }) => {
@@ -56,7 +54,7 @@ export const CardCarousel = ({ cards }: { cards: Card[] }) => {
           <div className="absolute inset-0 bg-black/40 transition-opacity duration-700"></div>
           <div className="absolute bottom-0 left-0 right-0 p-4 transition-all duration-700">
             <h3 className="font-semibold text-base text-white transition-all duration-700">
-              {displayedCards[0]?.subtitle || ""}
+              {displayedCards[0]?.clone_name || ""}
             </h3>
           </div>
         </div>
@@ -77,7 +75,7 @@ export const CardCarousel = ({ cards }: { cards: Card[] }) => {
           <div className="absolute inset-0 bg-black/40 transition-opacity duration-700"></div>
           <div className="absolute bottom-0 left-0 right-0 p-4 transition-all duration-700">
             <h3 className="font-bold text-xl text-white transition-all duration-700">
-              {displayedCards[1]?.subtitle || ""}
+              {displayedCards[1]?.clone_name || ""}
             </h3>
           </div>
         </div>
@@ -97,7 +95,7 @@ export const CardCarousel = ({ cards }: { cards: Card[] }) => {
           <div className="absolute inset-0 bg-black/40 transition-opacity duration-700"></div>
           <div className="absolute bottom-0 left-0 right-0 p-4 transition-all duration-700">
             <h3 className="font-bold text-lg text-white transition-all duration-700">
-              {displayedCards[2]?.subtitle || ""}
+              {displayedCards[2]?.clone_name || ""}
             </h3>
           </div>
         </div>

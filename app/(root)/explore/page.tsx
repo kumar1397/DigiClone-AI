@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-
+import Spinner from "@/components/spinner";
+import { UsersRound, Clock  } from 'lucide-react';
 interface Clone {
   _id: string;
   clone_id: string;
@@ -53,6 +54,12 @@ export default function ExplorePage() {
   }, []);
 
   return (
+    <>
+    {loading && (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <Spinner />
+      </div>
+    )}
     <div>
      <div style={{ width: '100%', position: 'relative', height: '500px' }}>
       <Image src="/bg1 1.svg" alt="bgimg" fill style={{ objectFit: 'cover' }} />
@@ -71,11 +78,7 @@ export default function ExplorePage() {
           Explore All Clones
         </span>
         
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-          </div>
-        )}
+       
 
         {error && (
           <div className="text-center py-12">
@@ -89,47 +92,45 @@ export default function ExplorePage() {
           </div>
         )}
 
-        {!loading && !error && clones.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No clones found. Create your first clone!</p>
-            <button 
-              onClick={() => router.push('/clone')} 
-              className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-            >
-              Create Clone
-            </button>
-          </div>
-        )}
-
         {!loading && !error && clones.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {clones.map((clone) => (
               <div
                 key={clone._id}
-                className="bg-white overflow-hidden duration-300 rounded-xl group cursor-pointer shadow-lg hover:shadow-xl transition-all"
+                className="relative bg-white overflow-hidden duration-300 rounded-xl group cursor-pointer shadow-lg hover:shadow-xl transition-all w-80 h-80"
                 onClick={() => router.push(`/chat/${clone.clone_id}`)}
               >
-                {/* Image container */}
-                <div className="relative h-48 w-full">
+                {/* Image container - full height */}
+                <div className="relative h-full w-full">
                   {clone.image ? (
                     <Image
                       src={clone.image}
                       alt={clone.clone_name}
                       fill
-                      className="object-cover rounded-t-xl transition-opacity duration-300 group-hover:opacity-80"
+                      className="object-cover rounded-xl transition-opacity duration-300 group-hover:opacity-80"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-t-xl">
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-xl">
                       <span className="text-gray-500 text-sm">No Image</span>
                     </div>
                   )}
                 </div>
 
-                {/* Card content - only name */}
-                <div className="py-4 flex flex-col h-full">
-                  <p className="text-black font-semibold text-base mb-4">
+                {/* Card content - overlay with glassy effect */}
+                <div className="absolute bottom-0 left-0 right-0 py-4 px-4 backdrop-blur-md bg-white/20 border-t border-white/30">
+                  <p className="text-white font-semibold text-2xl drop-shadow-lg text-center">
                     {clone.clone_name}
                   </p>
+                  <div className="flex items-center justify-between w-full mt-3">
+                    <div className="flex items-center gap-2">
+                      <UsersRound className="w-5 h-5 text-white" />
+                      <span className="text-white text-base drop-shadow-md">24</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-white" />
+                      <span className="text-white text-base drop-shadow-md">58 min</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -137,5 +138,6 @@ export default function ExplorePage() {
         )}
       </div>
     </div>
+    </>
   );
 }
