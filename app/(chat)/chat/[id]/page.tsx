@@ -48,19 +48,19 @@ export default function ChatPage() {
       if (!id) return;
 
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found");
-          setCloneLoading(false);
-          return;
-        }
+        // const token = localStorage.getItem("token");
+        // if (!token) {
+        //   console.error("No token found");
+        //   setCloneLoading(false);
+        //   return;
+        // }
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${id}`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`,
+              // Authorization: `Bearer ${token}`,
             },
           }
         );
