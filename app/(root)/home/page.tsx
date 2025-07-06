@@ -22,23 +22,15 @@ export default function Home() {
   useEffect(() => {
     const fetchClones = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/all`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
           }
         );
 
         if (!response.ok) {
-          if (response.status === 401) {
-            setError("Please log in again");
-          } else {
-            setError("Failed to fetch clones");
-          }
+          setError("Failed to fetch clones");
           setLoading(false);
           return;
         }
