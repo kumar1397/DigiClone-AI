@@ -1,14 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useRef } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,9 +26,9 @@ interface UploadedFile {
 export default function CloneProfileForm() {
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [cloneImagePreview, setCloneImagePreview] = useState<string | null>(null);
-  const [selectedTone, setSelectedTone] = useState("Set yours tone");
-  const [selectedStyle, setSelectedStyle] = useState("Set yours style");
-  const [selectedValues, setSelectedValues] = useState("Set yours values");
+  const [selectedTones, setSelectedTones] = useState<string[]>([]);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   
   // Form data state
   const [formData, setFormData] = useState({
@@ -57,6 +51,31 @@ export default function CloneProfileForm() {
       ...prev,
       [field]: value
     }));
+  };
+
+  // Handle checkbox selections
+  const handleToneChange = (tone: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTones(prev => [...prev, tone]);
+    } else {
+      setSelectedTones(prev => prev.filter(t => t !== tone));
+    }
+  };
+
+  const handleStyleChange = (style: string, checked: boolean) => {
+    if (checked) {
+      setSelectedStyles(prev => [...prev, style]);
+    } else {
+      setSelectedStyles(prev => prev.filter(s => s !== style));
+    }
+  };
+
+  const handleValuesChange = (value: string, checked: boolean) => {
+    if (checked) {
+      setSelectedValues(prev => [...prev, value]);
+    } else {
+      setSelectedValues(prev => prev.filter(v => v !== value));
+    }
   };
 
   // Reset form data
@@ -122,13 +141,15 @@ export default function CloneProfileForm() {
       const submitFormData = new FormData();
       const { cloneName, catchphrases, dos, donts, description } = formData;
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
       const validLinks = links.filter((link) => link.value.trim() !== "");
       
       const hasRequiredData = cloneName && 
-        selectedTone !== "Set yours tone" && 
-        selectedStyle !== "Set yours style" && 
-        selectedValues !== "Set yours values" &&
-        token;
+        selectedTones.length > 0 && 
+        selectedStyles.length > 0 && 
+        selectedValues.length > 0 &&
+        token &&
+        userId;
       
       if (!hasRequiredData) {
         alert("Please fill in all required fields (Clone Name, Tone, Style, Values)");
@@ -137,15 +158,16 @@ export default function CloneProfileForm() {
       
       // Add form fields to FormData
       submitFormData.append('cloneName', cloneName);
-      submitFormData.append('tone', selectedTone);
-      submitFormData.append('style', selectedStyle);
-      submitFormData.append('values', selectedValues);
+      submitFormData.append('tone', selectedTones.join(', '));
+      submitFormData.append('style', selectedStyles.join(', '));
+      submitFormData.append('values', selectedValues.join(', '));
       submitFormData.append('catchphrases', catchphrases);
       submitFormData.append('dos', dos);
       submitFormData.append('donts', donts);
       submitFormData.append('description', description);
       
-      // Add userId to FormData as well
+      // Add userId to FormData
+      submitFormData.append('userId', userId);
       
       // Add clone image if exists
       if (cloneImage) {
@@ -167,6 +189,17 @@ export default function CloneProfileForm() {
       }
       
       const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/create`;
+      
+      // Debug logging to see what's being sent
+      console.log('Selected Tones:', selectedTones);
+      console.log('Selected Styles:', selectedStyles);
+      console.log('Selected Values:', selectedValues);
+      console.log('Form Data:', formData);
+      
+      // Log FormData contents
+      // for (let [key, value] of submitFormData.entries()) {
+      //   console.log(`${key}:`, value);
+      // }
       
       if (!process.env.NEXT_PUBLIC_DATA_BACKEND_URL) {
         alert("Backend URL not configured. Please check your environment variables.");
@@ -323,27 +356,23 @@ export default function CloneProfileForm() {
               >
                 Tone
               </Label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[200px] justify-between border-[#d9d9d9] text-[#858585]"
-                  >
-                    {selectedTone}
-                    <ChevronDown className="h-4 w-4 opacity-50" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[200px]">
-                  {toneOptions.map((tone) => (
-                    <DropdownMenuItem
-                      key={tone}
-                      onClick={() => setSelectedTone(tone)}
+              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
+                {toneOptions.map((tone) => (
+                  <div key={tone} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`tone-${tone}`}
+                      checked={selectedTones.includes(tone)}
+                      onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
+                    />
+                    <Label
+                      htmlFor={`tone-${tone}`}
+                      className="text-sm text-[#858585] cursor-pointer"
                     >
                       {tone.charAt(0).toUpperCase() + tone.slice(1)}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>
@@ -353,27 +382,23 @@ export default function CloneProfileForm() {
               >
                 Style
               </Label>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-[200px] justify-between border-[#d9d9d9] text-[#858585]"
-                  >
-                    {selectedStyle}
-                    <ChevronDown className="h-4 w-4 opacity-50" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[200px]">
-                  {styleOptions.map((style) => (
-                    <DropdownMenuItem
-                      key={style}
-                      onClick={() => setSelectedStyle(style)}
+              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
+                {styleOptions.map((style) => (
+                  <div key={style} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`style-${style}`}
+                      checked={selectedStyles.includes(style)}
+                      onCheckedChange={(checked) => handleStyleChange(style, checked as boolean)}
+                    />
+                    <Label
+                      htmlFor={`style-${style}`}
+                      className="text-sm text-[#858585] cursor-pointer"
                     >
                       {style.charAt(0).toUpperCase() + style.slice(1)}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -399,27 +424,23 @@ export default function CloneProfileForm() {
             >
               Core Values
             </Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between border-[#d9d9d9] text-[#858585]"
-                >
-                  {selectedValues}
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full">
-                {valuesOptions.map((values) => (
-                  <DropdownMenuItem
-                    key={values}
-                    onClick={() => setSelectedValues(values)}
+            <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
+              {valuesOptions.map((value) => (
+                <div key={value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`value-${value}`}
+                    checked={selectedValues.includes(value)}
+                    onCheckedChange={(checked) => handleValuesChange(value, checked as boolean)}
+                  />
+                  <Label
+                    htmlFor={`value-${value}`}
+                    className="text-sm text-[#858585] cursor-pointer"
                   >
-                    {values}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">

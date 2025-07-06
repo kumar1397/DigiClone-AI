@@ -1,24 +1,44 @@
 "use client"
 import { ArrowLeft, Bell} from "lucide-react"
 import { PenLine } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Profile from "@/components/profile"
 // import UploadOptions from "@/components/upload"
 import UserFiles from "@/components/display";
 import CloneProfileForm from "@/components/clone";
+
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('profile');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch user ID from localStorage
+    const storedUserId = localStorage.getItem('userId');
+    console.log("Stored user ID:", storedUserId);
+    console.log("Stored user ID type:", typeof storedUserId);
+    if (storedUserId) {
+      setUserId(storedUserId);
+      console.log("Setting userId to:", storedUserId);
+    } else {
+      console.log("No userId found in localStorage");
+    }
+  }, []);
+
+  // Add effect to log userId changes
+  useEffect(() => {
+    console.log("Settings page userId changed to:", userId);
+  }, [userId]);
 
   const renderContent = () => {
     switch (activeSection) {
       case 'profile':
-        return <Profile />;
+        return <Profile userId={userId} />;
       case 'clone':
         return <CloneProfileForm />;
       case 'files':
         return <UserFiles />;
       default:
-        return <Profile />;
+        return <Profile userId={userId} />;
     }
   };
 
@@ -80,7 +100,7 @@ export default function Settings() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex justify-center items-center">
+      <div className="flex-1 flex justify-center">
         <div className="w-7/12">
           {renderContent()}
         </div>
