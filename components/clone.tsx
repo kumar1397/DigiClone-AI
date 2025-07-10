@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Image from "next/image";
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,13 +23,144 @@ interface UploadedFile {
   file: File;
 }
 
-export default function CloneProfileForm() {
+// interface CloneData {
+//   clone_id: string;
+//   clone_name: string;
+//   catchphrases: string[];
+//   dos: string;
+//   donts: string;
+//   freeform_description: string;
+//   image: string;
+//   style: string[];
+//   tone: string[];
+//   values: string[];
+// }
+
+// function CloneProfileView({ cloneData }: { cloneData: CloneData }) {
+//   return (
+//     <div className="flex-1 p-8">
+//       <div className="max-w-4xl">
+//         <h1 className="text-3xl font-bold text-[#1c1c1c] mb-8">
+//           Clone Profile (View Only)
+//         </h1>
+//         <div className="space-y-6">
+//           <div className="flex gap-6 items-end">
+//             <div className="flex-1">
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Clone Name
+//               </Label>
+//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
+//                 {cloneData.clone_name || <span className="italic text-gray-400">N/A</span>}
+//               </div>
+//             </div>
+//             <div className="flex flex-col items-center">
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Clone Image
+//               </Label>
+//               <div className="w-24 h-24 bg-gray-200 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+//                 {cloneData.cloneImage ? (
+//                   <Image
+//                     src={cloneData.cloneImage}
+//                     alt="Clone preview"
+//                     width={96}
+//                     height={96}
+//                     className="w-full h-full object-cover rounded-full"
+//                   />
+//                 ) : (
+//                   <span className="text-gray-500 text-xs text-center">
+//                     No Image
+//                   </span>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="grid grid-cols-2 gap-6">
+//             <div>
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Tone
+//               </Label>
+//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
+//                 {cloneData.tone ? cloneData.tone.split(",").map((t: string, i: number) => (
+//                   <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{t.trim()}</span>
+//                 )) : <span className="italic text-gray-400">N/A</span>}
+//               </div>
+//             </div>
+//             <div>
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Style
+//               </Label>
+//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
+//                 {cloneData.style ? cloneData.style.split(",").map((s: string, i: number) => (
+//                   <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{s.trim()}</span>
+//                 )) : <span className="italic text-gray-400">N/A</span>}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div>
+//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//               Catchphrases
+//             </Label>
+//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
+//               {cloneData.catchphrases || <span className="italic text-gray-400">N/A</span>}
+//             </div>
+//           </div>
+
+//           <div>
+//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//               Core Values
+//             </Label>
+//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
+//               {cloneData.values ? cloneData.values.split(",").map((v: string, i: number) => (
+//                 <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{v.trim()}</span>
+//               )) : <span className="italic text-gray-400">N/A</span>}
+//             </div>
+//           </div>
+
+//           <div className="grid grid-cols-2 gap-6">
+//             <div>
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Do&apos;s
+//               </Label>
+//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
+//                 {cloneData.dos || <span className="italic text-gray-400">N/A</span>}
+//               </div>
+//             </div>
+//             <div>
+//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//                 Don&apos;ts
+//               </Label>
+//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
+//                 {cloneData.donts || <span className="italic text-gray-400">N/A</span>}
+//               </div>
+//             </div>
+//           </div>
+
+//           <div>
+//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
+//               Freeform Description
+//             </Label>
+//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
+//               {cloneData.description || <span className="italic text-gray-400">N/A</span>}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+export default function CloneProfileForm({ userId }: { userId: string }) {
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [cloneImagePreview, setCloneImagePreview] = useState<string | null>(null);
   const [selectedTones, setSelectedTones] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  
+  // const [cloneId, setCloneId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  // const [cloneData, setCloneData] = useState<CloneData | null>(null);
+
   // Form data state
   const [formData, setFormData] = useState({
     cloneName: "",
@@ -44,6 +175,53 @@ export default function CloneProfileForm() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [links, setLinks] = useState([{ id: 1, value: "" }]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+
+  // Fetch cloneId and clone details
+  useEffect(() => {
+    const fetchCloneInfo = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        console.log("Fetching user data for userId:", userId);
+        // 1. Fetch user data to get cloneId
+        const userRes = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`);
+        const userData = await userRes.json();
+        console.log("Fetched user data:", userData);
+        if (userData.cloneId) {
+          // setCloneId(userData.cloneId);
+          console.log("Found cloneId:", userData.cloneId);
+          // 2. Fetch clone details
+          const cloneRes = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${userData.cloneId}`);
+          const cloneDetails = await cloneRes.json();
+          console.log("Fetched clone details:", cloneDetails);
+          // setCloneData(cloneDetails);
+          // 3. Prefill form fields
+          setFormData({
+            cloneName: cloneDetails.cloneName || "",
+            catchphrases: cloneDetails.catchphrases || "",
+            dos: cloneDetails.dos || "",
+            donts: cloneDetails.donts || "",
+            description: cloneDetails.description || ""
+          });
+          setSelectedTones(cloneDetails.tone ? cloneDetails.tone.split(",").map((t: string) => t.trim()) : []);
+          setSelectedStyles(cloneDetails.style ? cloneDetails.style.split(",").map((s: string) => s.trim()) : []);
+          setSelectedValues(cloneDetails.values ? cloneDetails.values.split(",").map((v: string) => v.trim()) : []);
+          setCloneImagePreview(cloneDetails.cloneImage || null);
+        } else {
+          console.log("No cloneId found for user.");
+        }
+      } catch (err) {
+        // Optionally handle error
+        console.error("Error fetching clone info:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCloneInfo();
+  }, [userId]);
 
   // Handle form field changes
   const handleInputChange = (field: string, value: string) => {
@@ -293,6 +471,13 @@ export default function CloneProfileForm() {
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
+
+  if (loading) return <div>Loading...</div>;
+
+  // If cloneId and cloneData are present, show view UI
+  // if (cloneId && cloneData) {
+  //   return <CloneProfileView cloneData={cloneData} />;
+  // }
 
   return (
     <div className="flex-1 p-8">

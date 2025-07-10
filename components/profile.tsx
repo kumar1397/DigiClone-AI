@@ -13,9 +13,6 @@ interface User {
   profilePicture:string;
 }
 export default function Profile( { userId }: { userId: string | null } ) {
-  console.log("User ID from Profile component:", userId);
-  console.log("User ID type:", typeof userId);
-  console.log("User ID is truthy:", !!userId);
   const [userData, setUserData] = useState<User | null>(null);
   const [phone, setPhone] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -23,9 +20,7 @@ export default function Profile( { userId }: { userId: string | null } ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    console.log("useEffect triggered with userId:", userId);
     if (userId) {
-      console.log("userId is truthy, calling fetchUserData");
       const fetchUserData = async () => {
         try{
           const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
@@ -42,15 +37,12 @@ export default function Profile( { userId }: { userId: string | null } ) {
           const data = await response.json();
           setUserData(data);
           setPhone(data.phone ? String(data.phone) : "");
-          setImagePreview(data.profilePicture || "/placeholder.svg");
-          console.log("Fetched user data:", data);
+          setImagePreview(data.profilePicture || "/user.jpg");
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       };
       fetchUserData();
-    } else {
-      console.log("userId is falsy, not calling fetchUserData");
     }
   }, [userId]);
 
@@ -78,15 +70,33 @@ export default function Profile( { userId }: { userId: string | null } ) {
     if (selectedImage) {
       formData.append("profilePicture", selectedImage);
     }
+    
+    // Debug: Log what we're sending
+    console.log("Sending update with phone:", phone);
+    console.log("Sending update with image:", selectedImage ? selectedImage.name : "none");
+    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
         method: "PUT",
         body: formData,
         credentials: "include",
       });
-      if (!response.ok) throw new Error("Failed to update user data");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Update failed:", response.status, errorData);
+        throw new Error(`Failed to update user data: ${response.status} - ${errorData.message || 'Unknown error'}`);
+      }
       const updated = await response.json();
-      setUserData(updated);
+      
+      // Merge the updated data with existing user data to preserve unchanged fields
+      setUserData(prevUserData => {
+        if (!prevUserData) return updated;
+        return {
+          ...prevUserData,
+          ...updated
+        };
+      });
+      
       setSelectedImage(null);
       // Optionally show a success message
     } catch (err) {
@@ -101,7 +111,7 @@ export default function Profile( { userId }: { userId: string | null } ) {
           <h1 className="text-3xl font-bold text-[#1c1c1c]">Edit profile</h1>
           <div className="w-20 h-20 rounded-full overflow-hidden cursor-pointer" onClick={handleImageClick}>
             <Image
-              src={imagePreview || "/placeholder.svg"}
+              src={imagePreview || "/user.jpg"}
               alt="Profile picture"
               className="w-full h-full object-cover"
               width={80}

@@ -14,19 +14,14 @@ export default function Settings() {
   useEffect(() => {
     // Fetch user ID from localStorage
     const storedUserId = localStorage.getItem('userId');
-    console.log("Stored user ID:", storedUserId);
-    console.log("Stored user ID type:", typeof storedUserId);
     if (storedUserId) {
       setUserId(storedUserId);
-      console.log("Setting userId to:", storedUserId);
-    } else {
-      console.log("No userId found in localStorage");
     }
   }, []);
 
   // Add effect to log userId changes
   useEffect(() => {
-    console.log("Settings page userId changed to:", userId);
+    // No logging in production
   }, [userId]);
 
   const renderContent = () => {
@@ -34,7 +29,7 @@ export default function Settings() {
       case 'profile':
         return <Profile userId={userId} />;
       case 'clone':
-        return <CloneProfileForm />;
+        return <CloneProfileForm userId={userId || ""} />;
       case 'files':
         return <UserFiles />;
       default:

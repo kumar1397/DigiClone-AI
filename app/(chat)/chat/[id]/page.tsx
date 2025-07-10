@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
-import Spinner from "@/components/spinner";
+// import Spinner from "@/components/spinner";
 
 interface Clone {
   _id: string;
@@ -203,16 +203,11 @@ export default function ChatPage() {
 
   return (
     <>
-      {cloneLoading && (
+      {/* {cloneLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Spinner />
         </div>
-      )}
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Spinner />
-        </div>
-      )}
+      )} */}
       <div className="flex h-screen">
       {/* Sidebar */}
       <div

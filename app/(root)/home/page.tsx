@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CardCarousel } from "@/components/ImageCarousel";
-import Spinner from "@/components/spinner";
+// import Spinner from "@/components/spinner";
 
 interface Clone {
   _id: string;
@@ -50,11 +50,12 @@ export default function Home() {
   }, []);
   return (
     <>
-      {loading && (
+      {/* {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Spinner />
         </div>
-      )}
+      )} */}
+      {console.log(loading)}
 
       {error && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Spinner from "@/components/spinner";
+// import Spinner from "@/components/spinner";
 import { UsersRound, Clock  } from 'lucide-react';
 interface Clone {
   _id: string;
@@ -47,11 +47,11 @@ export default function ExplorePage() {
 
   return (
     <>
-    {loading && (
+    {/* {loading && (
       <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
         <Spinner />
       </div>
-    )}
+    )} */}
     <div>
      <div style={{ width: '100%', position: 'relative', height: '500px' }}>
       <Image src="/bg1 1.svg" alt="bgimg" fill style={{ objectFit: 'cover' }} />
