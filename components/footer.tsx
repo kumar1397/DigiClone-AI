@@ -1,51 +1,23 @@
 import Link from "next/link";
-import { FaInstagram } from "react-icons/fa";
-import { FaLinkedinIn } from "react-icons/fa";
-import { FaDiscord } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 export default function Footer() {
   return (
-    <footer className="bg-[#282828] text-white mt-auto backdrop-blur-md bg-opacity-90 hidden md:block">
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold">DigiClone AI</h2>
-          <p className="text-sm mt-2 text-gray-300">
-            Empower your expertise, automate your impact.
-          </p>
-        </div>
-        <div className="w-full bg-white h-[1px]"></div>
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mt-8">
-          <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
-            <span className="text-lg font-medium">Connect with Us</span>
-            <div className="flex gap-4">
-              <Link href="#">
-                <FaInstagram />
-              </Link>
-              <Link href="#">
-                <FaLinkedinIn />
-              </Link>
-              <Link href="#">
-                <FaDiscord />
-              </Link>
-              <Link href="#">
-                <FaXTwitter />
-              </Link>
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row gap-4 text-sm mt-4 md:mt-0">
-            <Link href="/privacy-policy" className="hover:opacity-80">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:opacity-80">
-              Terms and Conditions
-            </Link>
-            <Link href="/code-of-conduct" className="hover:opacity-80">
-              Code of Conduct
-            </Link>
-          </div>
+    <footer className="py-12 px-4 bg-muted">
+    <div className="container max-w-6xl mx-auto">
+      <div className="text-center">
+        <h3 className="text-2xl font-serif font-bold mb-4 text-primary">DigiClone AI</h3>
+        <p className="text-muted-foreground mb-6">
+          Empowering experts to scale their impact through AI-powered digital clones
+        </p>
+        <div className="flex justify-center gap-8 text-sm text-muted-foreground">
+          <Link href="/discover" className="hover:text-primary transition-colors">Discover</Link>
+          <Link href="/login" className="hover:text-primary transition-colors">Login</Link>
+          <a href="#" className="hover:text-primary transition-colors">Privacy</a>
+          <a href="#" className="hover:text-primary transition-colors">Terms</a>
+          <a href="#" className="hover:text-primary transition-colors">Support</a>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
   );
 }
 

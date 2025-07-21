@@ -1,907 +1,387 @@
+"use client"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRef, useEffect } from "react";
-import Image from "next/image";
-import { useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Upload, Link, Plus, Trash2 } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-interface UploadedFile {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  file: File;
-}
-
-// interface CloneData {
-//   clone_id: string;
-//   clone_name: string;
-//   catchphrases: string[];
-//   dos: string;
-//   donts: string;
-//   freeform_description: string;
-//   image: string;
-//   style: string[];
-//   tone: string[];
-//   values: string[];
-// }
-
-// function CloneProfileView({ cloneData }: { cloneData: CloneData }) {
-//   return (
-//     <div className="flex-1 p-8">
-//       <div className="max-w-4xl">
-//         <h1 className="text-3xl font-bold text-[#1c1c1c] mb-8">
-//           Clone Profile (View Only)
-//         </h1>
-//         <div className="space-y-6">
-//           <div className="flex gap-6 items-end">
-//             <div className="flex-1">
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Clone Name
-//               </Label>
-//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
-//                 {cloneData.clone_name || <span className="italic text-gray-400">N/A</span>}
-//               </div>
-//             </div>
-//             <div className="flex flex-col items-center">
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Clone Image
-//               </Label>
-//               <div className="w-24 h-24 bg-gray-200 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-//                 {cloneData.cloneImage ? (
-//                   <Image
-//                     src={cloneData.cloneImage}
-//                     alt="Clone preview"
-//                     width={96}
-//                     height={96}
-//                     className="w-full h-full object-cover rounded-full"
-//                   />
-//                 ) : (
-//                   <span className="text-gray-500 text-xs text-center">
-//                     No Image
-//                   </span>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="grid grid-cols-2 gap-6">
-//             <div>
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Tone
-//               </Label>
-//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
-//                 {cloneData.tone ? cloneData.tone.split(",").map((t: string, i: number) => (
-//                   <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{t.trim()}</span>
-//                 )) : <span className="italic text-gray-400">N/A</span>}
-//               </div>
-//             </div>
-//             <div>
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Style
-//               </Label>
-//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
-//                 {cloneData.style ? cloneData.style.split(",").map((s: string, i: number) => (
-//                   <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{s.trim()}</span>
-//                 )) : <span className="italic text-gray-400">N/A</span>}
-//               </div>
-//             </div>
-//           </div>
-
-//           <div>
-//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//               Catchphrases
-//             </Label>
-//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
-//               {cloneData.catchphrases || <span className="italic text-gray-400">N/A</span>}
-//             </div>
-//           </div>
-
-//           <div>
-//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//               Core Values
-//             </Label>
-//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50 min-h-[40px]">
-//               {cloneData.values ? cloneData.values.split(",").map((v: string, i: number) => (
-//                 <span key={i} className="inline-block mr-2 bg-gray-200 rounded px-2 py-1 text-xs">{v.trim()}</span>
-//               )) : <span className="italic text-gray-400">N/A</span>}
-//             </div>
-//           </div>
-
-//           <div className="grid grid-cols-2 gap-6">
-//             <div>
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Do&apos;s
-//               </Label>
-//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
-//                 {cloneData.dos || <span className="italic text-gray-400">N/A</span>}
-//               </div>
-//             </div>
-//             <div>
-//               <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//                 Don&apos;ts
-//               </Label>
-//               <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
-//                 {cloneData.donts || <span className="italic text-gray-400">N/A</span>}
-//               </div>
-//             </div>
-//           </div>
-
-//           <div>
-//             <Label className="text-[#1c1c1c] font-medium mb-2 block">
-//               Freeform Description
-//             </Label>
-//             <div className="border border-[#d9d9d9] rounded px-3 py-2 text-[#858585] bg-gray-50">
-//               {cloneData.description || <span className="italic text-gray-400">N/A</span>}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-export default function CloneProfileForm({ userId }: { userId: string }) {
-  const [cloneImage, setCloneImage] = useState<File | null>(null);
-  const [cloneImagePreview, setCloneImagePreview] = useState<string | null>(null);
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Brain, Upload, Link as LinkIcon, X, Plus, ArrowLeft } from "lucide-react";
+import { toast } from 'react-hot-toast'
+import Link from "next/link";
+const CreateClone = () => {
+  const [cloneName, setCloneName] = useState("");
   const [selectedTones, setSelectedTones] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  // const [cloneId, setCloneId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  // const [cloneData, setCloneData] = useState<CloneData | null>(null);
+  const [catchphrases, setCatchphrases] = useState("");
+  const [dos, setDos] = useState("");
+  const [donts, setDonts] = useState("");
+  const [freeformDescription, setFreeformDescription] = useState("");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [linksDialogOpen, setLinksDialogOpen] = useState(false);
+  const [links, setLinks] = useState<string[]>([""]);
 
-  // Form data state
-  const [formData, setFormData] = useState({
-    cloneName: "",
-    catchphrases: "Enter upto 5 signature phrases that the clone should use (optional)",
-    dos: "Things the clone should always do while answering",
-    donts: "Things the clone should avoid while answering",
-    description: "Describe in your own words how the clone should behave, think and guide others"
-  });
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const [links, setLinks] = useState([{ id: 1, value: "" }]);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const toneOptions = [
+    "Friendly", "Professional", "Visionary", "Humble", "Motivational", 
+    "Empathetic", "Witty", "Authoritative", "Caring", "Inspiring"
+  ];
 
-  // Fetch cloneId and clone details
-  useEffect(() => {
-    const fetchCloneInfo = async () => {
-      if (!userId) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        console.log("Fetching user data for userId:", userId);
-        // 1. Fetch user data to get cloneId
-        const userRes = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`);
-        const userData = await userRes.json();
-        console.log("Fetched user data:", userData);
-        if (userData.cloneId) {
-          // setCloneId(userData.cloneId);
-          console.log("Found cloneId:", userData.cloneId);
-          // 2. Fetch clone details
-          const cloneRes = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${userData.cloneId}`);
-          const cloneDetails = await cloneRes.json();
-          console.log("Fetched clone details:", cloneDetails);
-          // setCloneData(cloneDetails);
-          // 3. Prefill form fields
-          setFormData({
-            cloneName: cloneDetails.cloneName || "",
-            catchphrases: cloneDetails.catchphrases || "",
-            dos: cloneDetails.dos || "",
-            donts: cloneDetails.donts || "",
-            description: cloneDetails.description || ""
-          });
-          setSelectedTones(cloneDetails.tone ? cloneDetails.tone.split(",").map((t: string) => t.trim()) : []);
-          setSelectedStyles(cloneDetails.style ? cloneDetails.style.split(",").map((s: string) => s.trim()) : []);
-          setSelectedValues(cloneDetails.values ? cloneDetails.values.split(",").map((v: string) => v.trim()) : []);
-          setCloneImagePreview(cloneDetails.cloneImage || null);
-        } else {
-          console.log("No cloneId found for user.");
-        }
-      } catch (err) {
-        // Optionally handle error
-        console.error("Error fetching clone info:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCloneInfo();
-  }, [userId]);
+  const styleOptions = [
+    "Storytelling", "Technical explanation", "Direct and concise", 
+    "Conversational", "Philosophical", "Analytical", "Casual", "Educational"
+  ];
 
-  // Handle form field changes
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  const valueOptions = [
+    "Discipline", "Innovation", "Empathy", "Rationality", "Peace", 
+    "Unity", "Simplicity", "Growth", "Authenticity", "Excellence"
+  ];
 
-  // Handle checkbox selections
   const handleToneChange = (tone: string, checked: boolean) => {
     if (checked) {
-      setSelectedTones(prev => [...prev, tone]);
+      setSelectedTones([...selectedTones, tone]);
     } else {
-      setSelectedTones(prev => prev.filter(t => t !== tone));
+      setSelectedTones(selectedTones.filter(t => t !== tone));
     }
   };
 
   const handleStyleChange = (style: string, checked: boolean) => {
     if (checked) {
-      setSelectedStyles(prev => [...prev, style]);
+      setSelectedStyles([...selectedStyles, style]);
     } else {
-      setSelectedStyles(prev => prev.filter(s => s !== style));
+      setSelectedStyles(selectedStyles.filter(s => s !== style));
     }
   };
 
-  const handleValuesChange = (value: string, checked: boolean) => {
+  const handleValueChange = (value: string, checked: boolean) => {
     if (checked) {
-      setSelectedValues(prev => [...prev, value]);
+      setSelectedValues([...selectedValues, value]);
     } else {
-      setSelectedValues(prev => prev.filter(v => v !== value));
+      setSelectedValues(selectedValues.filter(v => v !== value));
     }
   };
 
-  // Reset form data
-  // const resetForm = () => {
-  //   setFormData({
-  //     cloneName: "",
-  //     catchphrases: "Enter upto 5 signature phrases that the clone should use (optional)",
-  //     dos: "Things the clone should always do while answering",
-  //     donts: "Things the clone should avoid while answering",
-  //     description: "Describe in your own words how the clone should behave, think and guide others"
-  //   });
-  //   setCloneImage(null);
-  //   setSelectedTone("Set your tone");
-  //   setSelectedStyle("Set your style");
-  //   setSelectedValues("Set your values");
-  //   setUploadedFiles([]);
-  //   setLinks([{ id: 1, value: "" }]);
-  // };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map((file) => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: file.size,
-      type: file.type.split("/")[1].toUpperCase(),
-      file: file,
-    }));
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    maxSize: 1024 * 1024 * 1024,
-  });
-
-  const removeFile = (id: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
+  const handleAddLink = () => {
+    setLinks([...links, ""]);
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  const handleLinkChange = (index: number, value: string) => {
+    const newLinks = [...links];
+    newLinks[index] = value;
+    setLinks(newLinks);
   };
 
-  const addLink = () => {
-    setLinks([...links, { id: links.length + 1, value: "" }]);
+  const handleRemoveLink = (index: number) => {
+    setLinks(links.filter((_, i) => i !== index));
   };
 
-  const removeLink = (id: number) => {
-    setLinks(links.filter((link) => link.id !== id));
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Clone created successfully!");
   };
-
-  const updateLink = (id: number, value: string) => {
-    setLinks(links.map((link) => (link.id === id ? { ...link, value } : link)));
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      const submitFormData = new FormData();
-      const { cloneName, catchphrases, dos, donts, description } = formData;
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
-      const validLinks = links.filter((link) => link.value.trim() !== "");
-      
-      const hasRequiredData = cloneName && 
-        selectedTones.length > 0 && 
-        selectedStyles.length > 0 && 
-        selectedValues.length > 0 &&
-        token &&
-        userId;
-      
-      if (!hasRequiredData) {
-        alert("Please fill in all required fields (Clone Name, Tone, Style, Values)");
-        return;
-      }
-      
-      // Add form fields to FormData
-      submitFormData.append('cloneName', cloneName);
-      submitFormData.append('tone', selectedTones.join(', '));
-      submitFormData.append('style', selectedStyles.join(', '));
-      submitFormData.append('values', selectedValues.join(', '));
-      submitFormData.append('catchphrases', catchphrases);
-      submitFormData.append('dos', dos);
-      submitFormData.append('donts', donts);
-      submitFormData.append('description', description);
-      
-      // Add userId to FormData
-      submitFormData.append('userId', userId);
-      
-      // Add clone image if exists
-      if (cloneImage) {
-        submitFormData.append('cloneImage', cloneImage);
-        console.log('Image file added:', cloneImage);
-      }
-      
-      // Add uploaded files
-      uploadedFiles.forEach((file) => {
-        submitFormData.append('files', file.file);
-      });
-      
-      // Add links as JSON string
-      submitFormData.append('links', JSON.stringify(validLinks));
-
-      if (!token) {
-        alert("Authentication token not found. Please log in again.");
-        return;
-      }
-      
-      const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/create`;
-      
-      // Debug logging to see what's being sent
-      console.log('Selected Tones:', selectedTones);
-      console.log('Selected Styles:', selectedStyles);
-      console.log('Selected Values:', selectedValues);
-      console.log('Form Data:', formData);
-      
-      // Log FormData contents
-      // for (let [key, value] of submitFormData.entries()) {
-      //   console.log(`${key}:`, value);
-      // }
-      
-      if (!process.env.NEXT_PUBLIC_DATA_BACKEND_URL) {
-        alert("Backend URL not configured. Please check your environment variables.");
-        return;
-      }
-      
-      const response = await fetch(url, {
-        method: "POST",
-        body: submitFormData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        
-        if (response.status === 401) {
-          alert("Unauthorized. Please log in again.");
-        } else if (response.status === 400) {
-          alert(`Bad Request: ${errorText}`);
-        } else {
-          throw new Error(`Submission failed: ${response.status} - ${errorText}`);
-        }
-        return;
-      }
-      // Reset form state
-      // resetForm();
-      
-      alert("Clone profile created successfully!");
-      
-    } catch (error) {
-      console.error("Error creating clone profile:", error);
-      alert("Failed to create clone profile. Please try again.");
-    }
-  };
-
-  const toneOptions = [
-    "friendly",
-    "professional",
-    "visionary",
-    "humble",
-    "motivational",
-    "empathetic",
-    "witty",
-    "direct",
-    "calm",
-    "authoritative",
-  ];
-
-  const styleOptions = [
-    "storytelling",
-    "technical explanation",
-    "direct and conscise",
-    "conversational",
-    "philosophical",
-    "analytical",
-    "casual",
-    "educational",
-    "measured",
-    "metaphorical",
-  ];
-
-  const valuesOptions = [
-    "discipline",
-    "innovation",
-    "empathy",
-    "rationality",
-    "peace",
-    "unity",
-    "simplicity",
-    "growth mindset",
-    "integrity",
-    "entrepreneurship",
-  ];
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setCloneImage(file);
-      
-      // Create preview URL for display
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCloneImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  if (loading) return <div>Loading...</div>;
-
-  // If cloneId and cloneData are present, show view UI
-  // if (cloneId && cloneData) {
-  //   return <CloneProfileView cloneData={cloneData} />;
-  // }
 
   return (
-    <div className="flex-1 p-8">
-      <div className="max-w-4xl">
-        <h1 className="text-3xl font-bold text-[#1c1c1c] mb-8">
-          Clone Profile
-        </h1>
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="flex gap-6 items-end">
-            <div className="flex-1">
-              <Label
-                htmlFor="cloneName"
-                className="text-[#1c1c1c] font-medium mb-2 block"
-              >
-                Clone Name
-              </Label>
-              <Input
-                id="cloneName"
-                value={formData.cloneName}
-                onChange={(e) => handleInputChange('cloneName', e.target.value)}
-                className="border-[#d9d9d9] text-[#858585]"
-              />
+    <div className="min-h-screen bg-background py-8 px-4">
+      <div className="container max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            Back to home
+          </Link>
+          
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-primary/10 rounded-full">
+              <Brain className="h-6 w-6 text-primary" />
             </div>
-            <div className="flex flex-col items-center">
-              <Label className="text-[#1c1c1c] font-medium mb-2 block">
-                Clone Image
-              </Label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <div
-                onClick={handleImageClick}
-                className="w-24 h-24 bg-gray-200 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors overflow-hidden"
-              >
-                {cloneImagePreview ? (
-                  <Image
-                    src={cloneImagePreview}
-                    alt="Clone preview"
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <span className="text-gray-500 text-xs text-center">
-                    Upload Image
-                  </span>
-                )}
-              </div>
-            </div>
+            <h1 className="text-3xl font-serif font-bold">Clone Profile</h1>
           </div>
+          <p className="text-muted-foreground">Configure your digital clone&apos;s personality and behavior</p>
+        </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <Label
-                htmlFor="tone"
-                className="text-[#1c1c1c] font-medium mb-2 block"
-              >
-                Tone
-              </Label>
-              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
-                {toneOptions.map((tone) => (
-                  <div key={tone} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`tone-${tone}`}
-                      checked={selectedTones.includes(tone)}
-                      onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Clone Name and Image */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-4">
+                  <div>
+                    <Label htmlFor="cloneName" className="text-base font-semibold">Clone Name</Label>
+                    <Input
+                      id="cloneName"
+                      value={cloneName}
+                      onChange={(e) => setCloneName(e.target.value)}
+                      placeholder="Enter your clone's name"
+                      className="mt-2"
                     />
-                    <Label
-                      htmlFor={`tone-${tone}`}
-                      className="text-sm text-[#858585] cursor-pointer"
-                    >
-                      {tone.charAt(0).toUpperCase() + tone.slice(1)}
-                    </Label>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label
-                htmlFor="style"
-                className="text-[#1c1c1c] font-medium mb-2 block"
-              >
-                Style
-              </Label>
-              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
-                {styleOptions.map((style) => (
-                  <div key={style} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`style-${style}`}
-                      checked={selectedStyles.includes(style)}
-                      onCheckedChange={(checked) => handleStyleChange(style, checked as boolean)}
-                    />
-                    <Label
-                      htmlFor={`style-${style}`}
-                      className="text-sm text-[#858585] cursor-pointer"
-                    >
-                      {style.charAt(0).toUpperCase() + style.slice(1)}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <Label
-              htmlFor="catchphrases"
-              className="text-[#1c1c1c] font-medium mb-2 block"
-            >
-              Catchphrases
-            </Label>
-            <Input
-              id="catchphrases"
-              value={formData.catchphrases}
-              onChange={(e) => handleInputChange('catchphrases', e.target.value)}
-              className="border-[#d9d9d9] text-[#858585]"
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="values"
-              className="text-[#1c1c1c] font-medium mb-2 block"
-            >
-              Core Values
-            </Label>
-            <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-[#d9d9d9] rounded-md p-3">
-              {valuesOptions.map((value) => (
-                <div key={value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`value-${value}`}
-                    checked={selectedValues.includes(value)}
-                    onCheckedChange={(checked) => handleValuesChange(value, checked as boolean)}
-                  />
-                  <Label
-                    htmlFor={`value-${value}`}
-                    className="text-sm text-[#858585] cursor-pointer"
-                  >
-                    {value.charAt(0).toUpperCase() + value.slice(1)}
-                  </Label>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <Label
-                htmlFor="dos"
-                className="text-[#1c1c1c] font-medium mb-2 block"
-              >
-                Do&apos;s
-              </Label>
-              <Input
-                id="dos"
-                value={formData.dos}
-                onChange={(e) => handleInputChange('dos', e.target.value)}
-                className="border-[#d9d9d9] text-[#858585]"
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor="donts"
-                className="text-[#1c1c1c] font-medium mb-2 block"
-              >
-                Don&apos;ts
-              </Label>
-              <Input
-                id="donts"
-                value={formData.donts}
-                onChange={(e) => handleInputChange('donts', e.target.value)}
-                className="border-[#d9d9d9] text-[#858585]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label
-              htmlFor="description"
-              className="text-[#1c1c1c] font-medium mb-2 block"
-            >
-              Freeform Description
-            </Label>
-            <Input
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              className="border-[#d9d9d9] text-[#858585]"
-            />
-          </div>
-
-          <div className="flex items-center justify-center w-full">
-            <div className="container max-w-6xl mx-auto px-4 ">
-              <div className="text-center mb-6">
-                <p className="text-gray-600 max-w-2xl mx-auto">
-                  Choose how you want to share your content. Upload files
-                  directly or share via links.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center gap-8">
-                {/* File Upload Box */}
-                <div
-                  onClick={() => setIsDialogOpen(true)}
-                  className="group h-[20rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 rounded-xl cursor-pointer hover:border-blue-500 hover:text-blue-500 transition-all duration-300 bg-white shadow-sm hover:shadow-md"
-                >
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
-                      <Upload className="h-8 w-8" />
-                    </div>
+                
+                <div className="flex flex-col items-center">
+                  <Label className="text-base font-semibold mb-2">Clone Image</Label>
+                  <div className="w-32 h-32 rounded-full bg-muted border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors">
                     <div className="text-center">
-                      <h3 className="text-lg font-semibold mb-2">
-                        Upload Files
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Share files directly from your device
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* OR Text */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-gray-50 px-4 text-sm text-gray-500">
-                      or
-                    </span>
-                  </div>
-                </div>
-
-                {/* Link Box */}
-                <div
-                  onClick={() => setIsShareDialogOpen(true)}
-                  className="group h-[20rem] w-[25rem] border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 rounded-xl cursor-pointer hover:border-green-500 hover:text-green-500 transition-all duration-300 bg-white shadow-sm hover:shadow-md"
-                >
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-green-50 rounded-full group-hover:bg-green-100 transition-colors">
-                      <Link className="h-8 w-8" />
-                    </div>
-                    <div className="text-center">
-                      <h3 className="text-lg font-semibold mb-2">
-                        Share Links
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Share content via URLs
-                      </p>
+                      <Upload className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Upload Image</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="sm:max-w-[500px] p-6">
-                <DialogHeader>
-                  <DialogTitle className="text-center">
-                    Upload Files
-                  </DialogTitle>
-                  <DialogDescription className="text-center">
-                    Upload your user-downloadable files.
-                  </DialogDescription>
-                </DialogHeader>
-
-                {/* Dropzone Area */}
-                <div
-                  {...getRootProps()}
-                  className={`border-2 border-dashed border-gray-300 rounded-md py-10 text-center text-sm text-gray-500 cursor-pointer transition-colors ${
-                    isDragActive ? "border-blue-500 bg-blue-50" : ""
-                  }`}
-                >
-                  <input {...getInputProps()} />
-                  <div className="flex flex-col items-center">
-                    <svg
-                      className="w-6 h-6 text-gray-400 mb-2"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4m0 0l-4 4m4-4v12"
-                      />
-                    </svg>
-                    <p>
-                      {isDragActive ? (
-                        "Drop the files here..."
-                      ) : (
-                        <>
-                          Drop your files here or{" "}
-                          <span className="underline">browse</span>
-                        </>
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Max file size up to 1 GB
-                    </p>
-                  </div>
-                </div>
-
-                {/* Uploaded Files */}
-                <div className="space-y-3 mt-4">
-                  {uploadedFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      className="flex items-center justify-between bg-gray-50 p-2 px-3 rounded-md border"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="bg-gray-200 text-xs text-gray-700 px-2 py-1 rounded">
-                          {file.type}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">{file.name}</p>
-                          <p className="text-xs text-gray-500">
-                            {formatFileSize(file.size)}
-                          </p>
-                        </div>
+          {/* Tone and Style */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Personality</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <Label className="text-base font-semibold mb-4 block">Tone</Label>
+                  <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+                    {toneOptions.map((tone) => (
+                      <div key={tone} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`tone-${tone}`}
+                          checked={selectedTones.includes(tone)}
+                          onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
+                        />
+                        <Label htmlFor={`tone-${tone}`} className="text-sm cursor-pointer">
+                          {tone}
+                        </Label>
                       </div>
-                      <Trash2
-                        className="text-gray-400 hover:text-red-500 w-4 h-4 cursor-pointer"
-                        onClick={() => removeFile(file.id)}
-                      />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <DialogFooter className="mt-6 flex justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={() => setIsDialogOpen(false)}
-                    disabled={uploadedFiles.length === 0}
-                  >
-                    Done
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-            <Dialog
-              open={isShareDialogOpen}
-              onOpenChange={setIsShareDialogOpen}
-            >
-              <DialogContent className="sm:max-w-[450px] p-6 text-center">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">
-                    Add Links
-                  </DialogTitle>
-                  <DialogDescription className="text-gray-500 text-sm">
-                    Add the links you want to share
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="space-y-4 mt-6">
-                  {links.map((link) => (
-                    <div key={link.id} className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder="Enter link URL"
-                        value={link.value}
-                        onChange={(e) => updateLink(link.id, e.target.value)}
-                      />
-                      {links.length > 1 && (
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => removeLink(link.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-
-                  <Button
-                    onClick={addLink}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Another Link
-                  </Button>
+                <div>
+                  <Label className="text-base font-semibold mb-4 block">Style</Label>
+                  <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+                    {styleOptions.map((style) => (
+                      <div key={style} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`style-${style}`}
+                          checked={selectedStyles.includes(style)}
+                          onCheckedChange={(checked) => handleStyleChange(style, checked as boolean)}
+                        />
+                        <Label htmlFor={`style-${style}`} className="text-sm cursor-pointer">
+                          {style}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <Button
-                  className="mt-6 bg-green-500 hover:bg-green-600 w-full py-6 text-base font-medium"
-                  onClick={() => setIsShareDialogOpen(false)}
-                >
-                  Done
-                </Button>
-              </DialogContent>
-            </Dialog>
-          </div>
+          {/* Catchphrases */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Catchphrases</CardTitle>
+              <CardDescription>
+                Enter up to 5 signature phrases that the clone should use (optional)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={catchphrases}
+                onChange={(e) => setCatchphrases(e.target.value)}
+                placeholder="Enter signature phrases, separated by commas or new lines"
+                className="min-h-[100px]"
+              />
+            </CardContent>
+          </Card>
 
-          <div className="flex gap-4 pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              className="px-8 py-2 border-[#ff7008] text-[#ff7008] hover:bg-[#ff7008] hover:text-white"
+          {/* Core Values */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Core Values</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {valueOptions.map((value) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`value-${value}`}
+                      checked={selectedValues.includes(value)}
+                      onCheckedChange={(checked) => handleValueChange(value, checked as boolean)}
+                    />
+                    <Label htmlFor={`value-${value}`} className="text-sm cursor-pointer">
+                      {value}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Do's and Don'ts */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Guidelines</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="dos" className="text-base font-semibold">Do&apos;s</Label>
+                  <Textarea
+                    id="dos"
+                    value={dos}
+                    onChange={(e) => setDos(e.target.value)}
+                    placeholder="Things the clone should always do while answering"
+                    className="mt-2 min-h-[120px]"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="donts" className="text-base font-semibold">Don&apos;ts</Label>
+                  <Textarea
+                    id="donts"
+                    value={donts}
+                    onChange={(e) => setDonts(e.target.value)}
+                    placeholder="Things the clone should avoid while answering"
+                    className="mt-2 min-h-[120px]"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Freeform Description */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Freeform Description</CardTitle>
+              <CardDescription>
+                Describe in your own words how the clone should behave, think and guide others
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={freeformDescription}
+                onChange={(e) => setFreeformDescription(e.target.value)}
+                placeholder="Describe your clone's personality, approach, and unique characteristics in detail..."
+                className="min-h-[150px]"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Content Upload Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif">Share Your Content</CardTitle>
+              <CardDescription>
+                Choose how you want to share your content. Upload files directly or share via links.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                  <DialogTrigger asChild>
+                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
+                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="font-semibold text-lg mb-2">Upload Files</h3>
+                      <p className="text-muted-foreground text-sm">Share files directly from your device</p>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Upload Files</DialogTitle>
+                      <DialogDescription>
+                        Upload your user-downloadable files.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
+                      <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Drop your files here or <button className="text-primary underline">browse</button>
+                      </p>
+                      <p className="text-xs text-muted-foreground">Max file size up to 1 GB</p>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
+                        Back
+                      </Button>
+                      <Button onClick={() => setUploadDialogOpen(false)}>
+                        Done
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={linksDialogOpen} onOpenChange={setLinksDialogOpen}>
+                  <DialogTrigger asChild>
+                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
+                      <LinkIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="font-semibold text-lg mb-2">Share Links</h3>
+                      <p className="text-muted-foreground text-sm">Share content via URLs</p>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Links</DialogTitle>
+                      <DialogDescription>
+                        Add the links you want to share
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {links.map((link, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={link}
+                            onChange={(e) => handleLinkChange(index, e.target.value)}
+                            placeholder="Enter link URL"
+                          />
+                          {links.length > 1 && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleRemoveLink(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                      <Button
+                        variant="outline"
+                        onClick={handleAddLink}
+                        className="w-full"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Another Link
+                      </Button>
+                    </div>
+                    <Button 
+                      onClick={() => setLinksDialogOpen(false)}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      Done
+                    </Button>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Submit Button */}
+          <div className="flex justify-center pt-6">
+            <Button 
+              type="submit" 
+              size="lg" 
+              className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-12 py-3"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="px-8 py-2 bg-[#ff7008] hover:bg-[#ff7008]/90 text-white"
-            >
-              Save
+              Create Your Clone
             </Button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+};
+
+export default CreateClone;

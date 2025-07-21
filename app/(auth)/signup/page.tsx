@@ -1,196 +1,396 @@
-"use client"
-import Link from "next/link"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+"use client";
 
-export default function AccountCreation() {
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+// import { Badge } from "@/components/ui/badge";
+import { Brain, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+
+export default function Signup() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [currentStep, setCurrentStep] = useState(1);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
+
+    // Validation checks
+    if (password !== confirmPassword) {
+      toast.error("Password mismatch. Please make sure your passwords match.");
       return;
     }
 
+    if (password.length < 8) {
+      toast.error(
+        "Password too short. Password must be at least 8 characters long."
+      );
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/signup`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({ name, email, password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ name, email, password }),
+        }
+      );
+
       const data = await response.json();
+
       if (response.ok) {
-        console.log('Signup successful:', data);
-        router.push('/login');
+        toast.success("Account created successfully! ");
+        router.push("/login");
       } else {
-        setError(data.error || 'Signup failed');
+        const errorMessage =
+          data.error || data.message || "Signup failed. Please try again.";
+        toast.error(errorMessage);
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      setError('An error occurred during signup');
+      console.error("Signup error:", error);
+      toast.error("Signup failed. Please check your connection and try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getStepColor = (step: number) => {
-    if (step < currentStep) return 'bg-[#333333]';
-    if (step === currentStep) return 'bg-[#333333]';
-    return 'bg-[#c4c4c4]';
-  };
+  // const handleFileUpload = (type: string) => {
+  //   const input = document.createElement('input');
+  //   input.type = 'file';
+  //   input.accept = type === 'selfie' ? 'image/*' : 'image/*,.pdf';
+  //   input.onchange = (e) => {
+  //     const file = (e.target as HTMLInputElement).files?.[0];
+  //     if (file) {
+  //       setUploadedFiles(prev => [...prev, `${type}: ${file.name}`]);
+  //       toast.success(`${type === 'selfie' ? 'Selfie' : 'ID Document'} uploaded successfully.`);
+  //     }
+  //   };
+  //   input.click();
+  // };
 
-  const getStepTextColor = (step: number) => {
-    if (step <= currentStep) return 'text-[#333333]';
-    return 'text-[#666666]';
-  };
+  // const handleVerificationComplete = () => {
+  //   setIsLoading(true);
+  //   setTimeout(() => {
+  //     toast.success("Verification complete! Welcome to DigiClone AI. Redirecting to dashboard...");
+  //     // In real app, redirect to dashboard
+  //     setIsLoading(false);
+  //   }, 2000);
+  // };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center p-4 md:p-8">
-      {/* Logo */}
-
-      {/* Main content */}
-      <div className="w-full max-w-md mt-16 flex flex-col items-center">
-        <h1 className="text-[#333333] text-3xl font-medium mb-2">Create an account</h1>
-        <p className="text-[#666666] mb-12">
-          Already have an account?{" "}
-          <Link href="/login" className="text-[#333333] underline">
-            Log in now
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to home
           </Link>
-        </p>
 
-        {/* Progress steps */}
-        <div className="w-full flex justify-between mb-8">
-          <div className="flex flex-col items-center flex-1">
-            <div className={`w-8 h-8 rounded-full ${getStepColor(1)} text-white flex items-center justify-center mb-2`}>1</div>
-            <p className={`text-sm ${getStepTextColor(1)}`}>Enter your email address</p>
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-primary/10 rounded-full">
+              <Brain className="h-8 w-8 text-primary" />
+            </div>
           </div>
-          <div className="flex-1 flex items-center">
-            <div className="h-[1px] w-full bg-[#eeeeee]"></div>
-          </div>
-          <div className="flex flex-col items-center flex-1">
-            <div className={`w-8 h-8 rounded-full ${getStepColor(2)} text-white flex items-center justify-center mb-2`}>2</div>
-            <p className={`text-sm ${getStepTextColor(2)}`}>Provide your basic info</p>
-          </div>
-          <div className="flex-1 flex items-center">
-            <div className="h-[1px] w-full bg-[#eeeeee]"></div>
-          </div>
-          <div className="flex flex-col items-center flex-1">
-            <div className={`w-8 h-8 rounded-full ${getStepColor(3)} text-white flex items-center justify-center mb-2`}>3</div>
-            <p className={`text-sm ${getStepTextColor(3)}`}>Create your password</p>
-          </div>
+
+          <h1 className="text-2xl font-serif font-bold mb-2">
+            Create your account
+          </h1>
+          <p className="text-muted-foreground">
+            Start building your digital clone today
+          </p>
         </div>
 
-        {/* Form */}
-        <div className="w-full">
-          <form onSubmit={handleSubmit}>
-            {currentStep === 1 && (
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-[#333333] mb-2">
-                  What&apos;s your email?
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
-                  required
-                />
-              </div>
-            )}
+        {/* Step 1: Account Creation */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-xl font-serif">
+              Sign up for DigiClone AI
+            </CardTitle>
+            <CardDescription>Enter your details to get started</CardDescription>
+          </CardHeader>
 
-            {currentStep === 2 && (
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-[#333333] mb-2">
-                  Your name
-                </label>
-                <input
-                  type="text"
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
                   id="name"
+                  type="text"
+                  placeholder="Your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
                   required
+                  className="h-11"
                 />
               </div>
-            )}
 
-            {currentStep === 3 && (
-              <div className="mb-4">
-                <label htmlFor="password" className="block text-[#333333] mb-2">
-                  Create a password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full p-4 border border-[#eeeeee] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#333333]"
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="h-11"
                 />
               </div>
-            )}
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-11 px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Must be at least 8 characters long
+                </p>
+              </div>
 
-            <button
-              type="submit"
-              className="w-full bg-[#333333] text-white py-4 rounded-lg mt-4 hover:bg-opacity-90 transition-all"
-            >
-              {currentStep < 3 ? 'Next' : 'Sign up'}
-            </button>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-11 px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
 
-          {/* Divider */}
-          <div className="flex items-center my-8">
-            <div className="flex-1 h-[1px] bg-[#eeeeee]"></div>
-            <span className="px-4 text-[#666666]">OR</span>
-            <div className="flex-1 h-[1px] bg-[#eeeeee]"></div>
-          </div>
+              <Button
+                type="submit"
+                className="w-full h-11 bg-primary hover:bg-secondary text-primary-foreground font-semibold"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Creating account...
+                  </div>
+                ) : (
+                  "Create account"
+                )}
+              </Button>
+            </form>
 
-          {/* Social login */}
-          <div className="flex flex-col space-y-4 mt-4">
-            <button className="w-full border border-[#eeeeee] rounded-full py-3 px-4 flex items-center justify-center space-x-2 hover:bg-gray-50 transition-all">
-              <GoogleIcon />
-              <span className="text-[#333333]">Sign up with Google</span>
-            </button>
-          </div>
+            <div className="relative">
+              <Separator />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="bg-card px-2 text-sm text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <Button variant="outline" className="w-full h-11">
+              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Continue with Google
+            </Button>
+
+            <div className="text-center pt-4">
+              <p className="text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Step 2: Identity Verification */}
+        {/* {step === 2 && (
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="space-y-1 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Shield className="h-5 w-5 text-primary" />
+                <Badge variant="secondary">Required</Badge>
+              </div>
+              <CardTitle className="text-xl font-serif">Identity Verification</CardTitle>
+              <CardDescription>
+                Upload your documents for identity validation. This ensures trust and safety for all users.
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-success" />
+                  Why we need this
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Verify your identity for clone authenticity</li>
+                  <li>• Protect against impersonation</li>
+                  <li>• Build trust in the DigiClone community</li>
+                  <li>• Your data is encrypted and secure</li>
+                </ul>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-base font-semibold">Step 1: Upload a clear selfie</Label>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-2 h-12 border-dashed"
+                    onClick={() => handleFileUpload('selfie')}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Selfie
+                  </Button>
+                </div>
+
+                <div>
+                  <Label className="text-base font-semibold">Step 2: Upload government ID</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Aadhaar Card, PAN Card, Passport, or Driver&apos;s License
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-12 border-dashed"
+                    onClick={() => handleFileUpload('id')}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload ID Document
+                  </Button>
+                </div>
+              </div>
+
+              {uploadedFiles.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Uploaded files:</Label>
+                  {uploadedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center gap-2 text-sm text-success">
+                      <CheckCircle className="h-4 w-4" />
+                      {file}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button 
+                className="w-full h-11 bg-primary hover:bg-secondary text-primary-foreground font-semibold"
+                disabled={uploadedFiles.length < 2 || isLoading}
+                onClick={handleVerificationComplete}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Verifying...
+                  </div>
+                ) : (
+                  "Complete Verification"
+                )}
+              </Button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                Your documents are used only for identity validation and are not made public. 
+                We comply with all data protection regulations.
+              </p>
+            </CardContent>
+          </Card>
+        )} */}
+
+        <div className="text-center mt-6">
+          <p className="text-xs text-muted-foreground">
+            By creating an account, you agree to our{" "}
+            <a href="#" className="text-primary hover:underline">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="text-primary hover:underline">
+              Privacy Policy
+            </a>
+          </p>
         </div>
       </div>
     </div>
-  )
-}
-
-function GoogleIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.255H17.92C17.665 15.63 16.89 16.795 15.725 17.575V20.335H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23C14.97 23 17.46 22.015 19.28 20.335L15.725 17.575C14.74 18.235 13.48 18.625 12 18.625C9.13504 18.625 6.71004 16.69 5.84504 14.09H2.17004V16.94C3.98004 20.535 7.70004 23 12 23Z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.84501 14.09C5.62501 13.43 5.50001 12.725 5.50001 12C5.50001 11.275 5.62501 10.57 5.84501 9.91V7.06H2.17001C1.40001 8.59 0.950012 10.28 0.950012 12C0.950012 13.72 1.40001 15.41 2.17001 16.94L5.84501 14.09Z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.375C13.615 5.375 15.065 5.93 16.205 7.02L19.36 3.865C17.455 2.09 14.965 1 12 1C7.70004 1 3.98004 3.465 2.17004 7.06L5.84504 9.91C6.71004 7.31 9.13504 5.375 12 5.375Z"
-        fill="#EA4335"
-      />
-    </svg>
-  )
+  );
 }
