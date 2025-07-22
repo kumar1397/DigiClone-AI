@@ -69,7 +69,7 @@ const CloneCreatorDashboard = ({
   });
   // ✅ Enhanced parseArray function
 
-  function parseArray(arr: any): string[] {
+  function parseArray(arr: unknown): string[] {
     try {
       if (Array.isArray(arr) && typeof arr[0] === "string") {
         return JSON.parse(arr[0]);
@@ -422,6 +422,7 @@ const CloneCreatorDashboard = ({
                       if (!res.ok) throw new Error("Failed to update clone data");
                       toast.success("Personality updated!");
                     } catch (err) {
+                      console.error(err);
                       toast.error("Failed to update personality");
                     } finally {
                     }

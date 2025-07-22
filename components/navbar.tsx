@@ -9,7 +9,7 @@ import Link from "next/link";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({
+  const [user] = useState({
     name: "John Doe",
     email: "john@example.com",
     avatar: null
