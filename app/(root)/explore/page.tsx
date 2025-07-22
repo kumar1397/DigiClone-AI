@@ -27,17 +27,6 @@ interface Clone {
 export default function Explore() {
   const [clones, setClones] = useState<Clone[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  // const filteredClones = featuredClones.filter((clone) => {
-  //   const matchesSearch =
-  //     clone.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     clone.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     clone.specialties.some((s) =>
-  //       s.toLowerCase().includes(searchQuery.toLowerCase())
-  //     );
-  //   return matchesSearch;
-  // });
-
   useEffect(() => {
     const fetchClones = async () => {
       try {

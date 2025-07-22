@@ -37,8 +37,6 @@ interface CloneData {
   style: string[];
   tone: string[];
   values: string[];
-  fileUploads: string[];
-  uploadedSources: string[];
 }
 
 interface userProfile {
@@ -55,6 +53,8 @@ const CloneCreatorDashboard = ({
     name: "",
     profilePicture: "",
   });
+  console.log("User ID:", userId);
+  console.log("Clone ID:", cloneId);
   const [cloneData, setCloneData] = useState<CloneData>({
     clone_id: "",
     clone_name: "",
@@ -66,74 +66,19 @@ const CloneCreatorDashboard = ({
     style: [],
     tone: [],
     values: [],
-    fileUploads: [],
-    uploadedSources: [],
   });
-  const [saving, setSaving] = useState(false);
-  // const handleFileUpload = () => {
-  //   const input = document.createElement("input");
-  //   input.type = "file";
-  //   input.accept = ".pdf,.txt,.doc,.docx";
-  //   input.onchange = (e) => {
-  //     const file = (e.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const newSource = {
-  //         id: uploadedSources.length + 1,
-  //         name: file.name,
-  //         type: "PDF",
-  //         date: new Date().toISOString().split("T")[0],
-  //       };
-  //       setUploadedSources([...uploadedSources, newSource]);
-  //       toast.success(`${file.name} has been added to your knowledge base.`);
-  //     }
-  //   };
-  //   input.click();
-  // };
+  // ✅ Enhanced parseArray function
 
-  // const handleProfilePictureUpload = () => {
-  //   const input = document.createElement("input");
-  //   input.type = "file";
-  //   input.accept = "image/*";
-  //   input.onchange = (e) => {
-  //     const file = (e.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e) => {
-  //         setUserProfile((prev) => ({
-  //           ...prev,
-  //           profilePicture: e.target?.result as string,
-  //         }));
-  //       };
-  //       reader.readAsDataURL(file);
-  //       toast.success("Profile picture updated");
-  //     }
-  //   };
-  //   input.click();
-  // };
-
-  // const handleDeleteSource = (id: number) => {
-  //   setUploadedSources(uploadedSources.filter((source) => source.id !== id));
-  //   toast.success("Source removed");
-  // };
-
-  // const handleProfileUpdate = () => {
-  //   toast.success("Profile updated");
-  // };
-
-  const defaultCloneData: CloneData = {
-    clone_id: "",
-    clone_name: "",
-    catchphrases: [],
-    dos: "",
-    donts: "",
-    freeform_description: "",
-    image: "",
-    style: [],
-    tone: [],
-    values: [],
-    fileUploads: [],
-    uploadedSources: [],
-  };
+  function parseArray(arr: any): string[] {
+    try {
+      if (Array.isArray(arr) && typeof arr[0] === "string") {
+        return JSON.parse(arr[0]);
+      }
+    } catch (e) {
+      console.error("Failed to parse array:", arr, e);
+    }
+    return [];
+  }
 
   useEffect(() => {
     const fetchCloneInfo = async () => {
@@ -142,57 +87,68 @@ const CloneCreatorDashboard = ({
           const cloneRes = await fetch(
             `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${cloneId}`
           );
-          const cloneDetails = await cloneRes.json();
-          setCloneData({
-            ...defaultCloneData,
-            ...cloneDetails,
-            // Defensive: ensure arrays
-            tone: Array.isArray(cloneDetails.tone) ? cloneDetails.tone : [],
-            style: Array.isArray(cloneDetails.style) ? cloneDetails.style : [],
-            catchphrases: Array.isArray(cloneDetails.catchphrases) ? cloneDetails.catchphrases : [],
-            values: Array.isArray(cloneDetails.values) ? cloneDetails.values : [],
-            fileUploads: Array.isArray(cloneDetails.fileUploads) ? cloneDetails.fileUploads : [],
-            uploadedSources: Array.isArray(cloneDetails.uploadedSources) ? cloneDetails.uploadedSources : [],
-          });
-          console.log(cloneData);
+          if (!cloneRes.ok) {
+            throw new Error("Failed to fetch clone data");
+          }
+          const cloneData = await cloneRes.json();
+          const data = cloneData.data; // ✅ get actual clone data from "data" field
+
+          const parsedClone = {
+            clone_id: data.cloneIdStr || "",         
+            clone_name: data.cloneName || "",
+            catchphrases: data.catchphrases || [],
+            dos: data.dos || "",
+            donts: data.donts || "",
+            freeform_description: data.description || "",
+            image: data.image || "",
+            style: parseArray(data.style),
+            tone: parseArray(data.tone),
+            values: parseArray(data.values),
+          };
+
+          console.log("Parsed clone data:", parsedClone);
+          setCloneData(parsedClone);
         } else {
           console.log("No cloneId found for user.");
         }
       } catch (err) {
-        // Optionally handle error
         console.error("Error fetching clone info:", err);
-      } finally {
       }
     };
+
     fetchCloneInfo();
   }, [cloneId]);
-
 
   useEffect(() => {
     if (userId) {
       const fetchUserData = async () => {
-        try{
-          const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
-            },
-            credentials: "include",
-          });
-          if (!response.ok){
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              credentials: "include",
+            }
+          );
+
+          if (!response.ok) {
             throw new Error("Failed to fetch user data");
           }
+
           const data = await response.json();
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       };
+
       fetchUserData();
     }
   }, [userId]);
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -329,7 +285,7 @@ const CloneCreatorDashboard = ({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
-                {/* Tone and Style */}
+
                 <div className="grid md:grid-cols-2 gap-8">
                   <div>
                     <Label className="text-base font-semibold mb-4 block">
@@ -387,7 +343,7 @@ const CloneCreatorDashboard = ({
                   </div>
                 </div>
 
-                {/* Catchphrases */}
+  
                 <div>
                   <Label className="text-base font-semibold mb-2 block">
                     Catchphrases
@@ -403,7 +359,7 @@ const CloneCreatorDashboard = ({
                   />
                 </div>
 
-                {/* Do's and Don'ts */}
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="dos" className="text-base font-semibold">
@@ -431,7 +387,7 @@ const CloneCreatorDashboard = ({
                   </div>
                 </div>
 
-                {/* Freeform Description */}
+              
                 <div>
                   <Label className="text-base font-semibold mb-2 block">
                     Freeform Description
@@ -447,7 +403,7 @@ const CloneCreatorDashboard = ({
                 <Button
                   className="bg-primary hover:bg-secondary text-primary-foreground"
                   onClick={async () => {
-                    setSaving(true);
+                   
                     try {
                       const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${cloneData.clone_id}`, {
                         method: "PUT",
@@ -468,12 +424,11 @@ const CloneCreatorDashboard = ({
                     } catch (err) {
                       toast.error("Failed to update personality");
                     } finally {
-                      setSaving(false);
                     }
                   }}
-                  disabled={saving}
+                 
                 >
-                  {saving ? "Saving..." : "Save Personality Settings"}
+                  vvu
                 </Button>
               </CardContent>
             </Card>

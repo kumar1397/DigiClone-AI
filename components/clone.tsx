@@ -19,9 +19,6 @@ const CreateClone = () => {
   const [dos, setDos] = useState("");
   const [donts, setDonts] = useState("");
   const [freeformDescription, setFreeformDescription] = useState("");
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [linksDialogOpen, setLinksDialogOpen] = useState(false);
-  const [links, setLinks] = useState<string[]>([""]);
 
   const toneOptions = [
     "Friendly", "Professional", "Visionary", "Humble", "Motivational", 
@@ -61,21 +58,6 @@ const CreateClone = () => {
       setSelectedValues(selectedValues.filter(v => v !== value));
     }
   };
-
-  const handleAddLink = () => {
-    setLinks([...links, ""]);
-  };
-
-  const handleLinkChange = (index: number, value: string) => {
-    const newLinks = [...links];
-    newLinks[index] = value;
-    setLinks(newLinks);
-  };
-
-  const handleRemoveLink = (index: number) => {
-    setLinks(links.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Clone created successfully!");
@@ -267,104 +249,6 @@ const CreateClone = () => {
                 placeholder="Describe your clone's personality, approach, and unique characteristics in detail..."
                 className="min-h-[150px]"
               />
-            </CardContent>
-          </Card>
-
-          {/* Content Upload Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-serif">Share Your Content</CardTitle>
-              <CardDescription>
-                Choose how you want to share your content. Upload files directly or share via links.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-                  <DialogTrigger asChild>
-                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
-                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="font-semibold text-lg mb-2">Upload Files</h3>
-                      <p className="text-muted-foreground text-sm">Share files directly from your device</p>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Upload Files</DialogTitle>
-                      <DialogDescription>
-                        Upload your user-downloadable files.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
-                      <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Drop your files here or <button className="text-primary underline">browse</button>
-                      </p>
-                      <p className="text-xs text-muted-foreground">Max file size up to 1 GB</p>
-                    </div>
-                    <div className="flex justify-end gap-2 mt-4">
-                      <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
-                        Back
-                      </Button>
-                      <Button onClick={() => setUploadDialogOpen(false)}>
-                        Done
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog open={linksDialogOpen} onOpenChange={setLinksDialogOpen}>
-                  <DialogTrigger asChild>
-                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
-                      <LinkIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="font-semibold text-lg mb-2">Share Links</h3>
-                      <p className="text-muted-foreground text-sm">Share content via URLs</p>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Links</DialogTitle>
-                      <DialogDescription>
-                        Add the links you want to share
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      {links.map((link, index) => (
-                        <div key={index} className="flex gap-2">
-                          <Input
-                            value={link}
-                            onChange={(e) => handleLinkChange(index, e.target.value)}
-                            placeholder="Enter link URL"
-                          />
-                          {links.length > 1 && (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => handleRemoveLink(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      <Button
-                        variant="outline"
-                        onClick={handleAddLink}
-                        className="w-full"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Another Link
-                      </Button>
-                    </div>
-                    <Button 
-                      onClick={() => setLinksDialogOpen(false)}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      Done
-                    </Button>
-                  </DialogContent>
-                </Dialog>
-              </div>
             </CardContent>
           </Card>
 
