@@ -22,11 +22,21 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/auth/logout`, {
+      method: "GET",
+      credentials: "include", 
+    });
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setIsMenuOpen(false);
+    
+  } catch (error) {
+    console.error("Logout failed:", error);
   }
+};
+
   
   const getUserInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
