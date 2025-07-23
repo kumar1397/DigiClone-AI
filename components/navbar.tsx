@@ -16,12 +16,18 @@ export default function Navbar() {
   });
 
   useEffect(() => {
-    // Simulate fetching user data from localStorage or API
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setIsLoggedIn(true);
     }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setIsMenuOpen(false);
+  }
+  
   const getUserInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
@@ -175,7 +181,7 @@ export default function Navbar() {
                       variant="outline" 
                       className="w-full justify-start text-red-600"
                       onClick={() => {
-                        // handleLogout();
+                        handleLogout();
                         setIsMenuOpen(false);
                       }}
                     >

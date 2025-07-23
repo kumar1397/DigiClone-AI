@@ -23,11 +23,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/signin`,
@@ -49,7 +49,7 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("userId", user._id);
         localStorage.setItem("token", token);
-        
+
         toast.success("Login successful! Welcome back to DigiClone AI.");
         router.push("/home");
       } else {
@@ -65,7 +65,7 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    toast.success("Google login will be available in the next update.");
+    window.location.href = "http://localhost:4000/auth/google";
   };
 
   return (
