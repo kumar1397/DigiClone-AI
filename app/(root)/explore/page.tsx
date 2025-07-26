@@ -15,6 +15,7 @@ import { Search, Star, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
+import LoaderGrid from "@/components/loaderGrid";
 import Link from "next/link";
 interface Clone {
   _id: string;
@@ -26,6 +27,7 @@ interface Clone {
 }
 export default function Explore() {
   const [clones, setClones] = useState<Clone[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchClones = async () => {
@@ -41,10 +43,9 @@ export default function Explore() {
           toast.error("Failed to fetch clones");
           return;
         }
-
         const data = await response.json();
-        console.log(data.data);
         setClones(data.data);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching clones:", error);
         toast.error("Failed to fetch clones");
@@ -81,100 +82,102 @@ export default function Explore() {
 
           {/* Quick Stats */}
           {/* <div className="flex justify-center gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span>156 Expert Clones</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MessageCircle className="h-4 w-4" />
-              <span>50K+ Conversations</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4" />
-              <span>4.8 Avg Rating</span>
-            </div>
-          </div> */}
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span>156 Expert Clones</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>50K+ Conversations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4" />
+                  <span>4.8 Avg Rating</span>
+                </div>
+              </div> */}
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {clones.map((clone) => (
-            <Card
-              key={clone.clone_id}
-              className="group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md"
-            >
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={clone.image} />
-                    <AvatarFallback>
+
+        {isLoading ? (
+          <LoaderGrid />
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {clones.map((clone) => (
+              <Card
+                key={clone.clone_id}
+                className="relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1 shadow-md border-0 h-[300px]"
+              >
+                {/* Background image */}
+                <div className="absolute inset-0">
+                  <img
+                    src={clone.image}
+                    alt={clone.clone_name}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Semi-transparent black backdrop on bottom half */}
+                  <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black opacity-50" />
+                </div>
+
+                {/* Overlay content displayed on the bottom-half overlay */}
+                <div className="absolute bottom-0 left-0 z-10 w-full h-1/2 p-4 text-white flex flex-col justify-end">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="h-12 w-12 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-lg border border-white">
                       {clone.clone_name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
-                    </AvatarFallback>
-                  </Avatar>
+                    </div>
 
-                  <div className="flex-1 min-w-0 flex items-center">
                     <CardTitle className="text-lg font-serif truncate">
                       {clone.clone_name}
                     </CardTitle>
                   </div>
-                </div>
-              </CardHeader>
 
-              <CardContent className="space-y-4">
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  {clone.freeform_description}
-                </p>
+                  <p className="text-sm line-clamp-2 mb-2">
+                    {clone.freeform_description}
+                  </p>
 
-                <div className="flex flex-wrap gap-2">
-                  {clone.values[0].split(",").map((value) => (
-                    <Badge
-                      key={value}
-                      variant="secondary"
-                      className="text-xs"
-                    >
-                      {value}
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>4.9</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle className="h-4 w-4" />
-                      <span>19.3k</span>
-                    </div>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {clone.values[0].split(",").map((value) => (
+                      <Badge
+                        key={value}
+                        variant="secondary"
+                        className="text-xs bg-white/10 text-white border border-white/30"
+                      >
+                        {value}
+                      </Badge>
+                    ))}
                   </div>
 
-                  <Link href={`/chat/${clone.clone_id}`}>
-                    <Button
-                      size="sm"
-                      className="bg-primary hover:bg-secondary text-primary-foreground"
-                    >
-                      Chat Now
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span>4.9</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="h-4 w-4" />
+                        <span>19.3k</span>
+                      </div>
+                    </div>
 
-        {clones.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="h-12 w-12 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No clones found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search or category filter.
-            </p>
+                    <Link href={`/chat/${clone.clone_id}`}>
+                      <Button
+                        size="sm"
+                        className="bg-white text-black hover:bg-gray-100"
+                      >
+                        Chat Now
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </Card>
+
+
+            ))}
           </div>
+
         )}
+
 
         {/* CTA Section */}
         <div className="mt-16 text-center bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8">

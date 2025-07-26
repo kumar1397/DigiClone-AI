@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, User } from "lucide-react";
-import { useEffect,useState,useRef  } from "react";
-
+import { useEffect, useState, useRef } from "react";
+import { toast } from "react-hot-toast";
 
 interface userProfile {
   name: string;
@@ -19,7 +19,7 @@ interface ProfileSectionProps {
   userId: string;
 }
 
-const ProfileSection = ( {userId} : ProfileSectionProps ) => {
+const ProfileSection = ({ userId }: ProfileSectionProps) => {
   const [userProfile, setUserData] = useState<userProfile>({
     name: "",
     email: "",
@@ -41,7 +41,7 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({...userProfile, phone: e.target.value});
+    setUserData({ ...userProfile, phone: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,11 +52,8 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
     if (selectedImage) {
       formData.append("profilePicture", selectedImage);
     }
-    
+
     // Debug: Log what we're sending
-    console.log("Sending update with phone:", userProfile.phone);
-    console.log("Sending update with image:", selectedImage ? selectedImage.name : "none");
-    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
         method: "PUT",
@@ -69,8 +66,6 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
         throw new Error(`Failed to update user data: ${response.status} - ${errorData.message || 'Unknown error'}`);
       }
       const updated = await response.json();
-      
-      // Merge the updated data with existing user data to preserve unchanged fields
       setUserData(prevUserData => {
         if (!prevUserData) return updated;
         return {
@@ -78,10 +73,11 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
           ...updated
         };
       });
-      
+
       setSelectedImage(null);
-      // Optionally show a success message
+      toast.success("Profile updated successfully!");
     } catch (err) {
+      toast.error("Failed to update profile. Please try again.");
       console.error("Error updating user data:", err);
     }
   };
@@ -89,7 +85,7 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
   useEffect(() => {
     if (userId) {
       const fetchUserData = async () => {
-        try{
+        try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
             method: "GET",
             headers: {
@@ -98,10 +94,10 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
             },
             credentials: "include",
           });
-          if (!response.ok){
+          if (!response.ok) {
             throw new Error("Failed to fetch user data");
           }
-          const data = await response.json(); 
+          const data = await response.json();
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -138,7 +134,7 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
           </div>
           <div className="space-y-2">
             <Label>Full Name</Label>
-            <Input 
+            <Input
               value={userProfile.name}
             />
           </div>
@@ -148,7 +144,7 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Email Address</Label>
-            <Input 
+            <Input
               type="email"
               value={userProfile.email}
             />
@@ -158,7 +154,7 @@ const ProfileSection = ( {userId} : ProfileSectionProps ) => {
             <Label>Phone Number</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
+              <Input
                 className="pl-10"
                 placeholder="+1 (555) 123-4567"
                 value={userProfile.phone}

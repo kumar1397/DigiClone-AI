@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Brain, ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -65,8 +65,29 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:4000/auth/google";
+    window.open("http://localhost:4000/auth/google", "_blank", "width=500,height=600");
   };
+
+  useEffect(() => {
+    const listener = (event: MessageEvent) => {
+      if (event.origin !== process.env.NEXT_PUBLIC_FRONTEND_URL) return;
+
+      const { token, userId, name, email } = event.data;
+
+      if (token) {
+        const user = { _id: userId, name, email };
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        toast.success("Google login successful!");
+        router.push("/home");
+      }
+    };
+
+    window.addEventListener("message", listener);
+    return () => window.removeEventListener("message", listener);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">

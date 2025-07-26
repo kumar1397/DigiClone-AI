@@ -5,8 +5,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Brain, Menu, X, User, Settings, Crown, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 export default function Navbar() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user] = useState({
@@ -23,21 +24,21 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-  try {
-    await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/auth/logout`, {
-      method: "GET",
-      credentials: "include", 
-    });
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setIsMenuOpen(false);
-    
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/auth/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+      localStorage.removeItem("user");
+      setIsLoggedIn(false);
+      setIsMenuOpen(false);
 
-  
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+
   const getUserInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
@@ -62,9 +63,9 @@ export default function Navbar() {
             <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
               How It Works
             </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">
+            {/* <a href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">
               Pricing
-            </a>
+            </a> */}
           </nav>
 
           {/* Desktop Auth Buttons / User Dropdown */}
@@ -89,13 +90,7 @@ export default function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push("/settings")}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
@@ -141,22 +136,22 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-border animate-fade-in">
             <nav className="flex flex-col gap-4 pt-4">
-              <Link 
-                href="/explore" 
+              <Link
+                href="/explore"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Discover Clones
               </Link>
-              <a 
-                href="#how-it-works" 
+              <a
+                href="#how-it-works"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 How It Works
               </a>
-              <a 
-                href="#pricing" 
+              <a
+                href="#pricing"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -187,8 +182,8 @@ export default function Navbar() {
                       <Crown className="mr-2 h-4 w-4" />
                       Upgrade to Premium
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full justify-start text-red-600"
                       onClick={() => {
                         handleLogout();

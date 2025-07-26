@@ -79,11 +79,6 @@ export default function UploadOptions() {
   
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
-      
-      console.log("Debug - userId:", userId);
-      console.log("Debug - token:", token);
-      console.log("Debug - localStorage keys:", Object.keys(localStorage));
-      
       if (!userId) {
         alert('User ID not found. Please log in again.');
         return;
@@ -112,7 +107,6 @@ export default function UploadOptions() {
       }
   
       const data = await response.json();
-      console.log('Upload successful:', data);
       setIsDialogOpen(false);
       setUploadedFiles([]);
     } catch (error) {
@@ -144,7 +138,6 @@ export default function UploadOptions() {
         throw new Error('Failed to submit links');
       }
       const data = await response.json();
-      console.log('Links submitted successfully:', data);
       setIsShareDialogOpen(false);
       setLinks([{ id: 1, value: '' }]); // Reset to initial state
     } catch (error) {

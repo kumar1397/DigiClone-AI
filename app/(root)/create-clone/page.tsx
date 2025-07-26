@@ -234,23 +234,6 @@ const CreateClone = () => {
       }
       return;
     }
-
-    console.log("Form Data:", formData);
-    console.log("Raw Form Data:", {
-      cloneName,
-      selectedTones,
-      selectedStyles,
-      selectedValues,
-      catchphrases,
-      dos,
-      donts,
-      freeformDescription,
-      links,
-      youtubeLinks,
-      cloneImage,
-      uploadedFiles,
-    });
-
     toast.success("Clone created successfully!");
   };
 
