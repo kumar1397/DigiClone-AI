@@ -4,19 +4,17 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Star, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
 import LoaderGrid from "@/components/loaderGrid";
 import Link from "next/link";
+import Image from "next/image";
 interface Clone {
   _id: string;
   clone_id: string;
@@ -108,10 +106,12 @@ export default function Explore() {
               >
                 {/* Background image */}
                 <div className="absolute inset-0">
-                  <img
-                    src={clone.image}
+                  <Image
+                    src={clone.image ?? "/default-clone.png"}
                     alt={clone.clone_name}
                     className="w-full h-full object-cover"
+                    width={100}
+                    height = {100}
                   />
                   {/* Semi-transparent black backdrop on bottom half */}
                   <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black opacity-50" />

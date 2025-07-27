@@ -180,6 +180,7 @@ const CloneChat = () => {
         console.error("Failed to save conversation");
       } else {
         const saveData = await response.json();
+        console.log(saveData);
       }
     } catch (err) {
       console.error("API error:", err);
@@ -217,10 +218,10 @@ const CloneChat = () => {
     toast.success("Feedback recorded");
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied!");
-  };
+  // const handleShare = () => {
+  //   navigator.clipboard.writeText(window.location.href);
+  //   toast.success("Link copied!");
+  // };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

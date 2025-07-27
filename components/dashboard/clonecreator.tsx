@@ -260,6 +260,7 @@ export default function CloneCreatorDashboard({
       setUploadedFiles([]); // Clear local uploads
       await fetchFiles(); // 🔁 Refresh file list from backend
     } catch (error) {
+      console.error(error);
       toast.error("Failed to upload files");
     }
   };
@@ -280,6 +281,7 @@ export default function CloneCreatorDashboard({
       toast.success("YouTube links uploaded successfully!");
       setYoutubeLinks([]);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to upload YouTube links");
     }
   }
@@ -300,6 +302,7 @@ export default function CloneCreatorDashboard({
       toast.success("Links uploaded successfully!");
       setLinks([]);
     } catch (error) {
+      console.log(error);
       toast.error("Failed to upload links");
     }
   }

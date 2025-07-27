@@ -105,8 +105,6 @@ export default function UploadOptions() {
         }
         return;
       }
-  
-      const data = await response.json();
       setIsDialogOpen(false);
       setUploadedFiles([]);
     } catch (error) {
@@ -137,7 +135,6 @@ export default function UploadOptions() {
       if (!response.ok) {
         throw new Error('Failed to submit links');
       }
-      const data = await response.json();
       setIsShareDialogOpen(false);
       setLinks([{ id: 1, value: '' }]); // Reset to initial state
     } catch (error) {
