@@ -188,7 +188,7 @@ export default function Explore() {
             Join hundreds of experts who are scaling their impact and helping
             thousands of people worldwide.
           </p>
-          <Link href="/signup">
+          <Link href="/create-clone">
             <Button
               size="lg"
               className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-8"

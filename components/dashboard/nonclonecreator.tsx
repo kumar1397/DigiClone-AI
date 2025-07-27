@@ -49,61 +49,7 @@ export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboard
       fetchUserData();
     }
   }, [userId]);
-
-
-
   const router = useRouter();
-  
-  // const handleFileUpload = () => {
-  //   const input = document.createElement("input");
-  //   input.type = "file";
-  //   input.accept = ".pdf,.txt,.doc,.docx";
-  //   input.onchange = (e) => {
-  //     const file = (e.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const newSource = {
-  //         id: uploadedSources.length + 1,
-  //         name: file.name,
-  //         type: "PDF",
-  //         date: new Date().toISOString().split("T")[0],
-  //       };
-  //       setUploadedSources([...uploadedSources, newSource]);
-  //       toast.success(`${file.name} has been added to your knowledge base.`);
-  //     }
-  //   };
-  //   input.click();
-  // };
-
-  // const handleProfilePictureUpload = () => {
-  //   const input = document.createElement("input");
-  //   input.type = "file";
-  //   input.accept = "image/*";
-  //   input.onchange = (e) => {
-  //     const file = (e.target as HTMLInputElement).files?.[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e) => {
-  //         setUserProfile((prev) => ({
-  //           ...prev,
-  //           profilePicture: e.target?.result as string,
-  //         }));
-  //       };
-  //       reader.readAsDataURL(file);
-  //       toast.success("Profile picture updated");
-  //     }
-  //   };
-  //   input.click();
-  // };
-
-  // const handleDeleteSource = (id: number) => {
-  //   setUploadedSources(uploadedSources.filter((source) => source.id !== id));
-  //   toast.success("Source removed");
-  // };
-
-  // const handleProfileUpdate = () => {
-  //   toast.success("Profile updated");
-  // };
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
