@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();
@@ -62,10 +63,6 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleLogin = () => {
-    window.open("http://localhost:4000/auth/google", "_blank", "width=500,height=600");
   };
 
   useEffect(() => {
@@ -200,7 +197,7 @@ export default function Login() {
             <Button
               variant="outline"
               className="w-full h-11"
-              onClick={handleGoogleLogin}
+              onClick={() => signIn("google")}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path

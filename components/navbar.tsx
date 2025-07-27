@@ -6,28 +6,16 @@ import { Brain, Menu, X, User, Settings, Crown, LogOut, Lollipop } from "lucide-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 export default function Navbar() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user] = useState({
     name: "John Doe",
     email: "john@example.com",
     avatar: null
   });
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const handleLogout = async () => {
-    setIsLoggedIn(false);
-    localStorage.clear();
-  };
-
 
   const getUserInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -60,7 +48,7 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons / User Dropdown */}
           <div className="hidden md:flex items-center gap-4">
-            {isLoggedIn ? (
+            {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -89,7 +77,7 @@ export default function Navbar() {
                     <span>Upgrade to Premium</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
+                  <DropdownMenuItem className="text-red-600" onClick={() => signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -148,7 +136,7 @@ export default function Navbar() {
                 Pricing
               </a>
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                {isLoggedIn ? (
+                {session ? (
                   <>
                     <div className="flex items-center gap-3 px-2 py-2">
                       <Avatar className="h-8 w-8">
@@ -176,7 +164,6 @@ export default function Navbar() {
                       variant="outline"
                       className="w-full justify-start text-red-600"
                       onClick={() => {
-                        handleLogout();
                         setIsMenuOpen(false);
                       }}
                     >
