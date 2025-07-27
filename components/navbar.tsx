@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Brain, Menu, X, User, Settings, Crown, LogOut } from "lucide-react";
+import { Brain, Menu, X, User, Settings, Crown, LogOut, Lollipop } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,18 +24,8 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/auth/logout`, {
-        method: "GET",
-        credentials: "include",
-      });
-      localStorage.removeItem("user");
-      setIsLoggedIn(false);
-      setIsMenuOpen(false);
-
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    setIsLoggedIn(false);
+    localStorage.clear();
   };
 
 
@@ -99,7 +89,7 @@ export default function Navbar() {
                     <span>Upgrade to Premium</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
