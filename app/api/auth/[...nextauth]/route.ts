@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
-const authOptions = {
+const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -10,24 +12,23 @@ const authOptions = {
   ],
 
   pages: {
-    signIn: "/login",   // Your login page
+    signIn: "/login", // custom login page
   },
 
   callbacks: {
-    async session({ session, token }: any) {
-      if (session.user) {
-        session.user.id = token.sub as string;
-      }
+    async session({
+      session,
+    }: {
+      session: Session;
+      token: JWT;
+    }): Promise<Session> {
       return session;
     },
 
     async redirect() {
-      // Always redirect to /home after login
       return "/home";
     },
   },
-};
-
-const handler = NextAuth(authOptions);
+});
 
 export { handler as GET, handler as POST };
