@@ -17,6 +17,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 export default function Signup() {
   const router = useRouter();
@@ -250,7 +251,7 @@ export default function Signup() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full h-11">
+            <Button variant="outline" className="w-full h-11" onClick={() => signIn("google")}>
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"

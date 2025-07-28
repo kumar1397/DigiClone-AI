@@ -11,12 +11,9 @@ export default function Navbar() {
   const { data: session } = useSession();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: null
-  });
-
+  const name = session?.user?.name || "";
+  const image = session?.user?.image || "";
+  const email = session?.user?.email || "";
   const getUserInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
@@ -53,20 +50,22 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.avatar || undefined} alt={user.name} />
+                      <AvatarImage src={image || undefined} alt={name} />
                       <AvatarFallback className="bg-primary/10 text-primary">
-                        {getUserInitials(user.name)}
+                        {getUserInitials(name)}
                       </AvatarFallback>
                     </Avatar>
+
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <p className="text-sm font-medium leading-none">{name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{email}</p>
                     </div>
                   </DropdownMenuLabel>
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push("/settings")}>
                     <Settings className="mr-2 h-4 w-4" />
@@ -139,15 +138,16 @@ export default function Navbar() {
                 {session ? (
                   <>
                     <div className="flex items-center gap-3 px-2 py-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar || undefined} alt={user.name} />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                          {getUserInitials(user.name)}
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={image || undefined} alt={name} />
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getUserInitials(name)}
                         </AvatarFallback>
                       </Avatar>
+
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium">{user.name}</span>
-                        <span className="text-xs text-muted-foreground">{user.email}</span>
+                        <span className="text-sm font-medium">{name}</span>
+                        <span className="text-xs text-muted-foreground">{email}</span>
                       </div>
                     </div>
                     <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
