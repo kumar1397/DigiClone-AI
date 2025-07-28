@@ -18,6 +18,21 @@ export default function Navbar() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  if (session?.user) {
+    const userData = {
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image,
+    };
+
+    localStorage.setItem("user", JSON.stringify(userData));
+  }
+
+  const handleLogOut = () => {
+    signOut();
+    localStorage.clear();
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container max-w-6xl mx-auto px-4 py-4">
@@ -76,7 +91,7 @@ export default function Navbar() {
                     <span>Upgrade to Premium</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600" onClick={() => signOut()}>
+                  <DropdownMenuItem className="text-red-600" onClick={handleLogOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

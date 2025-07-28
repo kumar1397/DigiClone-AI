@@ -7,7 +7,7 @@ import Navbar from "@/components/navbar";
 import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile";
 import CloneConversationsSection from "./cloneconversation";
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 
 interface userProfile {
@@ -19,8 +19,8 @@ interface NonCloneUserDashboardProps {
   userId: string;
 }
 
-export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboardProps ) {
-  const [userProfile, setUserData] = useState<userProfile>({
+export default function NonCloneUserDashboard({ userId }: NonCloneUserDashboardProps) {
+  const [userData, setUserData] = useState<userProfile>({
     name: "",
     profilePicture: "",
   });
@@ -28,7 +28,7 @@ export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboard
   useEffect(() => {
     if (userId) {
       const fetchUserData = async () => {
-        try{
+        try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
             method: "GET",
             headers: {
@@ -37,10 +37,11 @@ export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboard
             },
             credentials: "include",
           });
-          if (!response.ok){
+          if (!response.ok) {
             throw new Error("Failed to fetch user data");
           }
           const data = await response.json();
+          console.log(data);
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -53,24 +54,24 @@ export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboard
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={userProfile.profilePicture} />
+                <AvatarImage src={userData.profilePicture} />
                 <AvatarFallback>
-                  {userProfile.name.split(' ').map(n => n[0]).join('')}
+                  {userData.name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-3xl font-serif font-bold">Welcome, {userProfile.name}!</h1>
+                <h1 className="text-3xl font-serif font-bold">Welcome, {userData.name}!</h1>
                 <p className="text-muted-foreground">Explore AI clones and manage your profile</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button onClick={() => router.push('/create-clone')} className="bg-primary hover:bg-secondary text-primary-foreground">
                 Create Your Clone
@@ -78,7 +79,7 @@ export default function NonCloneUserDashboard ({ userId }: NonCloneUserDashboard
             </div>
           </div>
 
-          <QuickStatsGrid userType="non-clone-user"/>
+          <QuickStatsGrid userType="non-clone-user" />
         </div>
 
         <Tabs defaultValue="clones" className="space-y-6">
