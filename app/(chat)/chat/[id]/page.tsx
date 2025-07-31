@@ -4,12 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  ArrowLeft, Send, ThumbsUp, ThumbsDown,
+  ArrowLeft, Send, 
   Mic, Video,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { toast } from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from "next/navigation";
 interface Clone {
@@ -108,7 +107,7 @@ export default function CloneChat() {
           const history = data.conversation;
           const loadedMessages: Message[] = [];
 
-          history.forEach((entry: any, index: number) => {
+          history.forEach((entry: { user: string; bot: { content: string; sources: string } }, index: number) => {
             loadedMessages.push({
               id: index * 2 + 1,
               content: entry.user,

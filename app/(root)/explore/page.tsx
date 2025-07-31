@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, MessageCircle } from "lucide-react";
+import { Search, } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";

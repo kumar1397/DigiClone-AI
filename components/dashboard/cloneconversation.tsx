@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, ThumbsUp } from "lucide-react";
+import { MessageCircle, } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface CloneProfile {
@@ -18,54 +18,6 @@ interface NonCloneUserDashboardProps {
 
 
 const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
-
-  const Clone = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      type: "Customer Service",
-      lastChat: "2 hours ago",
-      avatar: "/avatars/sarah.jpg",
-      totalChats: 15,
-      rating: 4.8
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      type: "Technical Support",
-      lastChat: "1 day ago",
-      avatar: "/avatars/mike.jpg",
-      totalChats: 8,
-      rating: 4.6
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      type: "Sales Assistant",
-      lastChat: "3 days ago",
-      avatar: "/avatars/emma.jpg",
-      totalChats: 12,
-      rating: 4.9
-    },
-    {
-      id: 4,
-      name: "Alex Rodriguez",
-      type: "Product Specialist",
-      lastChat: "1 week ago",
-      avatar: "/avatars/alex.jpg",
-      totalChats: 6,
-      rating: 4.7
-    },
-    {
-      id: 5,
-      name: "Lisa Thompson",
-      type: "Marketing Expert",
-      lastChat: "2 weeks ago",
-      avatar: "/avatars/lisa.jpg",
-      totalChats: 9,
-      rating: 4.5
-    }
-  ];
 
   const [clones, setClones] = useState<CloneProfile[]>([])
   const fetchClones = async () => {
@@ -99,7 +51,7 @@ const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
       <CardContent>
         <div className="space-y-4">
           {clones.map((clone) => (
-            <div key={clone.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
+            <div key={clone.clone_id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={clone.image} />
