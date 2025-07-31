@@ -53,9 +53,9 @@ export default function Navbar() {
             <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
               How It Works
             </a>
-            {/* <a href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">
-              Pricing
-            </a> */}
+            <a href="#endless-possibility" className="text-muted-foreground hover:text-primary transition-colors">
+              Endless possibilities
+            </a>
           </nav>
 
           {/* Desktop Auth Buttons / User Dropdown */}

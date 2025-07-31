@@ -89,7 +89,7 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserDashboardP
           </TabsList>
 
           <TabsContent value="clones" className="space-y-6">
-            <CloneConversationsSection />
+            <CloneConversationsSection userId={userId}/>
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">

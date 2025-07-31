@@ -2,71 +2,92 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, ThumbsUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
-interface Clone {
-  id: number;
-  name: string;
-  type: string;
-  lastChat: string;
-  avatar: string;
-  totalChats: number;
-  rating: number;
+interface CloneProfile {
+  clone_id: number;
+  clone_name: string;
+  image: string;
+}
+interface NonCloneUserDashboardProps {
+  userId: string;
 }
 
-interface CloneConversationsSectionProps {
-  clones?: Clone[];
-}
 
 // Sample hard-coded data
-const sampleClones: Clone[] = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    type: "Customer Service",
-    lastChat: "2 hours ago",
-    avatar: "/avatars/sarah.jpg",
-    totalChats: 15,
-    rating: 4.8
-  },
-  {
-    id: 2,
-    name: "Mike Chen",
-    type: "Technical Support",
-    lastChat: "1 day ago",
-    avatar: "/avatars/mike.jpg",
-    totalChats: 8,
-    rating: 4.6
-  },
-  {
-    id: 3,
-    name: "Emma Davis",
-    type: "Sales Assistant",
-    lastChat: "3 days ago",
-    avatar: "/avatars/emma.jpg",
-    totalChats: 12,
-    rating: 4.9
-  },
-  {
-    id: 4,
-    name: "Alex Rodriguez",
-    type: "Product Specialist",
-    lastChat: "1 week ago",
-    avatar: "/avatars/alex.jpg",
-    totalChats: 6,
-    rating: 4.7
-  },
-  {
-    id: 5,
-    name: "Lisa Thompson",
-    type: "Marketing Expert",
-    lastChat: "2 weeks ago",
-    avatar: "/avatars/lisa.jpg",
-    totalChats: 9,
-    rating: 4.5
-  }
-];
 
-const CloneConversationsSection = ({ clones = sampleClones }: CloneConversationsSectionProps) => {
+
+const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
+
+  const Clone = [
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      type: "Customer Service",
+      lastChat: "2 hours ago",
+      avatar: "/avatars/sarah.jpg",
+      totalChats: 15,
+      rating: 4.8
+    },
+    {
+      id: 2,
+      name: "Mike Chen",
+      type: "Technical Support",
+      lastChat: "1 day ago",
+      avatar: "/avatars/mike.jpg",
+      totalChats: 8,
+      rating: 4.6
+    },
+    {
+      id: 3,
+      name: "Emma Davis",
+      type: "Sales Assistant",
+      lastChat: "3 days ago",
+      avatar: "/avatars/emma.jpg",
+      totalChats: 12,
+      rating: 4.9
+    },
+    {
+      id: 4,
+      name: "Alex Rodriguez",
+      type: "Product Specialist",
+      lastChat: "1 week ago",
+      avatar: "/avatars/alex.jpg",
+      totalChats: 6,
+      rating: 4.7
+    },
+    {
+      id: 5,
+      name: "Lisa Thompson",
+      type: "Marketing Expert",
+      lastChat: "2 weeks ago",
+      avatar: "/avatars/lisa.jpg",
+      totalChats: 9,
+      rating: 4.5
+    }
+  ];
+
+  const [clones, setClones] = useState<CloneProfile[]>([])
+  const fetchClones = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/${userId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Clones:', data.clones);
+        setClones(data.clones)
+        // Use data.clones in your component state
+      } else {
+        console.error('Error:', data.error);
+      }
+    } catch (error) {
+      console.error('Fetch failed:', error);
+    }
+  };
+  useEffect(() => {
+    fetchClones();
+  }, [userId]);
+
   return (
     <Card>
       <CardHeader>
@@ -81,22 +102,17 @@ const CloneConversationsSection = ({ clones = sampleClones }: CloneConversations
             <div key={clone.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={clone.avatar} />
-                  <AvatarFallback>{clone.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarImage src={clone.image} />
+                  <AvatarFallback>{clone.clone_name}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold">{clone.name}</h4>
-                  <p className="text-sm text-muted-foreground">{clone.type}</p>
-                  <p className="text-xs text-muted-foreground">Last chat: {clone.lastChat}</p>
+                  <h4 className="font-semibold">{clone.clone_name}</h4>
+                  <p className="text-xs text-muted-foreground">Last chat: 2 hours ago</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="text-sm font-medium">{clone.totalChats} conversations</p>
-                  <div className="flex items-center gap-1">
-                    <ThumbsUp className="h-3 w-3 text-green-500" />
-                    <span className="text-xs">{clone.rating}</span>
-                  </div>
+                  <p className="text-sm font-medium">18 conversations</p>
                 </div>
                 <Button size="sm" variant="outline">
                   <MessageCircle className="h-4 w-4 mr-2" />

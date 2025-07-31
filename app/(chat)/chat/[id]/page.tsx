@@ -29,10 +29,9 @@ interface Message {
   content: string;
   sender: 'user' | 'clone';
   timestamp: Date;
-  feedback?: 'positive' | 'negative' | null;
 }
 
-export default function CloneChat () {
+export default function CloneChat() {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -47,6 +46,12 @@ export default function CloneChat () {
   >([]);
   const params = useParams();
   const id = params?.id as string;
+
+
+    // --- Scroll ---
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Fetch clone data
   useEffect(() => {
@@ -78,14 +83,65 @@ export default function CloneChat () {
     fetchCloneData();
   }, [id]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
+
+  const userId = typeof window !== 'undefined' ? localStorage.getItem("userId") : null; 
+
+  // --- Fetch existing conversation ---
+  useEffect(() => {
+    const fetchExistingConversation = async () => {
+      if (!userId || !id) return;
+
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/${userId}/${id}`
+        );
+
+        const data = await res.json();
+
+        if (res.ok && data?.conversation?.length) {
+          const history = data.conversation;
+          const loadedMessages: Message[] = [];
+
+          history.forEach((entry: any, index: number) => {
+            loadedMessages.push({
+              id: index * 2 + 1,
+              content: entry.user,
+              sender: 'user',
+              timestamp: new Date(),
+            });
+            loadedMessages.push({
+              id: index * 2 + 2,
+              content: entry.bot?.content,
+              sender: 'clone',
+              timestamp: new Date(),
+            });
+          });
+
+          setChatHistory(history);
+          setMessages(loadedMessages);
+          setHasStartedChat(true);
+        }
+      } catch (err) {
+        console.error("Error fetching conversation:", err);
+      }
+    };
+
+    fetchExistingConversation(); 
+  }, [userId, id]);
+
+
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // --- Send message ---
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -99,10 +155,6 @@ export default function CloneChat () {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
-
-    if (!hasStartedChat) {
-      setHasStartedChat(true);
-    }
 
     const trimmedPrompt = inputMessage.trim();
     if (!trimmedPrompt) return;
@@ -121,9 +173,7 @@ export default function CloneChat () {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           process_query: trimmedPrompt,
           folder: id,
@@ -151,7 +201,6 @@ export default function CloneChat () {
 
       setChatHistory(updatedChatHistory);
 
-      // Add the bot response to messages
       const cloneResponse: Message = {
         id: messages.length + 2,
         content: data.response || "No content received.",
@@ -161,18 +210,17 @@ export default function CloneChat () {
 
       setMessages(prev => [...prev, cloneResponse]);
 
-      const latestMessagePair =
-        updatedChatHistory[updatedChatHistory.length - 1];
+      const latestMessagePair = updatedChatHistory[updatedChatHistory.length - 1];
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chatHistory: [latestMessagePair],
-            folder: id,
+            cloneId: id,
+            userId: userId
           }),
         }
       );
@@ -182,6 +230,10 @@ export default function CloneChat () {
       } else {
         const saveData = await response.json();
         console.log(saveData);
+      }
+
+      if (!hasStartedChat) {
+        setHasStartedChat(true); // ADDED: Start chat after first message
       }
     } catch (err) {
       console.error("API error:", err);
@@ -193,7 +245,6 @@ export default function CloneChat () {
 
       setChatHistory(updatedChatHistory);
 
-      // Add error message to messages
       const errorResponse: Message = {
         id: messages.length + 2,
         content: "Something went wrong. Please try again later.",
@@ -207,29 +258,6 @@ export default function CloneChat () {
     }
   };
 
-  const handleFeedback = (messageId: number, feedback: 'positive' | 'negative') => {
-    setMessages(prev =>
-      prev.map(msg =>
-        msg.id === messageId
-          ? { ...msg, feedback: msg.feedback === feedback ? null : feedback }
-          : msg
-      )
-    );
-
-    toast.success("Feedback recorded");
-  };
-
-  // const handleShare = () => {
-  //   navigator.clipboard.writeText(window.location.href);
-  //   toast.success("Link copied!");
-  // };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -238,10 +266,10 @@ export default function CloneChat () {
         <div className="container w-full h-full mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3 sm:gap-4">
-                <button className="flex flex-row mr-2 sm:mr-3 items-center" onClick={() => router.back()}>
-                  <ArrowLeft className="h-5 w-5 mr-2 sm:mr-3" />
-                  <span className="font-lg">Back</span>
-                </button>
+              <button className="flex flex-row mr-2 sm:mr-3 items-center" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5 mr-2 sm:mr-3" />
+                <span className="font-lg">Back</span>
+              </button>
 
               <div className="flex items-center gap-2 sm:gap-3">
                 <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
@@ -285,32 +313,11 @@ export default function CloneChat () {
                   >
                     <div
                       className={`max-w-[85%] sm:max-w-md p-3 sm:p-4 rounded-xl text-sm sm:text-base leading-relaxed ${message.sender === 'user'
-                          ? 'chat-bubble-user bg-blue-100 text-blue-900'
-                          : 'chat-bubble-clone bg-gray-100 text-gray-900'
+                        ? 'chat-bubble-user bg-blue-100 text-blue-900'
+                        : 'chat-bubble-clone bg-gray-100 text-gray-900'
                         }`}
                     >
                       <ReactMarkdown>{message.content}</ReactMarkdown>
-                      {message.sender === 'clone' && (
-                        <div className="flex items-center gap-2 mt-2 sm:mt-3 pt-2 border-t border-current/10">
-                          <span className="text-xs opacity-70">Was this helpful?</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className={`p-1 h-auto ${message.feedback === 'positive' ? 'bg-success/20' : ''}`}
-                            onClick={() => handleFeedback(message.id, 'positive')}
-                          >
-                            <ThumbsUp className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className={`p-1 h-auto ${message.feedback === 'negative' ? 'bg-destructive/20' : ''}`}
-                            onClick={() => handleFeedback(message.id, 'negative')}
-                          >
-                            <ThumbsDown className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
                     </div>
                   </div>
                 ))}
@@ -336,8 +343,8 @@ export default function CloneChat () {
             {/* Input Section */}
             <div
               className={`${hasStartedChat
-                  ? 'fixed bottom-0 left-0 right-0 border-t bg-white px-3 sm:px-4 py-3 sm:py-4'
-                  : 'w-full max-w-xl mx-auto mt-4 sm:mt-6 px-3'
+                ? 'fixed bottom-0 left-0 right-0 border-t bg-white px-3 sm:px-4 py-3 sm:py-4'
+                : 'w-full max-w-xl mx-auto mt-4 sm:mt-6 px-3'
                 }`}
             >
               <div className={`${hasStartedChat ? 'max-w-3xl mx-auto' : ''}`}>

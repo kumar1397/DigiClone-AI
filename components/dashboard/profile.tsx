@@ -156,7 +156,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 className="pl-10"
-                placeholder="+1 (555) 123-4567"
+                placeholder="don't use any country code"
                 value={userProfile.phone}
                 onChange={handlePhoneChange}
               />

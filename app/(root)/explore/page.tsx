@@ -114,11 +114,11 @@ export default function Explore() {
                     height = {100}
                   />
                   {/* Semi-transparent black backdrop on bottom half */}
-                  <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black opacity-50" />
+                  <div className="absolute bottom-0 left-0 w-full h-2/5 bg-black opacity-50" />
                 </div>
 
                 {/* Overlay content displayed on the bottom-half overlay */}
-                <div className="absolute bottom-0 left-0 z-10 w-full h-1/2 p-4 text-white flex flex-col justify-end">
+                <div className="absolute bottom-0 left-0 z-10 w-full h-1/3 p-4 text-white flex flex-col justify-end">
                   <div className="flex items-center gap-4 mb-2">
                     <div className="h-12 w-12 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-lg border border-white">
                       {clone.clone_name
@@ -136,28 +136,18 @@ export default function Explore() {
                     {clone.freeform_description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {clone.values[0].split(",").map((value) => (
-                      <Badge
-                        key={value}
-                        variant="secondary"
-                        className="text-xs bg-white/10 text-white border border-white/30"
-                      >
-                        {value}
-                      </Badge>
-                    ))}
-                  </div>
 
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>4.9</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="h-4 w-4" />
-                        <span>19.3k</span>
-                      </div>
+                  <div className="flex items-center justify-between text-xs"> 
+                    <div className="flex flex-wrap gap-2 ">
+                      {clone.values[0].split(",").map((value) => (
+                        <Badge
+                          key={value}
+                          variant="secondary"
+                          className="text-xs bg-white/10 text-white border border-white/30"
+                        >
+                          {value}
+                        </Badge>
+                      ))}
                     </div>
 
                     <Link href={`/chat/${clone.clone_id}`}>
