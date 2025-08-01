@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +27,7 @@ import {
   Plus,
   Trash2,
   Play,
+  Brain,
   FileText
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
@@ -51,6 +53,9 @@ interface CloneData {
   style: string[];
   tone: string[];
   values: string[];
+  youtubeLinkUpload: string[];
+  otherLinkUpload: string[];
+  Status: string;
 }
 
 interface userProfile {
@@ -96,6 +101,9 @@ export default function CloneCreatorDashboard({
     style: [],
     tone: [],
     values: [],
+    youtubeLinkUpload: [],
+    otherLinkUpload: [],
+    Status:"",
   });
 
   useEffect(() => {
@@ -109,8 +117,8 @@ export default function CloneCreatorDashboard({
             throw new Error("Failed to fetch clone data");
           }
           const cloneData = await cloneRes.json();
-          const data = cloneData.data; // ✅ get actual clone data from "data" field
-
+          const data = cloneData.data;
+          console.log(data);
           const parsedClone = {
             clone_id: data.cloneIdStr || "",
             clone_name: data.cloneName || "",
@@ -122,6 +130,9 @@ export default function CloneCreatorDashboard({
             style: data.style,
             tone: (data.tone),
             values: (data.values),
+            youtubeLinkUpload: (data.youtubeLinkUpload),
+            otherLinkUpload: (data.otherLinkUpload),
+            Status: data.status || "",
           };
           setCloneData(parsedClone);
         } else {
@@ -359,12 +370,11 @@ export default function CloneCreatorDashboard({
         </div>
 
         <Tabs defaultValue="knowledge" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile">Personal Details</TabsTrigger>
             <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>
             <TabsTrigger value="personality">Clone Personality</TabsTrigger>
-            {/* <TabsTrigger value="training">Training Status</TabsTrigger>
-            <TabsTrigger value="preview">Preview & Test</TabsTrigger> */}
+            <TabsTrigger value="training">Training Status</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
@@ -635,8 +645,56 @@ export default function CloneCreatorDashboard({
                 ))}
               </div>
             </div>
+            <div className="space-y-4">
+              <h4 className="font-semibold">
+                Youtube Links ({cloneData.youtubeLinkUpload.length})
+              </h4>
 
+              <div className="flex flex-wrap gap-3">
+                {cloneData.youtubeLinkUpload.map((url, index) => {
+                  const validUrl = url.startsWith("http://") || url.startsWith("https://")
+                    ? url
+                    : `https://${url}`;
 
+                  return (
+                    <a
+                      key={index}
+                      href={validUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 transition"
+                    >
+                      {validUrl}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-semibold">
+                Other Links ({cloneData.otherLinkUpload.length})
+              </h4>
+
+              <div className="flex flex-wrap gap-3">
+                {cloneData.otherLinkUpload.map((url, index) => {
+                  const validUrl = url.startsWith("http://") || url.startsWith("https://")
+                    ? url
+                    : `https://${url}`;
+
+                  return (
+                    <a
+                      key={index}
+                      href={validUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 transition"
+                    >
+                      {validUrl}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="personality" className="space-y-6">
@@ -838,6 +896,74 @@ export default function CloneCreatorDashboard({
               </Card>
             </form>
           </TabsContent>
+
+          <TabsContent value="training" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-serif flex items-center gap-2">
+                  <Brain className="h-5 w-5" />
+                  Training Progress
+                </CardTitle>
+                <CardDescription>
+                  Your clone is learning from your knowledge sources
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">Overall Progress</span>
+                    <span className="text-sm text-muted-foreground">33% complete</span>
+                  </div>
+                  <Progress value={33} className="h-3" />
+                  <p className="text-sm text-muted-foreground">
+                    Estimated time remaining: 2-3 hours
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="font-medium">Content Processing</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">✓ Complete</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+                      <span className="font-medium">Personality Training</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">⟳ In Progress</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                      <span className="font-medium">Quality Testing</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">⧖ Pending</p>
+                  </div>
+                </div>
+
+                {cloneData.Status === 'publish' && (
+                  <div className="bg-success/10 border border-success/20 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Play className="h-5 w-5 text-success" />
+                      <span className="font-semibold text-success">Your clone is live!</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Your digital clone is ready to help others. Share your clone link to start conversations.
+                    </p>
+                    <Button size="sm" className="bg-success hover:bg-success/90 text-success-foreground">
+                      Share Clone Link
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>

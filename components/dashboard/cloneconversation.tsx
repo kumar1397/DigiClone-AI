@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, } from "lucide-react";
 import { useEffect, useState } from "react";
-
+import {  useRouter } from "next/navigation";
 interface CloneProfile {
   clone_id: number;
   clone_name: string;
@@ -18,7 +18,7 @@ interface NonCloneUserDashboardProps {
 
 
 const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
-
+  const router = useRouter();
   const [clones, setClones] = useState<CloneProfile[]>([])
   const fetchClones = async () => {
     try {
@@ -66,7 +66,7 @@ const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
                 <div className="text-right">
                   <p className="text-sm font-medium">18 conversations</p>
                 </div>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" onClick={() => router.push(`/chat/${clone.clone_id}`)}>
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Chat Again
                 </Button>
