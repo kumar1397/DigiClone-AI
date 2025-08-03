@@ -1,16 +1,15 @@
 "use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowLeft, Send, 
-  Mic, Video,
-} from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { useParams } from "next/navigation";
-import ReactMarkdown from 'react-markdown';
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Send, Mic, Video } from "lucide-react";
+
 interface Clone {
   _id: string;
   cloneName: string;
@@ -23,12 +22,20 @@ interface Clone {
   donts: string;
   description: string;
 }
+
 interface Message {
   id: number;
   content: string;
-  sender: 'user' | 'clone';
+  sender: "user" | "clone";
   timestamp: Date;
 }
+
+type MessageEntry = {
+  _id: string;
+  role: "user" | "clone";
+  content: string;
+  timestamp: string; // or Date, if parsed
+};
 
 export default function CloneChat() {
   const router = useRouter();
@@ -40,17 +47,25 @@ export default function CloneChat() {
   const [hasStartedChat, setHasStartedChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [cloneData, setCloneData] = useState<Clone | null>(null);
-  const [chatHistory, setChatHistory] = useState<
-    { user: string; bot: { content: string; sources: string } }[]
-  >([]);
+  const [chatHistory, setChatHistory] = useState<{
+    user: string;
+    bot: { content: string; sources: string };
+  }[]>([]);
+
   const params = useParams();
   const id = params?.id as string;
 
-
-    // --- Scroll ---
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user?.userId) {
+      setUserId(user.userId);
+    }
+  }, []);
 
   // Fetch clone data
   useEffect(() => {
@@ -58,67 +73,44 @@ export default function CloneChat() {
       if (!id) return;
 
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${id}`,
-          {
-            method: "GET",
-            headers: {
-            },
-          }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch clone data");
 
-        if (!response.ok) {
-          console.error("Failed to fetch clone data");
-          return;
-        }
-
-        const data = await response.json();
+        const data = await res.json();
         setCloneData(data.data);
-      } catch (error) {
-        console.error("Error fetching clone data:", error);
+      } catch (err) {
+        console.error("Clone fetch error:", err);
       }
     };
-
     fetchCloneData();
   }, [id]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const userId = typeof window !== 'undefined' ? localStorage.getItem("userId") : null; 
-
-  // --- Fetch existing conversation ---
+  // Fetch existing conversation
   useEffect(() => {
-    const fetchExistingConversation = async () => {
+    const fetchConversation = async () => {
       if (!userId || !id) return;
-
+      console.log("Fetching conversation for:", { userId, cloneId: id });
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/${userId}/${id}`
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversations`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, cloneId: id }),
+        });
+        if (!res.ok) throw new Error("Failed to fetch conversation");
 
         const data = await res.json();
-
-        if (res.ok && data?.conversation?.length) {
-          const history = data.conversation;
+        if (data?.messages?.length) {
+          const history = data.messages;
           const loadedMessages: Message[] = [];
 
-          history.forEach((entry: { user: string; bot: { content: string; sources: string } }, index: number) => {
+          history.forEach((entry:MessageEntry, index:number) => {
             loadedMessages.push({
-              id: index * 2 + 1,
-              content: entry.user,
-              sender: 'user',
-              timestamp: new Date(),
-            });
-            loadedMessages.push({
-              id: index * 2 + 2,
-              content: entry.bot?.content,
-              sender: 'clone',
-              timestamp: new Date(),
+              id: index + 1,
+              content: entry.content,
+              sender: entry.role === "user" ? "user" : "clone",
+              timestamp: new Date(entry.timestamp),
             });
           });
 
@@ -127,54 +119,47 @@ export default function CloneChat() {
           setHasStartedChat(true);
         }
       } catch (err) {
-        console.error("Error fetching conversation:", err);
+        console.error("Conversation fetch error:", err);
       }
     };
-
-    fetchExistingConversation(); 
+    fetchConversation();
   }, [userId, id]);
-
-
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // --- Send message ---
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
     const userMessage: Message = {
       id: messages.length + 1,
       content: inputMessage,
-      sender: 'user',
+      sender: "user",
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
 
-    const trimmedPrompt = inputMessage.trim();
-    if (!trimmedPrompt) return;
-
-    const newChatHistory = [
-      ...chatHistory,
-      {
-        user: trimmedPrompt,
-        bot: { content: "", sources: "" },
-      },
-    ];
-    setChatHistory(newChatHistory);
-
-    const updatedChatHistory = [...newChatHistory];
+    const prompt = inputMessage.trim();
+    const updatedChatHistory = [...chatHistory, { user: prompt, bot: { content: "", sources: "" } }];
+    setChatHistory(updatedChatHistory);
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          process_query: trimmedPrompt,
+          process_query: prompt,
           folder: id,
           clone_profile: {
             clone_name: cloneData?.cloneName,
@@ -189,69 +174,42 @@ export default function CloneChat() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to fetch from backend.");
+      if (!res.ok) throw new Error("API request failed");
 
       const data = await res.json();
-
-      updatedChatHistory[updatedChatHistory.length - 1].bot = {
-        content: data.response || "No content received.",
-        sources: data.sources || [],
-      };
-
-      setChatHistory(updatedChatHistory);
-
-      const cloneResponse: Message = {
+      const cloneMessage: Message = {
         id: messages.length + 2,
-        content: data.response || "No content received.",
-        sender: 'clone',
+        content: data.response || "No response",
+        sender: "clone",
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, cloneResponse]);
+      updatedChatHistory[updatedChatHistory.length - 1].bot = {
+        content: data.response || "",
+        sources: data.sources || "",
+      };
 
-      const latestMessagePair = updatedChatHistory[updatedChatHistory.length - 1];
+      setMessages((prev) => [...prev, cloneMessage]);
+      setChatHistory(updatedChatHistory);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chatHistory: [latestMessagePair],
-            cloneId: id,
-            userId: userId
-          }),
-        }
-      );
+      await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatHistory: [updatedChatHistory.at(-1)], cloneId: id, userId }),
+      });
 
-      if (!response.ok) {
-        console.error("Failed to save conversation");
-      } else {
-        const saveData = await response.json();
-        console.log(saveData);
-      }
-
-      if (!hasStartedChat) {
-        setHasStartedChat(true); // ADDED: Start chat after first message
-      }
+      if (!hasStartedChat) setHasStartedChat(true);
     } catch (err) {
-      console.error("API error:", err);
+      console.error("Message send error:", err);
 
-      updatedChatHistory[updatedChatHistory.length - 1].bot = {
-        content: "Something went wrong. Please try again later.",
-        sources: "",
-      };
-
-      setChatHistory(updatedChatHistory);
-
-      const errorResponse: Message = {
+      const errorMessage: Message = {
         id: messages.length + 2,
         content: "Something went wrong. Please try again later.",
-        sender: 'clone',
+        sender: "clone",
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, errorResponse]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
     }

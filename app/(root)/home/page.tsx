@@ -109,20 +109,12 @@ const Index = () => {
             Scale your impact, preserve your wisdom, and mentor others 24/7.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-scale-in">
-            <Link href="/create-clone">
-              <Button size="lg" className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-8 py-4 text-lg animate-pulse-glow">
-                Create Your Clone
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-
             <Link href="/explore">
-              <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+              <Button variant="outline" size="lg" className="px-8 py-4 text-lg w-96">
                 Explore Clones
               </Button>
             </Link>
-          </div>
+         
 
           <div className="mt-12 animate-float">
             <Image
