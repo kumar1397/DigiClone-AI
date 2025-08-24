@@ -165,7 +165,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         </div>
 
         {/* Button below */}
-        <Button onClick={handleSubmit} className="bg-primary hover:bg-secondary text-primary-foreground">
+        <Button onClick={handleSubmit} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
           <User className="h-4 w-4 mr-2" />
           Update Profile
         </Button>

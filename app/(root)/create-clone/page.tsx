@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,7 +35,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-
+import { Separator } from "@/components/ui/separator";
 interface UploadedFile {
   id: string;
   name: string;
@@ -43,7 +44,8 @@ interface UploadedFile {
   file: File;
 }
 
-const CreateClone = () => {
+export default function CreateClone() {
+  const router = useRouter();
   const [cloneName, setCloneName] = useState("");
   const [selectedTones, setSelectedTones] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
@@ -192,55 +194,75 @@ const CreateClone = () => {
     setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData();
 
     // Add text fields
-    formData.append('userId', userId ?? "");
-    formData.append('cloneName', cloneName);
-    formData.append('tone', JSON.stringify(selectedTones));
-    formData.append('style', JSON.stringify(selectedStyles));
-    formData.append('values', JSON.stringify(selectedValues));
-    formData.append('catchphrases', catchphrases);
-    formData.append('dos', dos);
-    formData.append('donts', donts);
-    formData.append('description', freeformDescription);
-    formData.append('youtubeLinks', JSON.stringify(youtubeLinks.filter((link) => link.trim() !== "")));
-    formData.append('otherLinks', JSON.stringify(links.filter((link) => link.trim() !== "")));
+    formData.append("userId", userId ?? "");
+    formData.append("cloneName", cloneName);
+    formData.append("tone", JSON.stringify(selectedTones));
+    formData.append("style", JSON.stringify(selectedStyles));
+    formData.append("values", JSON.stringify(selectedValues));
+    formData.append("catchphrases", catchphrases);
+    formData.append("dos", dos);
+    formData.append("donts", donts);
+    formData.append("description", freeformDescription);
+    formData.append(
+      "youtubeLinks",
+      JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))
+    );
+    formData.append(
+      "otherLinks",
+      JSON.stringify(links.filter((link) => link.trim() !== ""))
+    );
 
-    // Add clone image if exists
     if (cloneImage) {
-      formData.append('cloneImage', cloneImage);
+      formData.append("cloneImage", cloneImage);
     }
 
-    // Add uploaded files
     uploadedFiles.forEach((file) => {
-      formData.append(`uploadedFiles`, file.file);
+      formData.append("uploadedFiles", file.file);
     });
 
     const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/create`;
 
-    const response = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
+    await toast.promise(
+      (async () => {
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
 
-      if (response.status === 401) {
-        alert("Unauthorized. Please log in again.");
-      } else if (response.status === 400) {
-        alert(`Bad Request: ${errorText}`);
-      } else {
-        throw new Error(`Submission failed: ${response.status} - ${errorText}`);
+        if (!response.ok) {
+          let errorMsg = `Submission failed: ${response.status}`;
+
+          try {
+            const errorJson = await response.json();
+            errorMsg = errorJson.message || errorMsg;
+          } catch {
+            const errorText = await response.text();
+            errorMsg = errorText || errorMsg;
+          }
+
+          throw new Error(errorMsg);
+        }
+
+        // ✅ Success → redirect after a short delay so toast shows up
+        setTimeout(() => router.push("/explore"), 1000);
+        return "Clone created successfully!";
+      })(),
+      {
+        loading: "Generating clone...",
+        success: (msg) => msg,
+        error: (err) => err.message || "Something went wrong",
       }
-      return;
-    }
-    toast.success("Clone created successfully!");
+    );
   };
+
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -341,7 +363,7 @@ const CreateClone = () => {
               <CardTitle className="text-xl font-serif">Personality</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-8">
                 <div>
                   <Label className="text-base font-semibold mb-4 block">
                     Tone
@@ -366,7 +388,7 @@ const CreateClone = () => {
                     ))}
                   </div>
                 </div>
-
+                <Separator orientation="vertical" />
                 <div>
                   <Label className="text-base font-semibold mb-4 block">
                     Style
@@ -739,7 +761,7 @@ const CreateClone = () => {
             <Button
               type="submit"
               size="lg"
-              className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-12 py-3"
+              className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground font-semibold px-12 py-3"
             >
               Create Your Clone
             </Button>
@@ -748,6 +770,5 @@ const CreateClone = () => {
       </div>
     </div>
   );
-};
 
-export default CreateClone;
+}

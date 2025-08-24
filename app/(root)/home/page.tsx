@@ -136,7 +136,7 @@ const Index = () => {
               className="max-w-sm"
             />
             <Link href="/signup">
-              <Button size="lg" className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-8">
+              <Button size="lg" className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground font-semibold px-8">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

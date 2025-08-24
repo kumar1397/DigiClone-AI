@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
-
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 interface Clone {
   _id: string;
   clone_id: string;
@@ -41,14 +40,8 @@ export default function ExploreClient({ clones }: { clones: Clone[] }) {
   return (
     <>
       {/* Hero Section */}
+
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-          Discover AI Clones
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Chat with digital clones of experts, coaches, and thought leaders.
-          Get personalized advice and insights anytime, anywhere.
-        </p>
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto relative mb-8">
@@ -61,7 +54,6 @@ export default function ExploreClient({ clones }: { clones: Clone[] }) {
           />
         </div>
       </div>
-
       {/* Clone Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredClones.map((clone) => (
@@ -114,7 +106,7 @@ export default function ExploreClient({ clones }: { clones: Clone[] }) {
           <Link href="/create-clone">
             <Button
               size="lg"
-              className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-8"
+              className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground font-semibold px-8"
             >
               Create Your Clone
             </Button>

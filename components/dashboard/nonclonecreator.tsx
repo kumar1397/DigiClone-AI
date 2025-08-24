@@ -72,7 +72,7 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserDashboardP
             </div>
 
             <div className="flex items-center gap-3">
-              <Button onClick={() => router.push('/create-clone')} className="bg-primary hover:bg-secondary text-primary-foreground">
+              <Button onClick={() => router.push('/create-clone')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
                 Create Your Clone
               </Button>
             </div>

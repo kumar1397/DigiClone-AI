@@ -317,7 +317,7 @@ export default function CloneChat() {
                   <button
                     onClick={handleSendMessage}
                     disabled={!inputMessage.trim() || isTyping}
-                    className="bg-primary hover:bg-secondary text-primary-foreground text-base w-12 h-12 sm:w-13 sm:h-13 rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground text-base w-12 h-12 sm:w-13 sm:h-13 rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="h-5 w-5" />
                   </button>
