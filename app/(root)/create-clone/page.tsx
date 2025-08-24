@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -59,7 +59,15 @@ const CreateClone = () => {
   const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserId(user.userId);
+    }
+  }, []);
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -188,9 +196,9 @@ const CreateClone = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    
+
     // Add text fields
-    formData.append('userId', localStorage.getItem("userId") || '');
+    formData.append('userId', userId ?? "");
     formData.append('cloneName', cloneName);
     formData.append('tone', JSON.stringify(selectedTones));
     formData.append('style', JSON.stringify(selectedStyles));
@@ -216,9 +224,6 @@ const CreateClone = () => {
 
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
       body: formData,
     });
 
@@ -532,9 +537,8 @@ const CreateClone = () => {
                     {/* Dropzone Area */}
                     <div
                       {...getRootProps()}
-                      className={`border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                        isDragActive ? "border-primary bg-primary/10" : ""
-                      }`}
+                      className={`border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary/10" : ""
+                        }`}
                     >
                       <input {...getInputProps()} />
                       <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />

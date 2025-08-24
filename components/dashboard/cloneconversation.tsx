@@ -26,7 +26,6 @@ const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Clones:', data.clones);
         setClones(data.clones)
         // Use data.clones in your component state
       } else {

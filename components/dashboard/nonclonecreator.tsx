@@ -41,7 +41,6 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserDashboardP
             throw new Error("Failed to fetch user data");
           }
           const data = await response.json();
-          console.log(data);
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data:", error);

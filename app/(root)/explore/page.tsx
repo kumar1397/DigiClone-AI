@@ -1,165 +1,18 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search, } from "lucide-react";
-import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+// app/explore/page.tsx
 import Navbar from "@/components/navbar";
-import LoaderGrid from "@/components/loaderGrid";
-import Link from "next/link";
-import Image from "next/image";
-interface Clone {
-  _id: string;
-  clone_id: string;
-  clone_name: string;
-  image?: string;
-  freeform_description: string;
-  values: string[];
-}
-export default function Explore() {
-  const [clones, setClones] = useState<Clone[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [cloneId, setCloneId] = useState<string | null>(null);
+import { getAllClones } from "@/lib/db";
+import ExploreClient from "./explore-client";
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setCloneId(user.cloneId);
-    }
-  }, []);
+export const dynamic = "force-dynamic"; // ensures fresh fetch if needed
 
-  useEffect(() => {
-    const fetchClones = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/all`,
-          {
-            method: "GET",
-          }
-        );
+export default async function ExplorePage() {
+  const clones = await getAllClones(); // server-side fetch
 
-        if (!response.ok) {
-          toast.error("Failed to fetch clones");
-          return;
-        }
-        const data = await response.json();
-        setClones(data.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching clones:", error);
-        toast.error("Failed to fetch clones");
-      }
-    };
-
-    fetchClones();
-  }, []);
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
       <div className="container max-w-7xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-            Discover AI Clones
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Chat with digital clones of experts, coaches, and thought leaders.
-            Get personalized advice and insights anytime, anywhere.
-          </p>
-
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative mb-8">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, expertise, or topic..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-6 text-lg rounded-full border-2 focus:border-primary"
-            />
-          </div>
-        </div>
-
-        {isLoading ? (
-          <LoaderGrid />
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {clones.map((clone) => (
-              <Card
-                key={clone.clone_id}
-                className="relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1 shadow-md border-0 h-[300px]"
-              >
-                {/* Background image */}
-                <div className="absolute inset-0">
-                  <Image
-                    src={clone.image ?? "/default-clone.png"}
-                    alt={clone.clone_name}
-                    className="w-full h-full object-cover"
-                    width={100}
-                    height={100}
-                  />
-                  {/* Semi-transparent black backdrop on bottom half */}
-                  <div className="absolute bottom-0 left-0 w-full h-1/5 opacity-50" />
-                </div>
-
-                {/* Overlay content displayed on the bottom-half overlay */}
-                <div className="absolute bottom-0 left-0 z-10 w-full h-1/5 p-4 text-white flex flex-col justify-end">
-
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-4 ">
-                      <CardTitle className="text-lg font-serif truncate">
-                        {clone.clone_name}
-                      </CardTitle>
-                    </div>
-
-                    <Link href={`/chat/${clone.clone_id}`}>
-                      <Button
-                        size="sm"
-                        className="bg-white text-black hover:bg-gray-100"
-                      >
-                        Chat Now
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-
-
-            ))}
-          </div>
-
-        )}
-
-
-        {/* CTA Section */}
-        {!cloneId &&
-          (
-            <div className="mt-16 text-center bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8">
-              <h2 className="text-2xl font-serif font-bold mb-4">
-                Want to create your own clone?
-              </h2>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Join hundreds of experts who are scaling their impact and helping
-                thousands of people worldwide.
-              </p>
-              <Link href="/create-clone">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-secondary text-primary-foreground font-semibold px-8"
-                >
-                  Create Your Clone
-                </Button>
-              </Link>
-            </div>
-          )
-        }
-
+        <ExploreClient clones={clones} />
       </div>
     </div>
   );

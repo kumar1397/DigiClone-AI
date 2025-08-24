@@ -65,9 +65,10 @@ export default function Navbar() {
         });
 
         const user = await res.json();
-
         if (user.cloneId) {
           userData.current.cloneId = user.cloneId;
+        } else {
+          console.warn("⚠️ No cloneId found for user");
         }
 
         if (user._id) {
@@ -76,7 +77,7 @@ export default function Navbar() {
 
         localStorage.setItem("user", JSON.stringify(userData.current));
       } catch (err) {
-        console.error("Error fetching clone info:", err);
+        console.error("❌ Error fetching clone info:", err);
       }
     };
 
@@ -105,7 +106,7 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {pathname !== "/home" && (
-              
+
               <Link href="/home" className="text-muted-foreground hover:text-primary transition-colors">
                 Home
               </Link>
