@@ -99,7 +99,7 @@ export default function Navbar() {
               <Brain className="h-6 w-6 text-primary" />
             </div>
             <span className="text-xl font-serif font-bold text-foreground">
-              DigiClone AI
+              MentorZap AI
             </span>
           </Link>
 
