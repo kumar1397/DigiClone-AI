@@ -5,57 +5,48 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, User } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { toast } from "react-hot-toast";
-
-interface userProfile {
-  name: string;
-  email: string;
-  profilePicture: string;
-  phone: string;
-};
+import { useUserStore } from "@/lib/useUserStore";
+import { useEffect } from "react";
 
 interface ProfileSectionProps {
   userId: string;
 }
 
-const ProfileSection = ({ userId }: ProfileSectionProps) => {
-  const [userProfile, setUserData] = useState<userProfile>({
-    name: "",
-    email: "",
-    profilePicture: "",
-    phone: "",
-  });
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  profilePicture: string;
+}
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedImage(file);
-    }
-  };
+const ProfileSection = ({ userId }: ProfileSectionProps) => {
+  const { name, email, image } = useUserStore();
+  const [user, setUser] = useState<User | null>(null);
+  const [phone, setPhone] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({ ...userProfile, phone: e.target.value });
+    setPhone(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) return;
     const formData = new FormData();
-    formData.append("phone", userProfile.phone);
-    if (selectedImage) {
-      formData.append("profilePicture", selectedImage);
-    }
+    formData.append("phone", phone);
+
+
 
     // Debug: Log what we're sending
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
+      const response = await fetch(`api/users/${userId}`, {
         method: "PUT",
         body: formData,
         credentials: "include",
@@ -66,15 +57,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         throw new Error(`Failed to update user data: ${response.status} - ${errorData.message || 'Unknown error'}`);
       }
       const updated = await response.json();
-      setUserData(prevUserData => {
-        if (!prevUserData) return updated;
-        return {
-          ...prevUserData,
-          ...updated
-        };
-      });
-
-      setSelectedImage(null);
+      setPhone(updated.phone || "");
       toast.success("Profile updated successfully!");
     } catch (err) {
       toast.error("Failed to update profile. Please try again.");
@@ -83,29 +66,21 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
   };
 
   useEffect(() => {
-    if (userId) {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
-            },
-            credentials: "include",
-          });
-          if (!response.ok) {
-            throw new Error("Failed to fetch user data");
-          }
-          const data = await response.json();
-          setUserData(data);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+    async function fetchUser() {
+      try {
+        const res = await fetch(`/api/user/${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch user: ${res.status}`);
         }
-      };
-      fetchUserData();
+        const data = await res.json();
+        setUser(data);
+      } catch (err: any) {
+        console.error(err.message);
+      } 
     }
+    fetchUser();
   }, [userId]);
+
   return (
     <Card>
       <CardHeader>
@@ -119,9 +94,9 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         <div className="flex items-center gap-6">
           <div className="relative" onClick={handleImageClick}>
             <Avatar className="h-24 w-24">
-              <AvatarImage src={userProfile.profilePicture} />
+              <AvatarImage src={user?.profilePicture} />
               <AvatarFallback className="text-lg">
-                {userProfile.name.split(' ').map(n => n[0]).join('')}
+                {user?.name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
             <input
@@ -129,13 +104,13 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               accept="image/*"
               ref={fileInputRef}
               style={{ display: "none" }}
-              onChange={handleImageChange}
+              readOnly
             />
           </div>
           <div className="space-y-2">
             <Label>Full Name</Label>
             <Input
-              value={userProfile.name}
+              value={user?.name}
             />
           </div>
         </div>
@@ -146,7 +121,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Label>Email Address</Label>
             <Input
               type="email"
-              value={userProfile.email}
+              value={user?.email}
             />
           </div>
 
@@ -157,7 +132,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               <Input
                 className="pl-10"
                 placeholder="don't use any country code"
-                value={userProfile.phone}
+                value={user?.phone}
                 onChange={handlePhoneChange}
               />
             </div>

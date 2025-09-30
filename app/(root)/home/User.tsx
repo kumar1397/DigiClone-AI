@@ -1,25 +1,34 @@
-// app/_components/init-user.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { useUserStore } from "@/lib/useUserStore";
 
-export default function InitUser() {
-  const { data: session } = useSession();
+interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+  cloneId: string | null;
+}
+
+interface Session {
+  user: SessionUser | null;
+}
+
+export default function InitUser({ session }: { session: Session }) {
+  const setUser = useUserStore((s) => s.setUser);
 
   useEffect(() => {
-    if (session?.user) {
-      fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: session.user?.name ?? "",
-          email: session.user?.email ?? "",
-          image: session.user?.image ?? "",
-        }),
-      });
-    }
-  }, [session]);
+    if (!session?.user) return;
+
+    setUser({
+      userId: session.user.id,
+      name: session.user.name || "",
+      email: session.user.email || "",
+      image: session.user.image || "",
+      cloneId: session.user.cloneId ?? undefined,
+    });
+  }, [session, setUser]);
 
   return null;
 }

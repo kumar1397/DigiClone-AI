@@ -7,8 +7,8 @@ import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";
 export default function Login() {
   const handleGoogleLogin = async () => {
-    toast.success("Signing in......")
-    signIn("google");
+    toast.success("Signing in...");
+    await signIn("google", { callbackUrl: "/home" });
   };
 
   return (

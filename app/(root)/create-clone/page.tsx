@@ -36,6 +36,7 @@ import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { useUserStore } from "@/lib/useUserStore";
 interface UploadedFile {
   id: string;
   name: string;
@@ -61,15 +62,7 @@ export default function CreateClone() {
   const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUserId(user.userId);
-    }
-  }, []);
+  const {userId} = useUserStore();
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -194,41 +187,38 @@ export default function CreateClone() {
     setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData();
-
-    // Add text fields
-    formData.append("userId", userId ?? "");
-    formData.append("cloneName", cloneName);
+    formData.append("userId", userId);
+    formData.append("clone_name", cloneName);
     formData.append("tone", JSON.stringify(selectedTones));
     formData.append("style", JSON.stringify(selectedStyles));
     formData.append("values", JSON.stringify(selectedValues));
-    formData.append("catchphrases", catchphrases);
+    formData.append("catchphrases", JSON.stringify(catchphrases));
     formData.append("dos", dos);
     formData.append("donts", donts);
-    formData.append("description", freeformDescription);
+    formData.append("freeform_description", freeformDescription);
+
     formData.append(
-      "youtubeLinks",
+      "youtubeLinkUpload",
       JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))
     );
     formData.append(
-      "otherLinks",
+      "otherLinkUpload",
       JSON.stringify(links.filter((link) => link.trim() !== ""))
     );
 
     if (cloneImage) {
-      formData.append("cloneImage", cloneImage);
+      formData.append("image", cloneImage); 
     }
 
     uploadedFiles.forEach((file) => {
-      formData.append("uploadedFiles", file.file);
+      formData.append("fileUploads", file.file);
     });
 
-    const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/create`;
-
+    const url = `/api/clones`;
 
     await toast.promise(
       (async () => {
@@ -242,6 +232,7 @@ export default function CreateClone() {
 
           try {
             const errorJson = await response.json();
+            console.error("Server error:", errorJson);
             errorMsg = errorJson.message || errorMsg;
           } catch {
             const errorText = await response.text();
@@ -251,7 +242,6 @@ export default function CreateClone() {
           throw new Error(errorMsg);
         }
 
-        // ✅ Success → redirect after a short delay so toast shows up
         setTimeout(() => router.push("/explore"), 1000);
         return "Clone created successfully!";
       })(),

@@ -13,10 +13,6 @@ interface NonCloneUserDashboardProps {
   userId: string;
 }
 
-
-// Sample hard-coded data
-
-
 const CloneConversationsSection = ({ userId }: NonCloneUserDashboardProps) => {
   const router = useRouter();
   const [clones, setClones] = useState<CloneProfile[]>([])

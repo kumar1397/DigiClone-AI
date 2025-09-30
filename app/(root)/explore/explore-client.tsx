@@ -1,13 +1,14 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { useUserStore } from "@/lib/useUserStore"
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+
 interface Clone {
   _id: string;
   clone_id: string;
@@ -16,34 +17,30 @@ interface Clone {
   freeform_description: string;
   values: string[];
 }
+interface CloneApiResponse {
+  success: boolean;
+  data: Clone[];
+}
 
-export default function ExploreClient({ clones }: { clones: Clone[] }) {
+export default function ExploreClient() {
+  const fetcher = (url: string): Promise<CloneApiResponse> =>
+    fetch(url).then((res) => res.json());
+  const { data, error, isLoading } = useSWR<CloneApiResponse>("/api/clones", fetcher);
+
+  const { cloneId } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
-  const [cloneId, setCloneId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        setCloneId(user.cloneId);
-      } catch {
-        toast.error("Invalid user data in localStorage");
-      }
-    }
-  }, []);
-
-  const filteredClones = clones.filter((clone) =>
+  const filteredClones = data?.data?.filter((clone: Clone) =>
     clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) ?? [];
 
+  
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Failed to load</p>;
+  
   return (
     <>
-      {/* Hero Section */}
-
       <div className="text-center mb-12">
-
-        {/* Search Bar */}
         <div className="max-w-2xl mx-auto relative mb-8">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
@@ -54,9 +51,9 @@ export default function ExploreClient({ clones }: { clones: Clone[] }) {
           />
         </div>
       </div>
-      {/* Clone Grid */}
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredClones.map((clone) => (
+        {filteredClones.map((clone: Clone) => (
           <Card
             key={clone.clone_id}
             className="relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1 shadow-md border-0 h-[300px]"
@@ -64,7 +61,7 @@ export default function ExploreClient({ clones }: { clones: Clone[] }) {
             {/* Background image */}
             <div className="absolute inset-0">
               <Image
-                src={clone.image ?? "/default-clone.png"}
+                src={clone.image ?? "/newPic.jpg"}
                 alt={clone.clone_name}
                 className="w-full h-full object-cover"
                 width={100}

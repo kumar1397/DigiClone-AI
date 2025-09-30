@@ -1,23 +1,23 @@
-"use client";
+import { auth } from "@/app/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Upload, Bot, MessageCircle, Star, Users,} from "lucide-react";
+import { ArrowRight, Upload, Bot, MessageCircle, Star, Users, } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Image from "next/image"
 import Link from "next/link";
 import InitUser from "./User";
 import UseCases from "./useCases";
-const Index = () => {
-  
+
+export default async function HomePage() {
+  const session = await auth();
 
   return (
     <div className="min-h-screen bg-background">
-      <InitUser/>
-      <Navbar />
-
+      <InitUser session={session} />
+      <Navbar session={session}/>
       {/* Hero Section */}
       <section className="hero-gradient py-20 px-4">
         <div className="container max-w-6xl mx-auto text-center">
@@ -36,12 +36,12 @@ const Index = () => {
             Scale your impact, preserve your wisdom, and mentor others 24/7.
           </p>
 
-            <Link href="/explore">
-              <Button variant="outline" size="lg" className="px-8 py-4 text-lg w-96">
-                Explore Clones
-              </Button>
-            </Link>
-         
+          <Link href="/explore">
+            <Button variant="outline" size="lg" className="px-8 py-4 text-lg w-96">
+              Explore Clones
+            </Button>
+          </Link>
+
 
           <div className="mt-12 animate-float">
             <Image
@@ -117,7 +117,7 @@ const Index = () => {
       </section>
 
       {/* Use Cases */}
-     <UseCases/>
+      <UseCases />
 
       {/* CTA Section */}
       <section className="py-20 px-4 bg-primary/5">
@@ -166,4 +166,3 @@ const Index = () => {
   );
 };
 
-export default Index;

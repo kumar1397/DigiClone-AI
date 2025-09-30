@@ -1,0 +1,100 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+/// User
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String   @unique
+  email          String   @unique
+  profilePicture String?  @default("")
+  phone          String?
+  cloneId        String?  
+
+  conversations  Conversation[] @relation("UserConversations")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
+/// CloneProfile
+
+model CloneProfile {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  clone_id            String   @unique
+  clone_name          String
+  tone                String[]
+  style               String[]
+  image               String
+  catchphrases        String[]
+  values              String[]
+  dos                 String?
+  donts               String?
+  freeform_description String?
+  fileUploads         File[]
+  youtubeLinkUpload   String[]
+  otherLinkUpload     String[]
+  status              Status   @default(upload)
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+enum Status {
+  upload
+  approved
+  publish
+}
+
+
+/// File
+
+model File {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  url            String
+  originalName   String
+  fileSize       Int
+  mimeType       String
+  uploadDate     DateTime     @default(now())
+
+  cloneProfile   CloneProfile @relation(fields: [cloneProfileId], references: [id])
+  cloneProfileId String       @db.ObjectId
+}
+
+
+/// Conversation
+
+model Conversation {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  cloneId   String
+  messages  Message[]
+  createdAt DateTime  @default(now())
+
+  user      User      @relation("UserConversations", fields: [userId], references: [id])
+}
+
+
+/// Message
+
+model Message {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  role          Role
+  content       String
+  timestamp     DateTime @default(now())
+  conversation  Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String   @db.ObjectId
+}
+
+enum Role {
+  user
+  clone
+}
