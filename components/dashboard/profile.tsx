@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, User } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "react-hot-toast";
-import { useUserStore } from "@/lib/useUserStore";
 import { useEffect } from "react";
 
 interface ProfileSectionProps {
@@ -23,7 +22,6 @@ interface User {
 }
 
 const ProfileSection = ({ userId }: ProfileSectionProps) => {
-  const { name, email, image } = useUserStore();
   const [user, setUser] = useState<User | null>(null);
   const [phone, setPhone] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,14 +66,14 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch(`/api/user/${userId}`);
+        const res = await fetch(`/api/users/${userId}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch user: ${res.status}`);
         }
         const data = await res.json();
         setUser(data);
-      } catch (err: any) {
-        console.error(err.message);
+      } catch {
+        console.error("Failed to fetch user data");
       } 
     }
     fetchUser();
@@ -122,6 +120,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Input
               type="email"
               value={user?.email}
+              readOnly
             />
           </div>
 
@@ -132,7 +131,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               <Input
                 className="pl-10"
                 placeholder="don't use any country code"
-                value={user?.phone}
+                value={user?.phone ?? ""}
                 onChange={handlePhoneChange}
               />
             </div>

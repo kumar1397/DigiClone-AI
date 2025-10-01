@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Upload, Bot, MessageCircle, Star, Users, } from "lucide-react";
-import Navbar from "@/components/navbar";
+
 import Footer from "@/components/footer";
 import Image from "next/image"
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <InitUser session={session} />
-      <Navbar session={session}/>
+      
       {/* Hero Section */}
       <section className="hero-gradient py-20 px-4">
         <div className="container max-w-6xl mx-auto text-center">

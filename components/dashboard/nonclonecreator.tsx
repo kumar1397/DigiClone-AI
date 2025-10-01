@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/lib/useUserStore";
-import Navbar from "@/components/navbar";
 import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile";
 import CloneConversationsSection from "./cloneconversation";
@@ -18,8 +17,6 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
   const router = useRouter();
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <div className="container max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">

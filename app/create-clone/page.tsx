@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,7 +62,7 @@ export default function CreateClone() {
   const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const {userId} = useUserStore();
+  const { userId, setUser } = useUserStore();
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -211,7 +211,7 @@ export default function CreateClone() {
     );
 
     if (cloneImage) {
-      formData.append("image", cloneImage); 
+      formData.append("image", cloneImage);
     }
 
     uploadedFiles.forEach((file) => {
@@ -242,7 +242,13 @@ export default function CreateClone() {
           throw new Error(errorMsg);
         }
 
+        const data = await response.json();
+        if (data.data) {
+          setUser({ cloneId: data.data.clone_id });
+        }
+
         setTimeout(() => router.push("/explore"), 1000);
+
         return "Clone created successfully!";
       })(),
       {

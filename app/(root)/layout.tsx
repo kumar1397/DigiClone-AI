@@ -1,7 +1,8 @@
-"use client"
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { SessionProvider } from "next-auth/react";
+import Navbar from "@/components/navbar";
+import { auth } from "@/app/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,19 +14,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const session = await auth(); // ✅ safe here, server component
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <main className="flex-1">
-          <SessionProvider>
+          {/* Pass session to SessionProvider */}
+          <SessionProvider session={session}>
+            <Navbar session={session}/>
             {children}
           </SessionProvider>
         </main>

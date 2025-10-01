@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Knowledge from "./knowledge";
 import { useEffect, useState, useCallback } from "react";
-import Navbar from "@/components/navbar";
 import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile"
 import Training from "./training";
@@ -72,7 +71,7 @@ export default function CloneCreatorDashboard({
   useEffect(() => {
     const fetchCloneInfo = async () => {
       try {
-        const url = `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${cloneId}`;
+        const url = `api/clones/${cloneId}`;
         const cloneRes = await fetch(url, {
           method: "GET",
           headers: {
@@ -86,6 +85,7 @@ export default function CloneCreatorDashboard({
         }
 
         const cloneData = await cloneRes.json();
+        console.log("Fetched clone data:", cloneData);
         const data = cloneData.data;
 
         const parsedClone = {
@@ -167,8 +167,6 @@ export default function CloneCreatorDashboard({
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <div className="container max-w-7xl mx-auto px-4 py-8">
 
         <div className="mb-8">

@@ -1,15 +1,10 @@
 
-import { auth } from "@/app/auth";
 import ExploreClient from "./explore-client";
-import Navbar from "@/components/navbar";
 export const dynamic = "force-dynamic";
 
 export default async function ExplorePage() {
-  const session = await auth();
   return (
     <div className="min-h-screen bg-background">
-       <Navbar session={session}/>
-      
       <div className="text-center mb-12">
         <div className="container max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
