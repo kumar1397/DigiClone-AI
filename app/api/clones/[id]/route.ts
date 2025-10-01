@@ -9,10 +9,11 @@ type UploadData = {
   freeformDesc?: string;
   image?: string;
 }
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params;
   try {
     const clone = await prisma.cloneProfile.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { fileUploads: true },
     });
 
@@ -28,7 +29,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params;
   try {
     const formData = await req.formData();
 
@@ -46,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const updatedClone = await prisma.cloneProfile.update({
-      where: { id: params.id },
+      where: { id: id },
       data: updates,
       include: { fileUploads: true },
     });
@@ -60,10 +63,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params;
   try {
-    await prisma.file.deleteMany({ where: { cloneProfileId: params.id } });
-    await prisma.cloneProfile.delete({ where: { id: params.id } });
+    await prisma.file.deleteMany({ where: { cloneProfileId: id } });
+    await prisma.cloneProfile.delete({ where: { id: id } });
 
     return NextResponse.json({ success: true, message: "Clone deleted" });
   } catch (error: unknown) {
