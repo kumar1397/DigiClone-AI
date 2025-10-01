@@ -13,22 +13,21 @@ import UseCases from "./useCases";
 
 export default async function HomePage() {
   const session = await auth();
-
-  // Ensure cloneId is always string or null
+  
   const safeSession = session
     ? {
-        ...session,
-        user: {
-          ...session.user,
-          cloneId: session.user.email ?? null,
-        },
-      }
+      ...session,
+      user: {
+        ...session.user,
+        cloneId: session.user.cloneId ?? null,
+      },
+    }
     : null;
 
   return (
     <div className="min-h-screen bg-background">
       <InitUser session={safeSession} />
-      
+
       {/* Hero Section */}
       <section className="hero-gradient py-20 px-4">
         <div className="container max-w-6xl mx-auto text-center">

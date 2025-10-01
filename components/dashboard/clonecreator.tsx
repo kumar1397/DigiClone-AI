@@ -7,6 +7,7 @@ import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile"
 import Training from "./training";
 import Personality from "./personality";
+import { useUserStore } from "@/lib/useUserStore";
 interface CloneCreatorDashboardProps {
   userId: string;
   cloneId: string;
@@ -46,11 +47,8 @@ export default function CloneCreatorDashboard({
   userId,
   cloneId,
 }: CloneCreatorDashboardProps) {
-  const [userProfile, setUserData] = useState<userProfile>({
-    name: "",
-    profilePicture: "",
-  });
-
+  console.log("Rendering CloneCreatorDashboard with userId:", userId, "and cloneId:", cloneId);
+  const { name, image } = useUserStore();
   const [uploadSources, setUploadSources] = useState<UploadedFile[]>([]);
   const [cloneData, setCloneData] = useState<CloneData>({
     clone_id: "",
@@ -72,6 +70,7 @@ export default function CloneCreatorDashboard({
     const fetchCloneInfo = async () => {
       try {
         const url = `api/clones/${cloneId}`;
+        console.log("Fetching clone info from URL:", url);
         const cloneRes = await fetch(url, {
           method: "GET",
           headers: {
@@ -114,35 +113,6 @@ export default function CloneCreatorDashboard({
     fetchCloneInfo();
   }, [cloneId]);
 
-  useEffect(() => {
-    if (userId) {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/user/${userId}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-              },
-              credentials: "include",
-            }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch user data");
-          }
-          const data = await response.json();
-          setUserData(data);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      };
-
-      fetchUserData();
-    }
-  }, [userId]);
-
   const fetchFiles = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/files/${cloneId}`);
@@ -173,14 +143,14 @@ export default function CloneCreatorDashboard({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={userProfile.profilePicture} />
+                <AvatarImage src={image} />
                 <AvatarFallback>
-                  {userProfile.name.split(' ').map(n => n[0]).join('')}
+                  {name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h1 className="text-3xl font-serif font-bold">
-                  Welcome, {userProfile.name}!
+                  Welcome, {name}!
                 </h1>
                 <p className="text-muted-foreground">
                   Explore AI clones and manage your profile
