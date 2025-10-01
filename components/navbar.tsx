@@ -40,7 +40,7 @@ interface Session {
   user: SessionUser;
 }
 
-export default function Navbar({ session }: { session: Session }) {
+export default function Navbar({ session }: { session: Session | null }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

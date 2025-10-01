@@ -14,9 +14,20 @@ import UseCases from "./useCases";
 export default async function HomePage() {
   const session = await auth();
 
+  // Ensure cloneId is always string or null
+  const safeSession = session
+    ? {
+        ...session,
+        user: {
+          ...session.user,
+          cloneId: session.user.email ?? null,
+        },
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-background">
-      <InitUser session={session} />
+      <InitUser session={safeSession} />
       
       {/* Hero Section */}
       <section className="hero-gradient py-20 px-4">

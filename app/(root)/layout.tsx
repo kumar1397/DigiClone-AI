@@ -27,9 +27,8 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <main className="flex-1">
-          {/* Pass session to SessionProvider */}
           <SessionProvider session={session}>
-            <Navbar session={session}/>
+            <Navbar session={session} />
             {children}
           </SessionProvider>
         </main>

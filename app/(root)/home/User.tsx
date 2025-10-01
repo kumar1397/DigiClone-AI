@@ -15,7 +15,7 @@ interface Session {
   user: SessionUser | null;
 }
 
-export default function InitUser({ session }: { session: Session }) {
+export default function InitUser({ session }: { session: Session | null }) {
   const setUser = useUserStore((s) => s.setUser);
 
   useEffect(() => {

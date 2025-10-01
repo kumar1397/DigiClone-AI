@@ -9,8 +9,24 @@ declare module "next-auth" {
       name: string;
       email: string;
       image: string;
-      cloneId?: string | null;
+      cloneId: string | null; // ✅ not optional
     };
+  }
+
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+    image: string;
+    cloneId: string | null; // ✅ keep consistent with DB
+  }
+
+  interface JWT {
+    id: string;
+    name: string;
+    email: string;
+    image: string;
+    cloneId: string | null;
   }
 }
 
@@ -55,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = dbUser.name;
         token.email = dbUser.email;
         token.image = dbUser.profilePicture;
-        token.cloneId = dbUser.cloneId;
+        token.cloneId = dbUser.cloneId || null;
       }
       return token;
     },

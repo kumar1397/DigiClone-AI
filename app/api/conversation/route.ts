@@ -1,14 +1,21 @@
 import prisma from "@/prisma";
-import { NextResponse , NextRequest} from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export const saveMessage = async (req:NextRequest, res:NextResponse) => {
+type Message = {
+  role: "user" | "bot";
+  content: string;
+};
+// --- POST /api/conversation  (save a message)
+export async function POST(req: NextRequest) {
   try {
-    const { chatHistory, userId, cloneId } = req.body;
+    const body = await req.json();
+    const { chatHistory, userId, cloneId } = body;
 
-    const messagesToAdd = chatHistory.map(pair => [
-      { role: "user", content: pair.user },
-      { role: "clone", content: pair.bot.content }
-    ]).flat();
+    const messagesToAdd = chatHistory
+      .map((pair: Message) => [
+        { role: "user", content: pair.content },
+      ])
+      .flat();
 
     const existing = await prisma.conversation.findFirst({
       where: { userId, cloneId },
@@ -17,7 +24,7 @@ export const saveMessage = async (req:NextRequest, res:NextResponse) => {
     if (existing) {
       await prisma.conversation.update({
         where: { id: existing.id },
-        data: { messages: { push: messagesToAdd } }
+        data: { messages: { create: messagesToAdd } },
       });
     } else {
       await prisma.conversation.create({
@@ -29,51 +36,37 @@ export const saveMessage = async (req:NextRequest, res:NextResponse) => {
       });
     }
 
-    return res.status(200).json({ message: "Conversation saved." });
+    return NextResponse.json({ success: true, message: "Conversation saved." });
   } catch (error) {
     console.error("❌ Error saving conversation:", error);
-    return res.status(500).json({ error: "Failed to save conversation." });
+    return NextResponse.json(
+      { success: false, error: "Failed to save conversation." },
+      { status: 500 }
+    );
   }
-};
+}
 
-export const getUserConversations = async (req:NextResponse, res:NextResponse) => {
+// --- GET /api/conversation  (get conversation)
+export async function GET(req: NextRequest) {
   try {
-    const { userId, cloneId } = req.body;
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId")!;
+    const cloneId = searchParams.get("cloneId")!;
 
     const conversation = await prisma.conversation.findFirst({
       where: { userId, cloneId },
+      include: { messages: true },
     });
 
-    return res.status(200).json({ messages: conversation?.messages ?? [] });
+    return NextResponse.json({
+      success: true,
+      messages: conversation?.messages ?? [],
+    });
   } catch (error) {
     console.error("❌ Error fetching conversation:", error);
-    return res.status(500).json({ error: "Failed to fetch conversation." });
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch conversation." },
+      { status: 500 }
+    );
   }
-};
-
-export const getUserClonesWithDetails = async (req:NextRequest, res:NextResponse) => {
-  try {
-    const { userId } = req.params;
-
-    const conversations = await prisma.conversation.findMany({
-      where: { userId },
-      select: { cloneId: true },
-    });
-
-    const cloneIds = [...new Set(conversations.map(c => c.cloneId))];
-
-    if (cloneIds.length === 0) {
-      return res.json({ clones: [] });
-    }
-
-    const clones = await prisma.cloneProfile.findMany({
-      where: { clone_id: { in: cloneIds } },
-      select: { clone_id: true, clone_name: true, image: true },
-    });
-
-    return res.json({ clones });
-  } catch (error) {
-    console.error("❌ Error fetching clone details:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-};
+}
