@@ -20,8 +20,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ message: "User not found" }, { status: 404 })
     }
     return NextResponse.json(user, { status: 200 })
-  } catch (err) {
-    return NextResponse.json({ message: err.message }, { status: 500 })
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
 
@@ -30,7 +33,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
 
-  
+
   try {
     const formData = await req.formData();
 
@@ -45,15 +48,15 @@ export async function PUT(
 
     const user = await prisma.user.update({
       where: { id: params.id },
-      data: { phone }, 
+      data: { phone },
     });
 
     return NextResponse.json(user, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json(
-      { success: false, message: err.message },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
 
@@ -66,7 +69,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       { success: true, message: "User deleted successfully", data: user },
       { status: 200 }
     )
-  } catch (err) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 })
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }

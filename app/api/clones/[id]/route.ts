@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 
+type UploadData = {
+  clone_name?: string;
+  dos?: string;
+  donts?: string;
+  freeformDesc?: string;
+  image?: string;
+}
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const clone = await prisma.cloneProfile.findUnique({
@@ -14,15 +21,18 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     return NextResponse.json({ success: true, data: clone });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const formData = await req.formData();
 
-    const updates: any = {
+    const updates: UploadData = {
       clone_name: formData.get("cloneName")?.toString(),
       dos: formData.get("dos")?.toString(),
       donts: formData.get("donts")?.toString(),
@@ -42,17 +52,24 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
 
     return NextResponse.json({ success: true, data: updatedClone });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
+
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await prisma.file.deleteMany({ where: { cloneId: params.id } });
+    await prisma.file.deleteMany({ where: { cloneProfileId: params.id } });
     await prisma.cloneProfile.delete({ where: { id: params.id } });
 
     return NextResponse.json({ success: true, message: "Clone deleted" });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }

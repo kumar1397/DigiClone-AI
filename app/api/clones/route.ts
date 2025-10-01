@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 
+type UploadData = {
+  url: string;
+  originalName: string;
+  mimeType: string;
+  fileSize: number;
+}
 
 function toArray(value: FormDataEntryValue | null): string[] {
   if (!value) return [];
@@ -35,7 +41,7 @@ export async function POST(req: NextRequest) {
     const otherLinks = toArray(formData.get("otherLinkUpload"));
 
     // Upload image
-    let imageUrl = `newPic.jpg`; 
+    let imageUrl = `newPic.jpg`;
     const imageFile = formData.get("image") as File | null;
 
     if (imageFile) {
@@ -47,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Upload PDFs
-    const uploadedFiles: any[] = [];
+    const uploadedFiles: UploadData[] = [];
     const pdfFiles = formData.getAll("fileUploads") as File[];
 
     for (const pdf of pdfFiles) {
@@ -81,7 +87,6 @@ export async function POST(req: NextRequest) {
       include: { fileUploads: true },
     });
 
-    // 🔑 Update User with cloneId
     await prisma.user.update({
       where: { id: userId },
       data: { cloneId: newClone.id },
@@ -90,9 +95,11 @@ export async function POST(req: NextRequest) {
     console.log("🎉 Created clone with files:", newClone);
 
     return NextResponse.json({ success: true, data: newClone }, { status: 201 });
-  } catch (error: any) {
-    console.error("Error creating clone:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
 
@@ -104,7 +111,10 @@ export async function GET() {
       include: { fileUploads: true },
     });
     return NextResponse.json({ success: true, data: clones });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }

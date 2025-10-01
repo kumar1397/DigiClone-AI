@@ -34,8 +34,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: user }, { status: 200 });
-  } catch (err: any) {
-    console.error("❌ Error in POST /api/user:", err);
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
