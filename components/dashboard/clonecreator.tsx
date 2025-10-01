@@ -29,11 +29,6 @@ interface CloneData {
   Status: string;
 }
 
-interface userProfile {
-  name: string;
-  profilePicture: string;
-};
-
 interface UploadedFile {
   id: string;
   fileId: string;
