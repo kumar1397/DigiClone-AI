@@ -3,8 +3,15 @@
 import prisma from "@/prisma";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 
+type UploadData = {
+  url: string;
+  originalName: string;
+  mimeType: string;
+  fileSize: number;
+}
+
 export async function uploadPdfFiles(cloneId: string, files: File[]) {
-  const uploadedFiles: any[] = [];
+  const uploadedFiles: UploadData[] = [];
 
   for (const pdf of files) {
     const buffer = Buffer.from(await pdf.arrayBuffer());

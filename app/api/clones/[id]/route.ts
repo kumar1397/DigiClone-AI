@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma";
-import { uploadFileToCloudinary } from "@/lib/cloudinary";
 
 // --- GET ---
 export async function GET(

@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Knowledge from "./knowledge";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, } from "react";
 import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile"
 import Training from "./training";
