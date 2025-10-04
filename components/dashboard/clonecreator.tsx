@@ -27,24 +27,25 @@ interface CloneData {
   youtubeLinkUpload: string[];
   otherLinkUpload: string[];
   Status: string;
+  fileUploads?: UploadedFile[];
 }
 
 interface UploadedFile {
-  id: string;
-  fileId: string;
-  name: string;
-  size: number;
-  type: string;
-  file: File;
+    id: string;
+    fileId: string;
+    originalName: string;
+    fileSize: number;
+    mimeType: string;
+    url: string;
+    file: File;
 }
+
 
 export default function CloneCreatorDashboard({
   userId,
   cloneId,
 }: CloneCreatorDashboardProps) {
-  console.log("Rendering CloneCreatorDashboard with userId:", userId, "and cloneId:", cloneId);
   const { name, image } = useUserStore();
-  const [uploadSources, setUploadSources] = useState<UploadedFile[]>([]);
   const [cloneData, setCloneData] = useState<CloneData>({
     clone_id: "",
     clone_name: "",
@@ -59,13 +60,13 @@ export default function CloneCreatorDashboard({
     youtubeLinkUpload: [],
     otherLinkUpload: [],
     Status: "",
+    fileUploads: [],
   });
 
   useEffect(() => {
     const fetchCloneInfo = async () => {
       try {
         const url = `api/clones/${cloneId}`;
-        console.log("Fetching clone info from URL:", url);
         const cloneRes = await fetch(url, {
           method: "GET",
           headers: {
@@ -79,16 +80,14 @@ export default function CloneCreatorDashboard({
         }
 
         const cloneData = await cloneRes.json();
-        console.log("Fetched clone data:", cloneData);
         const data = cloneData.data;
-
         const parsedClone = {
-          clone_id: data.cloneIdStr || "",
-          clone_name: data.cloneName || "",
+          clone_id: data.clone_id || "",
+          clone_name: data.clone_name || "",
           catchphrases: data.catchphrases || [],
           dos: data.dos || "",
           donts: data.donts || "",
-          freeform_description: data.description || "",
+          freeform_description: data.freeform_description || "",
           image: data.image || "",
           style: data.style,
           tone: data.tone,
@@ -96,10 +95,11 @@ export default function CloneCreatorDashboard({
           youtubeLinkUpload: data.youtubeLinkUpload,
           otherLinkUpload: data.otherLinkUpload,
           Status: data.status || "",
+          fileUploads: data.fileUploads || [],
         };
 
         setCloneData(parsedClone);
-
+        console.log("Fetched clone data:", parsedClone);
       } catch (err) {
         console.error("🚨 Error fetching clone info:", err);
       }
@@ -107,28 +107,6 @@ export default function CloneCreatorDashboard({
 
     fetchCloneInfo();
   }, [cloneId]);
-
-  const fetchFiles = useCallback(async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/files/${cloneId}`);
-      const data = await response.json();
-      if (response.ok) {
-        setUploadSources(data.files);
-      } else {
-        console.error("Failed to fetch files:", data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching files:", error);
-    }
-  }, [cloneId]);
-
-
-  useEffect(() => {
-    if (cloneId) fetchFiles();
-  }, [cloneId, fetchFiles]);
-
-  useEffect(() => {
-  }, [uploadSources, cloneId, userId]);
 
   return (
     <div className="min-h-screen bg-background">

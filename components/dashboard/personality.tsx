@@ -48,7 +48,7 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                     setSaving(true);
                     try {
                         const res = await fetch(
-                            `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${cloneData.clone_id}`,
+                            `api/clones/${cloneData.clone_id}`,
                             {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
@@ -222,7 +222,7 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                                         freeform_description: e.target.value,
                                     }))
                                 }
-                                placeholder="Describe your clone's personality, approach, and unique characteristics in detail..."
+                                placeholder={cloneData.freeform_description}
                                 className="min-h-[150px]"
                             />
                         </div>
@@ -230,7 +230,7 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                         <Button
                             type="submit"
                             disabled={saving}
-                            className="bg-primary hover:bg-secondary text-primary-foreground"
+                            className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground"
                         >
                             {saving ? "Saving..." : "Save Personality"}
                         </Button>

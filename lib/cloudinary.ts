@@ -17,7 +17,10 @@ export async function uploadFileToCloudinary(
       `data:${file.type};base64,${buffer.toString("base64")}`,
       {
         folder,
-        resource_type: type, // "image" or "raw"
+        resource_type: type,
+        use_filename: true,       
+        unique_filename: false,
+        format: file.type === "application/pdf" ? "pdf" : undefined, 
       }
     );
 

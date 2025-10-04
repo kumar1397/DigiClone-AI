@@ -59,9 +59,14 @@ export async function POST(req: NextRequest) {
     for (const pdf of pdfFiles) {
       const url = await uploadFileToCloudinary(pdf, "clone-pdfs", "raw");
       const buffer = Buffer.from(await pdf.arrayBuffer());
+      let originalName = pdf.name;
+      if (pdf.type === "application/pdf" && !originalName.toLowerCase().endsWith(".pdf")) {
+        originalName += ".pdf";
+      }
+
       uploadedFiles.push({
         url,
-        originalName: pdf.name,
+        originalName,
         mimeType: pdf.type,
         fileSize: buffer.length,
       });
@@ -89,7 +94,7 @@ export async function POST(req: NextRequest) {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { cloneId: newClone.id },
+      data: { cloneId: newClone.clone_id },
     });
 
     console.log("🎉 Created clone with files:", newClone);
@@ -102,8 +107,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
-
-
 
 export async function GET() {
   try {

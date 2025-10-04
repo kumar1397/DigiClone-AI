@@ -23,42 +23,46 @@ import {
     Play,
     FileText
 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
 import { Input } from "@/components/ui/input";
+import { uploadPdfFiles, uploadYoutubeLinks, uploadOtherLinks } from "@/app/api/actions/cloneAction";
 interface UploadedFile {
     id: string;
     fileId: string;
-    name: string;
-    size: number;
-    type: string;
+    originalName: string;
+    fileSize: number;
+    mimeType: string;
+    url: string;
     file: File;
 }
 
+
 interface CloneData {
-  clone_id: string;
-  clone_name: string;
-  catchphrases: string[];
-  dos: string;
-  donts: string;
-  freeform_description: string;
-  image: string;
-  style: string[];
-  tone: string[];
-  values: string[];
-  youtubeLinkUpload: string[];
-  otherLinkUpload: string[];
-  Status: string;
+    clone_id: string;
+    clone_name: string;
+    catchphrases: string[];
+    dos: string;
+    donts: string;
+    freeform_description: string;
+    image: string;
+    style: string[];
+    tone: string[];
+    values: string[];
+    youtubeLinkUpload: string[];
+    otherLinkUpload: string[];
+    Status: string;
+    fileUploads?: UploadedFile[];
 }
 
 interface KnowledgeProps {
-  cloneId: string;
-  cloneData: CloneData;
+    cloneId: string;
+    cloneData: CloneData;
 }
 
-export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
+export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [linksDialogOpen, setLinksDialogOpen] = useState(false);
     const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
@@ -66,6 +70,11 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
     const [uploadSources, setUploadSources] = useState<UploadedFile[]>([]);
+    useEffect(() => {
+        if (cloneData.fileUploads) {
+            setUploadSources(cloneData.fileUploads);
+        }
+    }, [cloneData.fileUploads]);
     const handleAddLink = () => {
         setLinks([...links, ""]);
     };
@@ -80,18 +89,18 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
             const uniqueId = Math.random().toString(36).substr(2, 9);
 
             return {
-                id: uniqueId,          
-                fileId: uniqueId,       
-                name: file.name,
-                size: file.size,
-                type: file.type.split("/")[1].toUpperCase(),
+                id: uniqueId,
+                fileId: uniqueId,
+                originalName: file.name,
+                fileSize: file.size,
+                mimeType: file.type,
+                url: "",
                 file: file,
-            };
+            } as UploadedFile;
         });
 
         setUploadedFiles((prev) => [...prev, ...newFiles]);
     }, []);
-
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -130,95 +139,50 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
 
     const handleFileUpload = async () => {
         setUploadDialogOpen(false);
-        const formData = new FormData();
-        uploadedFiles.forEach((file) => {
-            formData.append("uploadedFiles", file.file);
-        });
+
+        const toastId = toast.loading("Uploading files...");
 
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/upload/pdf/${cloneId}`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
+            await uploadPdfFiles(cloneId, uploadedFiles.map(f => f.file));
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                if (response.status === 401) {
-                    alert("Unauthorized. Please log in again.");
-                } else if (response.status === 400) {
-                    alert(`Bad Request: ${errorText}`);
-                } else {
-                    throw new Error(`Submission failed: ${response.status} - ${errorText}`);
-                }
-                return;
-            }
+            // Update the toast to success
+            toast.success("Files uploaded successfully!", { id: toastId });
+            setUploadedFiles([]);
+        } catch (err) {
+            console.error(err);
 
-            toast.success("Files uploaded successfully!");
-            setUploadedFiles([]); // Clear local uploads
-            await fetchFiles(); // 🔁 Refresh file list from backend
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to upload files");
+            // Update the toast to error
+            toast.error("Failed to upload files", { id: toastId });
         }
     };
 
-    const fetchFiles = useCallback(async () => {
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/files/${cloneId}`);
-            const data = await response.json();
-            if (response.ok) {
-                setUploadSources(data.files);
-            } else {
-                console.error("Failed to fetch files:", data.message);
-            }
-        } catch (error) {
-            console.error("Error fetching files:", error);
-        }
-    }, [cloneId]);
-
     const handleYoutubeLinkUpload = async () => {
         setYoutubeLinksDialogOpen(false);
+        const toastId = toast.loading("Uploading files...");
+
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/upload/youtube/${cloneId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ youtubeLinks }),
-            });
-            if (!response.ok) {
-                throw new Error("Failed to upload YouTube links");
-            }
-            toast.success("YouTube links uploaded successfully!");
+            await uploadYoutubeLinks(cloneId, youtubeLinks);
+            toast.success("YouTube links uploaded successfully!", { id: toastId });
             setYoutubeLinks([]);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to upload YouTube links");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to upload YouTube links", { id: toastId });
         }
-    }
+    };
 
     const handleOtherLinkUplaod = async () => {
         setLinksDialogOpen(false);
+        const toastId = toast.loading("Uploading files...");
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/upload/other/${cloneId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ otherLinks: links }),
-            });
-            if (!response.ok) {
-                throw new Error("Failed to upload links");
-            }
-            toast.success("Links uploaded successfully!");
+            await uploadOtherLinks(cloneId, links);
+            toast.success("Links uploaded successfuLlly!", { id: toastId });
             setLinks([]);
-        } catch {
-            toast.error("Failed to upload links");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to upload links", { id: toastId });
         }
-    }
+    };
+
     return (
         <>
             <Card>
@@ -256,7 +220,6 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
                                     </DialogDescription>
                                 </DialogHeader>
 
-                                {/* Dropzone Area */}
                                 <div
                                     {...getRootProps()}
                                     className={`border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary/10" : ""
@@ -291,15 +254,12 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
                                                 className="flex items-center justify-between bg-muted p-3 rounded-md border"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="bg-primary/10 text-xs text-primary px-2 py-1 rounded">
-                                                        {file.type}
-                                                    </div>
                                                     <div>
                                                         <p className="text-sm font-medium">
-                                                            {file.name}
+                                                            {file.originalName}
                                                         </p>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {formatFileSize(file.size)}
+                                                            {formatFileSize(file.fileSize)}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -469,11 +429,11 @@ export default function Knowledge({cloneId, cloneData}: KnowledgeProps) {
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{source.name}</p>
+                                    <p className="font-medium truncate">{source.originalName}</p>
                                 </div>
 
                                 <a
-                                    href={`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/file/${source.fileId}`}
+                                    href={`${source.url}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >

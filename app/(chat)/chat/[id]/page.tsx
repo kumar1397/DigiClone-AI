@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Send, Mic, Video } from "lucide-react";
-
+import { useUserStore } from "@/lib/useUserStore";
+import { saveConversation } from "@/app/api/actions/conversation";
 interface Clone {
   _id: string;
   cloneName: string;
@@ -58,14 +59,7 @@ export default function CloneChat() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  const [userId, setUserId] = useState<string | null>(null);
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user?.userId) {
-      setUserId(user.userId);
-    }
-  }, []);
+  const { userId } = useUserStore();
 
   // Fetch clone data
   useEffect(() => {
@@ -73,10 +67,12 @@ export default function CloneChat() {
       if (!id) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/clone/${id}`);
+        const res = await fetch(`/api/clones/${id}`);
+
         if (!res.ok) throw new Error("Failed to fetch clone data");
 
         const data = await res.json();
+        console.log("Fetched clone data:", data);
         setCloneData(data.data);
       } catch (err) {
         console.error("Clone fetch error:", err);
@@ -105,7 +101,7 @@ export default function CloneChat() {
           const history = data.messages;
           const loadedMessages: Message[] = [];
 
-          history.forEach((entry:MessageEntry, index:number) => {
+          history.forEach((entry: MessageEntry, index: number) => {
             loadedMessages.push({
               id: index + 1,
               content: entry.content,
@@ -191,13 +187,17 @@ export default function CloneChat() {
 
       setMessages((prev) => [...prev, cloneMessage]);
       setChatHistory(updatedChatHistory);
+      const formattedChatHistory = chatHistory.flatMap(item => [
+        { role: "user" as const, content: item.user },
+        { role: "bot" as const, content: item.bot.content },
+      ]);
 
-      await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversation/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatHistory: [updatedChatHistory.at(-1)], cloneId: id, userId }),
+      const saveRes = await saveConversation({
+        chatHistory: formattedChatHistory,
+        userId,
+        cloneId: id,
       });
-
+      if (!saveRes) throw new Error("Failed to save conversation");
       if (!hasStartedChat) setHasStartedChat(true);
     } catch (err) {
       console.error("Message send error:", err);
