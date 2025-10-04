@@ -50,7 +50,7 @@ export default function CloneChat() {
   const [cloneData, setCloneData] = useState<Clone | null>(null);
   const [chatHistory, setChatHistory] = useState<{
     user: string;
-    bot: { content: string; sources: string };
+    clone: { content: string; sources: string };
   }[]>([]);
 
   const params = useParams();
@@ -147,7 +147,7 @@ export default function CloneChat() {
     setIsTyping(true);
 
     const prompt = inputMessage.trim();
-    const updatedChatHistory = [...chatHistory, { user: prompt, bot: { content: "", sources: "" } }];
+    const updatedChatHistory = [...chatHistory, { user: prompt, clone: { content: "", sources: "" } }];
     setChatHistory(updatedChatHistory);
 
     try {
@@ -180,7 +180,7 @@ export default function CloneChat() {
         timestamp: new Date(),
       };
 
-      updatedChatHistory[updatedChatHistory.length - 1].bot = {
+      updatedChatHistory[updatedChatHistory.length - 1].clone = {
         content: data.response || "",
         sources: data.sources || "",
       };
@@ -189,7 +189,7 @@ export default function CloneChat() {
       setChatHistory(updatedChatHistory);
       const formattedChatHistory = chatHistory.flatMap(item => [
         { role: "user" as const, content: item.user },
-        { role: "bot" as const, content: item.bot.content },
+        { role: "clone" as const, content: item.clone.content },
       ]);
 
       const saveRes = await saveConversation({

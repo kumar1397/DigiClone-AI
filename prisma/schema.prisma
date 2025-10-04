@@ -100,5 +100,5 @@ model Message {
 
 enum Role {
   user
-  bot
+  clone
 }

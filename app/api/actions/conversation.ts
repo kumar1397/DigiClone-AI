@@ -1,8 +1,7 @@
 import prisma from "@/prisma";
-import { Role } from "@prisma/client"; 
 
 type Message = {
-  role: "user" | "bot";
+  role: "user" | "clone"; 
   content: string;
 };
 
@@ -14,7 +13,7 @@ export async function saveConversation(params: {
   const { chatHistory, userId, cloneId } = params;
 
   const messagesToAdd = chatHistory.map(m => ({
-    role: m.role === "user" ? Role.user : Role.bot,  
+    role: m.role,
     content: m.content,
   }));
 
