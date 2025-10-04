@@ -19,49 +19,66 @@ interface User {
   email: string;
   phone?: string | null;
   profilePicture: string;
+  linkedin?: string;
+  github?: string;
+  website1?: string;
+  website2?: string;
 }
 
 const ProfileSection = ({ userId }: ProfileSectionProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [phone, setPhone] = useState("");
+  const [user, setUser] = useState<User>({
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    profilePicture: "",
+  });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
-  };
+  const handleFieldChange = (field: keyof User) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setUser(prev => prev ? { ...prev, [field]: value } : prev);
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId) return;
+    if (!userId || !user) return;
+
     const formData = new FormData();
-    formData.append("phone", phone);
+    formData.append("phone", user.phone || "");
+    formData.append("linkedin", user.linkedin || "");
+    formData.append("github", user.github || "");
+    formData.append("website1", user.website1 || "");
+    formData.append("website2", user.website2 || "");
 
-
-
-    // Debug: Log what we're sending
     try {
-      const response = await fetch(`api/users/${userId}`, {
+      const response = await fetch(`/api/users/${userId}`, {
         method: "PUT",
         body: formData,
         credentials: "include",
       });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("Update failed:", response.status, errorData);
-        throw new Error(`Failed to update user data: ${response.status} - ${errorData.message || 'Unknown error'}`);
+        throw new Error(`Failed: ${response.status} - ${errorData.message || "Unknown error"}`);
       }
+
       const updated = await response.json();
-      setPhone(updated.phone || "");
+      setUser(updated);
       toast.success("Profile updated successfully!");
     } catch (err) {
       toast.error("Failed to update profile. Please try again.");
       console.error("Error updating user data:", err);
     }
   };
+
+
 
   useEffect(() => {
     async function fetchUser() {
@@ -74,7 +91,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         setUser(data);
       } catch {
         console.error("Failed to fetch user data");
-      } 
+      }
     }
     fetchUser();
   }, [userId]);
@@ -131,10 +148,56 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               <Input
                 className="pl-10"
                 placeholder="don't use any country code"
-                value={user?.phone ?? ""}
-                onChange={handlePhoneChange}
+                value={user.phone ?? ""}
+                onChange={handleFieldChange("phone")}
               />
             </div>
+          </div>
+          
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* LinkedIn */}
+          <div className="space-y-2">
+            <Label>LinkedIn</Label>
+            <Input
+              type="url"
+              placeholder="https://linkedin.com/in/username"
+              value={user.linkedin ?? ""}
+              onChange={handleFieldChange("linkedin")}
+            />
+          </div>
+
+          {/* GitHub */}
+          <div className="space-y-2">
+            <Label>GitHub</Label>
+            <Input
+              type="url"
+              placeholder="https://github.com/username"
+              value={user.github ?? ""}
+              onChange={handleFieldChange("github")}
+            />
+          </div>
+
+          {/* Website 1 */}
+          <div className="space-y-2">
+            <Label>Website 1</Label>
+            <Input
+              type="url"
+              placeholder="https://example.com"
+              value={user.website1 ?? ""}
+              onChange={handleFieldChange("website1")}
+            />
+          </div>
+
+          {/* Website 2 */}
+          <div className="space-y-2">
+            <Label>Website 2</Label>
+            <Input
+              type="url"
+              placeholder="https://portfolio.com"
+              value={user.website2 ?? ""}
+              onChange={handleFieldChange("website2")}
+            />
           </div>
         </div>
 

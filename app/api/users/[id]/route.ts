@@ -9,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// --- GET ---
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }   // 👈 Promise type
@@ -33,7 +33,6 @@ export async function GET(
   }
 }
 
-// --- PUT ---
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -42,30 +41,72 @@ export async function PUT(
 
   try {
     const formData = await req.formData();
-    const phone = formData.get("phone");
 
-    if (!phone || typeof phone !== "string") {
+    const phone = formData.get("phone");
+    const linkedin = formData.get("linkedin");
+    const github = formData.get("github");
+    const website1 = formData.get("website1");
+    const website2 = formData.get("website2");
+
+    // Validation (only basic checks for string type, you can add URL validation if needed)
+    if (phone && typeof phone !== "string") {
       return NextResponse.json(
         { success: false, message: "Phone must be a string" },
+        { status: 400 }
+      );
+    }
+    if (linkedin && typeof linkedin !== "string") {
+      return NextResponse.json(
+        { success: false, message: "LinkedIn must be a string" },
+        { status: 400 }
+      );
+    }
+    if (github && typeof github !== "string") {
+      return NextResponse.json(
+        { success: false, message: "GitHub must be a string" },
+        { status: 400 }
+      );
+    }
+    if (website1 && typeof website1 !== "string") {
+      return NextResponse.json(
+        { success: false, message: "Website1 must be a string" },
+        { status: 400 }
+      );
+    }
+    if (website2 && typeof website2 !== "string") {
+      return NextResponse.json(
+        { success: false, message: "Website2 must be a string" },
         { status: 400 }
       );
     }
 
     const user = await prisma.user.update({
       where: { id },
-      data: { phone },
+      data: {
+        phone: phone as string,
+        linkedin: linkedin as string,
+        github: github as string,
+        website1: website1 as string,
+        website2: website2 as string,
+      },
     });
 
     return NextResponse.json(user, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 500 }
+      );
     }
-    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Unknown error" },
+      { status: 500 }
+    );
   }
 }
 
-// --- DELETE ---
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

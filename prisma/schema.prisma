@@ -16,6 +16,10 @@ model User {
   email          String   @unique
   profilePicture String?  @default("")
   phone          String?
+  linkedin       String?
+  github         String?
+  website1       String?
+  website2       String?
   cloneId        String?  
 
   conversations  Conversation[] @relation("UserConversations")
