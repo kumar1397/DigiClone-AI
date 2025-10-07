@@ -13,7 +13,7 @@ import { useUserStore } from "@/lib/useUserStore";
 import { saveConversation } from "@/app/api/actions/conversation";
 interface Clone {
   _id: string;
-  cloneName: string;
+  clone_name: string;
   image?: string;
   tone: string;
   style: string;
@@ -158,7 +158,7 @@ export default function CloneChat() {
           process_query: prompt,
           folder: id,
           clone_profile: {
-            clone_name: cloneData?.cloneName,
+            clone_name: cloneData?.clone_name,
             tone: cloneData?.tone,
             style: cloneData?.style,
             catchphrases: cloneData?.catchphrases,
@@ -234,7 +234,7 @@ export default function CloneChat() {
                   <AvatarFallback>SC</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h1 className="font-semibold text-sm sm:text-base">{cloneData?.cloneName}</h1>
+                  <h1 className="font-semibold text-sm sm:text-base">{cloneData?.clone_name}</h1>
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function CloneChat() {
                   </Avatar>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-semibold">
-                  Hi! I&apos;m {cloneData?.cloneName}&apos;s clone.
+                  Hi! I&apos;m {cloneData?.clone_name}&apos;s clone.
                 </h2>
                 <p className="text-base sm:text-lg text-muted-foreground max-w-lg sm:max-w-xl">
                   I&apos;m here to help with life coaching, motivation, and personal development. How can I assist you today?
