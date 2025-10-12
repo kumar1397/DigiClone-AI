@@ -13,6 +13,7 @@ interface Clone {
   _id: string;
   clone_id: string;
   clone_name: string;
+  clone_intro: string;
   image?: string;
   freeform_description: string;
   values: string[];
@@ -26,7 +27,6 @@ export default function ExploreClient() {
   const fetcher = (url: string): Promise<CloneApiResponse> =>
     fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR<CloneApiResponse>("/api/clones", fetcher);
-
   const { cloneId } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -34,10 +34,10 @@ export default function ExploreClient() {
     clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase())
   ) ?? [];
 
-  
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load</p>;
-  
+
   return (
     <>
       <div className="text-center mb-12">
@@ -71,19 +71,29 @@ export default function ExploreClient() {
             </div>
 
             {/* Overlay content */}
-            <div className="absolute bottom-0 left-0 z-10 w-full h-1/5 p-4 text-white flex flex-col justify-end">
-              <div className="flex items-center justify-between text-xs">
-                <CardTitle className="text-lg font-serif truncate">
-                  {clone.clone_name}
-                </CardTitle>
-                <Link href={`/chat/${clone.clone_id}`}>
-                  <Button
-                    size="sm"
-                    className="bg-white text-black hover:bg-gray-100"
-                  >
-                    Chat Now
-                  </Button>
-                </Link>
+            <div className="absolute bottom-0 left-0 z-10 w-full overflow-hidden group">
+              {/* Glass backdrop container */}
+              <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-md transition-all duration-500 ease-in-out h-[70px] group-hover:h-[120px] p-4 flex flex-col justify-end text-white">
+
+                {/* Top row — clone name + chat button */}
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <CardTitle className="text-lg font-serif truncate">
+                    {clone.clone_name}
+                  </CardTitle>
+                  <Link href={`/chat/${clone.clone_id}`}>
+                    <Button
+                      size="sm"
+                      className="bg-white text-black hover:bg-gray-100"
+                    >
+                      Chat Now
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Clone intro (hidden until hover) */}
+                <p className="text-base opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 transition-all duration-500 ease-in-out line-clamp-3">
+                  {clone.clone_intro}
+                </p>
               </div>
             </div>
           </Card>

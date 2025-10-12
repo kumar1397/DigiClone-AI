@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DigiClone AI",
+  title: "MentorZap AI",
 };
 
 export default function RootLayout({

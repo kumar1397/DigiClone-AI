@@ -48,6 +48,7 @@ interface UploadedFile {
 export default function CreateClone() {
   const router = useRouter();
   const [cloneName, setCloneName] = useState("");
+  const [cloneIntro, setCloneIntro] = useState("");
   const [selectedTones, setSelectedTones] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
@@ -193,6 +194,7 @@ export default function CreateClone() {
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("clone_name", cloneName);
+    formData.append("clone_intro", cloneIntro);
     formData.append("tone", JSON.stringify(selectedTones));
     formData.append("style", JSON.stringify(selectedStyles));
     formData.append("values", JSON.stringify(selectedValues));
@@ -293,22 +295,42 @@ export default function CreateClone() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 space-y-4">
-                  <div>
-                    <Label
-                      htmlFor="cloneName"
-                      className="text-base font-semibold"
-                    >
-                      Clone Name
-                    </Label>
-                    <Input
-                      id="cloneName"
-                      value={cloneName}
-                      onChange={(e) => setCloneName(e.target.value)}
-                      placeholder="Enter your clone's name"
-                      className="mt-2"
-                    />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="md:col-span-2 space-y-4">
+                    <div>
+                      <Label
+                        htmlFor="cloneName"
+                        className="text-base font-semibold"
+                      >
+                        Clone Name
+                      </Label>
+                      <Input
+                        id="cloneName"
+                        value={cloneName}
+                        onChange={(e) => setCloneName(e.target.value)}
+                        placeholder="Enter your clone's name"
+                        className="mt-2"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 space-y-4">
+                    <div>
+                      <Label
+                        htmlFor="cloneName"
+                        className="text-base font-semibold"
+                      >
+                        Clone Description
+                      </Label>
+                      <Input
+                        id="cloneName"
+                        value={cloneIntro}
+                        onChange={(e) => setCloneIntro(e.target.value)}
+                        placeholder="Enter your clone's description in a sentence"
+                        className="mt-2"
+                      />
+                    </div>
                   </div>
                 </div>
 

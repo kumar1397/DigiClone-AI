@@ -9,6 +9,7 @@ type UploadData = {
   fileSize: number;
 }
 
+
 function toArray(value: FormDataEntryValue | null): string[] {
   if (!value) return [];
   const str = value.toString();
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cloneName = formData.get("clone_name")?.toString() ?? "Untitled Clone";
+    const cloneIntro = formData.get("clone_intro")?.toString() ?? "";
     const tone = toArray(formData.get("tone"));
     const style = toArray(formData.get("style"));
     const values = toArray(formData.get("values"));
@@ -77,6 +79,7 @@ export async function POST(req: NextRequest) {
       data: {
         clone_id: `clone_u_${Math.random().toString(16).substring(2, 14)}`,
         clone_name: cloneName,
+        clone_intro: cloneIntro,
         tone,
         style,
         values,

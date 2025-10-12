@@ -35,6 +35,7 @@ model CloneProfile {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   clone_id            String   @unique
   clone_name          String
+  clone_intro         String
   tone                String[]
   style               String[]
   image               String

@@ -1,7 +1,6 @@
 import { auth } from "@/app/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Upload, Bot, MessageCircle, Star, Users, } from "lucide-react";
 
@@ -13,7 +12,7 @@ import UseCases from "./useCases";
 
 export default async function HomePage() {
   const session = await auth();
-  
+
   const safeSession = session
     ? {
       ...session,
@@ -140,18 +139,17 @@ export default async function HomePage() {
             helping people around the world with your unique expertise.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Input
-              placeholder="Enter your email to get started"
-              className="max-w-sm"
-            />
-            <Link href="/signup">
-              <Button size="lg" className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground font-semibold px-8">
-                Get Started Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          {!session && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+        
+              <Link href="/auth">
+                <Button size="lg" className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground font-semibold px-8">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          )}
 
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">

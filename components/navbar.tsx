@@ -5,6 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Brain,
   Menu,
   X,
-  Settings,
-  Crown,
+  User,
   LogOut,
 } from "lucide-react";
 import { useState } from "react";
@@ -114,7 +115,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
           {/* Auth Buttons or Avatar */}
           <div className="hidden md:flex items-center gap-4">
-            {session  ? (
+            {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -149,13 +150,13 @@ export default function Navbar({ session }: { session: Session | null }) {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push("/settings")}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <User className="mr-2 h-5 w-5" />
+                    <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <Crown className="mr-2 h-4 w-4" />
                     <span>Upgrade to Premium</span>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-red-600"

@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Knowledge from "./knowledge";
 import { useEffect, useState, } from "react";
-import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile"
 import Training from "./training";
 import Personality from "./personality";
@@ -132,7 +131,7 @@ export default function CloneCreatorDashboard({
             </div>
           </div>
 
-          <QuickStatsGrid userType="clone-creator" />
+          {/* <QuickStatsGrid userType="clone-creator" /> */}
         </div>
 
         <Tabs defaultValue="knowledge" className="space-y-6">
