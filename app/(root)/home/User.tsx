@@ -8,6 +8,7 @@ interface SessionUser {
   name: string;
   email: string;
   image: string;
+  role: string;
   cloneId: string | null;
 }
 
@@ -26,6 +27,7 @@ export default function InitUser({ session }: { session: Session | null }) {
       email: session.user.email || "",
       image: session.user.image || "",
       cloneId: session.user.cloneId ?? undefined,
+      role: session.user.role || "",
     });
   }, [session, setUser]);
 

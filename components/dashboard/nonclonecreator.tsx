@@ -12,7 +12,7 @@ interface NonCloneUserId {
 }
 
 export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
-  const { name, image } = useUserStore();
+  const { name, image, role } = useUserStore();
   const router = useRouter();
   return (
     <div className="min-h-screen bg-background">
@@ -33,7 +33,12 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-center gap-3">
+              {role === 'admin' && (
+                <Button onClick={() => router.push('/settings/admin')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
+                    Admin Page
+                </Button>
+              )}
               <Button onClick={() => router.push('/create-clone')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
                 Create Your Clone
               </Button>

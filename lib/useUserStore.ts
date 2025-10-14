@@ -7,6 +7,7 @@ type UserState = {
   image: string;
   userId: string;
   cloneId: string;
+  role:string;
   setUser: (user: Partial<UserState>) => void;
   clearUser: () => void;
   isLoggedIn: () => boolean;
@@ -20,6 +21,7 @@ export const useUserStore = create<UserState>()(
       image: "",
       userId: "",
       cloneId: "",
+      role: "",
       setUser: (user) => set((state) => ({ ...state, ...user })),
       clearUser: () =>
         set({
@@ -28,6 +30,7 @@ export const useUserStore = create<UserState>()(
           image: "",
           userId: "",
           cloneId: "",
+          role: "",
         }),
       isLoggedIn: () => Boolean(get().email),
     }),

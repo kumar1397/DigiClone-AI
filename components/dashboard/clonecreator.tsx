@@ -7,6 +7,8 @@ import ProfileSection from "./profile"
 import Training from "./training";
 import Personality from "./personality";
 import { useUserStore } from "@/lib/useUserStore";
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 interface CloneCreatorDashboardProps {
   userId: string;
   cloneId: string;
@@ -44,7 +46,8 @@ export default function CloneCreatorDashboard({
   userId,
   cloneId,
 }: CloneCreatorDashboardProps) {
-  const { name, image } = useUserStore();
+  const router = useRouter();
+  const { name, image, role } = useUserStore();
   const [cloneData, setCloneData] = useState<CloneData>({
     clone_id: "",
     clone_name: "",
@@ -128,6 +131,14 @@ export default function CloneCreatorDashboard({
                   Explore AI clones and manage your profile
                 </p>
               </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              {role === 'admin' && (
+                <Button onClick={() => router.push('/settings/admin')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
+                    Admin Page
+                </Button>
+              )}
             </div>
           </div>
 
