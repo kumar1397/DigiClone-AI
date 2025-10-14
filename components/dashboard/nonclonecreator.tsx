@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/lib/useUserStore";
-import QuickStatsGrid from "./quickstatsgrid";
 import ProfileSection from "./profile";
 import CloneConversationsSection from "./cloneconversation";
 import { useRouter } from 'next/navigation';
@@ -41,7 +40,7 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
             </div>
           </div>
 
-          <QuickStatsGrid userType="non-clone-user" />
+          {/* <QuickStatsGrid userType="non-clone-user" /> */}
         </div>
 
         <Tabs defaultValue="clones" className="space-y-6">

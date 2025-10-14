@@ -21,6 +21,7 @@ model User {
   website1       String?
   website2       String?
   cloneId        String?  
+  role           userRole @default(user)
 
   conversations  Conversation[] @relation("UserConversations")
 
@@ -28,6 +29,10 @@ model User {
   updatedAt      DateTime @updatedAt
 }
 
+enum userRole {
+  admin
+  user
+}
 
 /// CloneProfile
 
