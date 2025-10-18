@@ -13,9 +13,19 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+interface User {
+  name: string;
+  email: string;
+  role: string;
+  verified: boolean;
+  cloneCount: number;
+  joinedOn: string;
+  status: string;
+}
+
 const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
 
   const users = [
@@ -62,7 +72,7 @@ const AdminUsers = () => {
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleViewUser = (user: any) => {
+  const handleViewUser = (user: User) => {
     setSelectedUser(user);
     setShowDialog(true);
   };

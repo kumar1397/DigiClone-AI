@@ -10,7 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Send, Mic, Video } from "lucide-react";
 import { useUserStore } from "@/lib/useUserStore";
-import { saveConversation } from "@/app/api/actions/conversation";
+import { saveConversation, getConversation } from "@/app/actions/conversation";
+
 interface Clone {
   _id: string;
   clone_name: string;
@@ -30,13 +31,6 @@ interface Message {
   sender: "user" | "clone";
   timestamp: Date;
 }
-
-type MessageEntry = {
-  _id: string;
-  role: "user" | "clone";
-  content: string;
-  timestamp: string; // or Date, if parsed
-};
 
 export default function CloneChat() {
   const router = useRouter();
@@ -72,7 +66,6 @@ export default function CloneChat() {
         if (!res.ok) throw new Error("Failed to fetch clone data");
 
         const data = await res.json();
-        console.log("Fetched clone data:", data);
         setCloneData(data.data);
       } catch (err) {
         console.error("Clone fetch error:", err);
@@ -81,36 +74,40 @@ export default function CloneChat() {
     fetchCloneData();
   }, [id]);
 
-  // Fetch existing conversation
   useEffect(() => {
     const fetchConversation = async () => {
       if (!userId || !id) return;
       console.log("Fetching conversation for:", { userId, cloneId: id });
+
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_DATA_BACKEND_URL}/conversations`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, cloneId: id }),
-        });
-        if (!res.ok) throw new Error("Failed to fetch conversation");
+        const res = await getConversation({ userId, cloneId: id });
+        console.log("Fetched conversation data:", res);
 
-        const data = await res.json();
-        if (data?.messages?.length) {
-          const history = data.messages;
-          const loadedMessages: Message[] = [];
+        if (res?.length) {
+          // Convert fetched messages to your { user, clone } structure
+          const formattedChatHistory = [];
+          for (let i = 0; i < res.length; i += 2) {
+            const userMsg = res[i];
+            const cloneMsg = res[i + 1];
 
-          history.forEach((entry: MessageEntry, index: number) => {
-            loadedMessages.push({
-              id: index + 1,
-              content: entry.content,
-              sender: entry.role === "user" ? "user" : "clone",
-              timestamp: new Date(entry.timestamp),
+            formattedChatHistory.push({
+              user: userMsg?.content || "",
+              clone: {
+                content: cloneMsg?.content || "",
+                sources: "", // You can fill this if you store sources in DB
+              },
             });
-          });
+          }
 
-          setChatHistory(history);
+          // For message rendering (Message[])
+          const loadedMessages: Message[] = res.map((entry, index) => ({
+            id: index + 1,
+            content: entry.content,
+            sender: entry.role === "user" ? "user" : "clone",
+            timestamp: new Date(entry.timestamp),
+          }));
+
+          setChatHistory(formattedChatHistory);
           setMessages(loadedMessages);
           setHasStartedChat(true);
         }
@@ -118,8 +115,11 @@ export default function CloneChat() {
         console.error("Conversation fetch error:", err);
       }
     };
+
     fetchConversation();
   }, [userId, id]);
+
+
 
   useEffect(() => {
     scrollToBottom();
@@ -288,7 +288,6 @@ export default function CloneChat() {
                           <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
                           <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                         </div>
-                        <span className="text-xs sm:text-sm opacity-70 ml-2">typing...</span>
                       </div>
                     </div>
                   </div>

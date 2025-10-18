@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
 import { Input } from "@/components/ui/input";
-import { uploadPdfFiles, uploadYoutubeLinks, uploadOtherLinks } from "@/app/api/actions/cloneAction";
+import { uploadPdfFiles, uploadYoutubeLinks, uploadOtherLinks } from "@/app/actions/cloneAction";
 interface UploadedFile {
     id: string;
     fileId: string;

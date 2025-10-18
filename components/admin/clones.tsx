@@ -13,9 +13,21 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+interface Clone {
+  name: string;
+  creator: string;
+  status: string;
+  createdOn: string;
+  conversations: number;
+  feedback: string;
+  description: string;
+  personality: string;
+  sources: number;
+}
+
 const AdminClones = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedClone, setSelectedClone] = useState<any>(null);
+  const [selectedClone, setSelectedClone] = useState<Clone | null>(null);
   const [showDialog, setShowDialog] = useState(false);
 
   const clones = [
@@ -83,7 +95,7 @@ const AdminClones = () => {
     }
   };
 
-  const handleViewClone = (clone: any) => {
+  const handleViewClone = (clone: Clone) => {
     setSelectedClone(clone);
     setShowDialog(true);
   };

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { 
-  Users, Brain, Upload, BarChart3, Settings, FileText, 
+  Users, Brain,
   LayoutDashboard, Menu, X 
 } from "lucide-react";
 import AdminDashboard from "@/components/admin/dashboard";

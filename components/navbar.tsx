@@ -153,10 +153,6 @@ export default function Navbar({ session }: { session: Session | null }) {
                     <User className="mr-2 h-5 w-5" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  {/* <DropdownMenuItem>
-                    <Crown className="mr-2 h-4 w-4" />
-                    <span>Upgrade to Premium</span>
-                  </DropdownMenuItem> */}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-red-600"
@@ -200,6 +196,79 @@ export default function Navbar({ session }: { session: Session | null }) {
             )}
           </Button>
         </div>
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-border animate-fade-in">
+            <nav className="flex flex-col gap-4 pt-4">
+              {pathname !== "/home" && (
+                <a className="text-muted-foreground hover:text-primary transition-colors">
+                  Home
+                </a>
+              )}
+              <Link href="/explore" onClick={() => setIsMenuOpen(false)} className="text-muted-foreground hover:text-primary">
+                Discover Clones
+              </Link>
+              {pathname === "/home" && (
+                <>
+                  <a href="#how-it-works" onClick={() => setIsMenuOpen(false)} className="text-muted-foreground hover:text-primary">
+                    How It Works
+                  </a>
+                  <a href="#pricing" onClick={() => setIsMenuOpen(false)} className="text-muted-foreground hover:text-primary">
+                    Pricing
+                  </a>
+                </>
+              )}
+
+              <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                {session ? (
+                  <>
+                    <div className="flex items-center gap-3 px-2 py-2">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={image} alt={name} />
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getUserInitials(name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{name}</span>
+                        <span className="text-xs text-muted-foreground">{email}</span>
+                      </div>
+                    </div>
+                    <Link href="/settings" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full justify-start">
+                        <User className="mr-2 h-5 w-5" />
+                        Profile
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-red-600"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleLogout();
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="w-full bg-primary hover:bg-secondary text-primary-foreground">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
