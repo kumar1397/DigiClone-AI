@@ -1,9 +1,11 @@
-import { useState } from "react";
+"use client"
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Eye, UserX, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Search, Eye, CheckCircle, XCircle } from "lucide-react";
+import { toast} from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -14,60 +16,47 @@ import {
 } from "@/components/ui/dialog";
 
 interface User {
+  id: string;
   name: string;
   email: string;
   role: string;
   verified: boolean;
-  cloneCount: number;
-  joinedOn: string;
+  cloneId: string;
+  createdAt: string;
   status: string;
 }
 
-const AdminUsers = () => {
+export default function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = [
-    { 
-      name: "Riya Mehta", 
-      email: "riya@example.com", 
-      role: "Creator", 
-      verified: true, 
-      cloneCount: 1, 
-      joinedOn: "10 Sep 2025",
-      status: "active"
-    },
-    { 
-      name: "Rahul Sharma", 
-      email: "rahul@example.com", 
-      role: "Creator", 
-      verified: true, 
-      cloneCount: 2, 
-      joinedOn: "05 Sep 2025",
-      status: "active"
-    },
-    { 
-      name: "Priya Patel", 
-      email: "priya@example.com", 
-      role: "Creator", 
-      verified: false, 
-      cloneCount: 0, 
-      joinedOn: "11 Oct 2025",
-      status: "pending"
-    },
-    { 
-      name: "Anita Singh", 
-      email: "anita@example.com", 
-      role: "Creator", 
-      verified: true, 
-      cloneCount: 1, 
-      joinedOn: "08 Oct 2025",
-      status: "active"
-    },
-  ];
 
-  const filteredUsers = users.filter(user => 
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("/api/users");
+        const data = await res.json();
+
+        if (data.success) {
+          setUsers(data.data);
+          console.log("Fetched users:", data.data);
+        } else {
+          console.error("Failed to fetch users:", data.message);
+        }
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -77,6 +66,22 @@ const AdminUsers = () => {
     setShowDialog(true);
   };
 
+  const handleUserDelete = async () => {
+    try {
+      const res = await fetch(`/api/users/${selectedUser?.id}`, { method: "DELETE" });
+
+      if (!res.ok) throw new Error("Failed to delete user");
+
+      setUsers(users.filter((user) => user.id !== selectedUser?.id));
+      setShowDialog(false);
+      toast.success("User deleted successfully");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Failed to delete user");
+    }
+  };
+
+  if (loading) return <p>Loading users...</p>;
   return (
     <div className="space-y-6">
       <div>
@@ -120,7 +125,7 @@ const AdminUsers = () => {
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Email</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Verification</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Clones</th>
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Clone</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Joined</th>
                   <th className="text-left py-3 px-4 font-medium text-muted-foreground">Actions</th>
                 </tr>
@@ -146,23 +151,23 @@ const AdminUsers = () => {
                         </Badge>
                       )}
                     </td>
-                    <td className="py-3 px-4">{user.cloneCount}</td>
-                    <td className="py-3 px-4 text-muted-foreground">{user.joinedOn}</td>
+                    <td className="py-3 px-4">{user.cloneId ? "Yes" : "No"}</td>
+                    <td className="py-3 px-4 text-muted-foreground">
+                      {new Date(user.createdAt).toLocaleString("en-IN", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleViewUser(user)}
                         >
                           <Eye size={16} />
                         </Button>
-                        <Button variant="ghost" size="sm">
-                          <UserX size={16} />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive">
-                          <Trash2 size={16} />
-                        </Button>
+
                       </div>
                     </td>
                   </tr>
@@ -195,18 +200,21 @@ const AdminUsers = () => {
                 <Badge variant="secondary">{selectedUser.role}</Badge>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Clones Created</p>
-                <p className="font-medium">{selectedUser.cloneCount}</p>
+                <p className="text-sm text-muted-foreground">Clone Created</p>
+                <p className="font-medium">{selectedUser.cloneId ? "Yes" : "No"}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Joined On</p>
-                <p className="font-medium">{selectedUser.joinedOn}</p>
+                <p className="font-medium">{new Date(selectedUser.createdAt).toLocaleString("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}</p>
               </div>
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>Close</Button>
-            <Button variant="destructive">Suspend Account</Button>
+            <Button variant="destructive" onClick={handleUserDelete}>Suspend Account</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -214,4 +222,3 @@ const AdminUsers = () => {
   );
 };
 
-export default AdminUsers;

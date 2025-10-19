@@ -41,3 +41,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        cloneId: true,
+        createdAt: true,
+      },
+    });
+    return NextResponse.json({ success: true, data: users }, { status: 200 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
+  }
+};
