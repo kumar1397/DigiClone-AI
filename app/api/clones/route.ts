@@ -99,9 +99,6 @@ export async function POST(req: NextRequest) {
       where: { id: userId },
       data: { cloneId: newClone.clone_id },
     });
-
-    console.log("🎉 Created clone with files:", newClone);
-
     return NextResponse.json({ success: true, data: newClone }, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) {

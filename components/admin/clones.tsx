@@ -15,9 +15,9 @@ import {
 
 interface Clone {
   name: string;
-  creator: string;
   status: string;
   createdOn: string;
+  creator: string;
   conversations: number;
   feedback: string;
   description: string;

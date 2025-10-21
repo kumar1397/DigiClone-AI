@@ -77,8 +77,6 @@ export default function CloneChat() {
   useEffect(() => {
     const fetchConversation = async () => {
       if (!userId || !id) return;
-      console.log("Fetching conversation for:", { userId, cloneId: id });
-
       try {
         const res = await getConversation({ userId, cloneId: id });
         console.log("Fetched conversation data:", res);
@@ -145,6 +143,7 @@ export default function CloneChat() {
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
+    if (!hasStartedChat) setHasStartedChat(true);
 
     const prompt = inputMessage.trim();
     const updatedChatHistory = [...chatHistory, { user: prompt, clone: { content: "", sources: "" } }];
@@ -187,18 +186,18 @@ export default function CloneChat() {
 
       setMessages((prev) => [...prev, cloneMessage]);
       setChatHistory(updatedChatHistory);
-      const formattedChatHistory = chatHistory.flatMap(item => [
-        { role: "user" as const, content: item.user },
-        { role: "clone" as const, content: item.clone.content },
-      ]);
 
       const saveRes = await saveConversation({
-        chatHistory: formattedChatHistory,
+        chatHistory: updatedChatHistory.flatMap(item => [
+          { role: "user", content: item.user },
+          { role: "clone", content: item.clone.content },
+        ]),
         userId,
         cloneId: id,
       });
+
       if (!saveRes) throw new Error("Failed to save conversation");
-      if (!hasStartedChat) setHasStartedChat(true);
+
     } catch (err) {
       console.error("Message send error:", err);
 
