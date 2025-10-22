@@ -17,6 +17,7 @@ interface Clone {
   image?: string;
   freeform_description: string;
   values: string[];
+  status: string;
 }
 interface CloneApiResponse {
   success: boolean;
@@ -31,6 +32,8 @@ export default function ExploreClient() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredClones = data?.data?.filter((clone: Clone) =>
+    // only show clones that are live and match the search query
+    clone.status?.toLowerCase() === "live" &&
     clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase())
   ) ?? [];
 

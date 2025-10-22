@@ -53,16 +53,16 @@ model CloneProfile {
   fileUploads         File[]
   youtubeLinkUpload   String[]
   otherLinkUpload     String[]
-  status              Status   @default(upload)
+  status              Status   @default(pending)
 
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
 
 enum Status {
-  upload
-  approved
-  publish
+  live
+  training
+  pending
 }
 
 
