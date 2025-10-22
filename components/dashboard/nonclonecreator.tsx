@@ -47,7 +47,7 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
           {/* <QuickStatsGrid userType="non-clone-user" /> */}
         </div>
 
-        <Tabs defaultValue="clones" className="space-y-6">
+        <Tabs defaultValue="profile" className="space-y-6">
           <TabsList className="grid w-full grid-cols-1">
             {/* <TabsTrigger value="clones">Clones You&apos;ve Talked To</TabsTrigger> */}
             <TabsTrigger value="profile">Personal Details</TabsTrigger>
