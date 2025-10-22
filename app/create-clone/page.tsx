@@ -24,12 +24,8 @@ import {
 import {
   Brain,
   Upload,
-  Link as LinkIcon,
-  X,
-  Plus,
   ArrowLeft,
   Trash2,
-  Play,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
@@ -57,10 +53,10 @@ export default function CreateClone() {
   const [donts, setDonts] = useState("");
   const [freeformDescription, setFreeformDescription] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [linksDialogOpen, setLinksDialogOpen] = useState(false);
-  const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
-  const [links, setLinks] = useState<string[]>([""]);
-  const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
+  // const [linksDialogOpen, setLinksDialogOpen] = useState(false);
+  // const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
+  const [links] = useState<string[]>([""]);
+  const [youtubeLinks] = useState<string[]>([""]);
   const [cloneImage, setCloneImage] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const { userId, setUser } = useUserStore();
@@ -125,15 +121,15 @@ export default function CreateClone() {
     }
   };
 
-  const handleAddLink = () => {
-    setLinks([...links, ""]);
-  };
+  // const handleAddLink = () => {
+  //   setLinks([...links, ""]);
+  // };
 
-  const handleLinkChange = (index: number, value: string) => {
-    const newLinks = [...links];
-    newLinks[index] = value;
-    setLinks(newLinks);
-  };
+  // const handleLinkChange = (index: number, value: string) => {
+  //   const newLinks = [...links];
+  //   newLinks[index] = value;
+  //   setLinks(newLinks);
+  // };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -170,23 +166,23 @@ export default function CreateClone() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const handleRemoveLink = (index: number) => {
-    setLinks(links.filter((_, i) => i !== index));
-  };
+  // const handleRemoveLink = (index: number) => {
+  //   setLinks(links.filter((_, i) => i !== index));
+  // };
 
-  const handleAddYoutubeLink = () => {
-    setYoutubeLinks([...youtubeLinks, ""]);
-  };
+  // const handleAddYoutubeLink = () => {
+  //   setYoutubeLinks([...youtubeLinks, ""]);
+  // };
 
-  const handleYoutubeLinkChange = (index: number, value: string) => {
-    const newYoutubeLinks = [...youtubeLinks];
-    newYoutubeLinks[index] = value;
-    setYoutubeLinks(newYoutubeLinks);
-  };
+  // const handleYoutubeLinkChange = (index: number, value: string) => {
+  //   const newYoutubeLinks = [...youtubeLinks];
+  //   newYoutubeLinks[index] = value;
+  //   setYoutubeLinks(newYoutubeLinks);
+  // };
 
-  const handleRemoveYoutubeLink = (index: number) => {
-    setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
-  };
+  // const handleRemoveYoutubeLink = (index: number) => {
+  //   setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -550,19 +546,18 @@ export default function CreateClone() {
                 Share Your Content
               </CardTitle>
               <CardDescription>
-                Choose how you want to share your content. Upload files
-                directly, share YouTube videos, or share other links.
+                Choose files to share your content. 
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-1">
                 <Dialog
                   open={uploadDialogOpen}
                   onOpenChange={setUploadDialogOpen}
                 >
                   <DialogTrigger asChild>
                     <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
-                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <Upload className="h-12 w-fit mx-auto mb-4 text-muted-foreground" />
                       <h3 className="font-semibold text-lg mb-2">
                         Upload Files
                       </h3>
@@ -653,7 +648,7 @@ export default function CreateClone() {
                   </DialogContent>
                 </Dialog>
 
-                <Dialog
+                {/* <Dialog
                   open={youtubeLinksDialogOpen}
                   onOpenChange={setYoutubeLinksDialogOpen}
                 >
@@ -774,7 +769,7 @@ export default function CreateClone() {
                       Done
                     </Button>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
               </div>
             </CardContent>
           </Card>

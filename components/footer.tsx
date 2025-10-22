@@ -4,7 +4,7 @@ export default function Footer() {
     <footer className="py-12 px-4 bg-muted">
     <div className="container max-w-6xl mx-auto">
       <div className="text-center">
-        <h3 className="text-2xl font-serif font-bold mb-4 text-primary">DigiClone AI</h3>
+        <h3 className="text-2xl font-serif font-bold mb-4 text-primary">Mentorzap AI</h3>
         <p className="text-muted-foreground mb-6">
           Empowering experts to scale their impact through AI-powered digital clones
         </p>

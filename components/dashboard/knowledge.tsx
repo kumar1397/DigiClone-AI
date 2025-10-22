@@ -16,19 +16,14 @@ import {
 } from "@/components/ui/dialog";
 import {
     Upload,
-    Link as LinkIcon,
-    X,
-    Plus,
     Trash2,
-    Play,
     FileText
 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
-import { Input } from "@/components/ui/input";
-import { uploadPdfFiles, uploadYoutubeLinks, uploadOtherLinks } from "@/app/actions/cloneAction";
+import { uploadPdfFiles,} from "@/app/actions/cloneAction";
 interface UploadedFile {
     id: string;
     fileId: string;
@@ -64,26 +59,24 @@ interface KnowledgeProps {
 
 export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-    const [linksDialogOpen, setLinksDialogOpen] = useState(false);
-    const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
-    const [links, setLinks] = useState<string[]>([""]);
+    // const [linksDialogOpen, setLinksDialogOpen] = useState(false);
+    // const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-    const [youtubeLinks, setYoutubeLinks] = useState<string[]>([""]);
     const [uploadSources, setUploadSources] = useState<UploadedFile[]>([]);
     useEffect(() => {
         if (cloneData.fileUploads) {
             setUploadSources(cloneData.fileUploads);
         }
     }, [cloneData.fileUploads]);
-    const handleAddLink = () => {
-        setLinks([...links, ""]);
-    };
+    // const handleAddLink = () => {
+    //     setLinks([...links, ""]);
+    // };
 
-    const handleLinkChange = (index: number, value: string) => {
-        const newLinks = [...links];
-        newLinks[index] = value;
-        setLinks(newLinks);
-    };
+    // const handleLinkChange = (index: number, value: string) => {
+    //     const newLinks = [...links];
+    //     newLinks[index] = value;
+    //     setLinks(newLinks);
+    // };
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newFiles = acceptedFiles.map((file) => {
             const uniqueId = Math.random().toString(36).substr(2, 9);
@@ -119,23 +112,23 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     };
 
-    const handleRemoveLink = (index: number) => {
-        setLinks(links.filter((_, i) => i !== index));
-    };
+    // const handleRemoveLink = (index: number) => {
+    //     setLinks(links.filter((_, i) => i !== index));
+    // };
 
-    const handleAddYoutubeLink = () => {
-        setYoutubeLinks([...youtubeLinks, ""]);
-    };
+    // const handleAddYoutubeLink = () => {
+    //     setYoutubeLinks([...youtubeLinks, ""]);
+    // };
 
-    const handleYoutubeLinkChange = (index: number, value: string) => {
-        const newYoutubeLinks = [...youtubeLinks];
-        newYoutubeLinks[index] = value;
-        setYoutubeLinks(newYoutubeLinks);
-    };
+    // const handleYoutubeLinkChange = (index: number, value: string) => {
+    //     const newYoutubeLinks = [...youtubeLinks];
+    //     newYoutubeLinks[index] = value;
+    //     setYoutubeLinks(newYoutubeLinks);
+    // };
 
-    const handleRemoveYoutubeLink = (index: number) => {
-        setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
-    }
+    // const handleRemoveYoutubeLink = (index: number) => {
+    //     setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
+    // }
 
     const handleFileUpload = async () => {
         setUploadDialogOpen(false);
@@ -155,33 +148,32 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
             toast.error("Failed to upload files", { id: toastId });
         }
     };
+ 
+    //     setYoutubeLinksDialogOpen(false);
+    //     const toastId = toast.loading("Uploading files...");
 
-    const handleYoutubeLinkUpload = async () => {
-        setYoutubeLinksDialogOpen(false);
-        const toastId = toast.loading("Uploading files...");
+    //     try {
+    //         await uploadYoutubeLinks(cloneId, youtubeLinks);
+    //         toast.success("YouTube links uploaded successfully!", { id: toastId });
+    //         setYoutubeLinks([]);
+    //     } catch (err) {
+    //         console.error(err);
+    //         toast.error("Failed to upload YouTube links", { id: toastId });
+    //     }
+    // };
 
-        try {
-            await uploadYoutubeLinks(cloneId, youtubeLinks);
-            toast.success("YouTube links uploaded successfully!", { id: toastId });
-            setYoutubeLinks([]);
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to upload YouTube links", { id: toastId });
-        }
-    };
-
-    const handleOtherLinkUplaod = async () => {
-        setLinksDialogOpen(false);
-        const toastId = toast.loading("Uploading files...");
-        try {
-            await uploadOtherLinks(cloneId, links);
-            toast.success("Links uploaded successfuLlly!", { id: toastId });
-            setLinks([]);
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to upload links", { id: toastId });
-        }
-    };
+    // const handleOtherLinkUplaod = async () => {
+    //     setLinksDialogOpen(false);
+    //     const toastId = toast.loading("Uploading files...");
+    //     try {
+    //         await uploadOtherLinks(cloneId, links);
+    //         toast.success("Links uploaded successfuLlly!", { id: toastId });
+    //         setLinks([]);
+    //     } catch (err) {
+    //         console.error(err);
+    //         toast.error("Failed to upload links", { id: toastId });
+    //     }
+    // };
 
     return (
         <>
@@ -196,7 +188,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-1">   
                         <Dialog
                             open={uploadDialogOpen}
                             onOpenChange={setUploadDialogOpen}
@@ -290,7 +282,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                             </DialogContent>
                         </Dialog>
 
-                        <Dialog
+                        {/* <Dialog
                             open={youtubeLinksDialogOpen}
                             onOpenChange={setYoutubeLinksDialogOpen}
                         >
@@ -411,7 +403,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                                     Done
                                 </Button>
                             </DialogContent>
-                        </Dialog>
+                        </Dialog> */}
                     </div>
                 </CardContent>
             </Card>
@@ -444,7 +436,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                     ))}
                 </div>
             </div>
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
                 <h4 className="font-semibold">
                     Youtube Links ({cloneData.youtubeLinkUpload.length})
                 </h4>
@@ -493,7 +485,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                         );
                     })}
                 </div>
-            </div>
+            </div> */}
         </>
     );
 }

@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserStore } from "@/lib/useUserStore";
 import ProfileSection from "./profile";
-import CloneConversationsSection from "./cloneconversation";
 import { useRouter } from 'next/navigation';
 
 interface NonCloneUserId {
@@ -36,7 +35,7 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
             <div className="flex flex-col items-center gap-3">
               {role === 'admin' && (
                 <Button onClick={() => router.push('/settings/admin')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
-                    Admin Page
+                  Admin Page
                 </Button>
               )}
               <Button onClick={() => router.push('/create-clone')} className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground">
@@ -49,14 +48,14 @@ export default function NonCloneUserDashboard({ userId }: NonCloneUserId) {
         </div>
 
         <Tabs defaultValue="clones" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="clones">Clones You&apos;ve Talked To</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-1">
+            {/* <TabsTrigger value="clones">Clones You&apos;ve Talked To</TabsTrigger> */}
             <TabsTrigger value="profile">Personal Details</TabsTrigger>
           </TabsList>
-
+          {/* 
           <TabsContent value="clones" className="space-y-6">
             <CloneConversationsSection userId={userId} />
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="profile" className="space-y-6">
             <ProfileSection userId={userId} />
