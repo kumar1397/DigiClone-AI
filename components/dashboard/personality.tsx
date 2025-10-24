@@ -11,7 +11,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { toast } from "react-hot-toast";
-
+import Image from "next/image";
 interface CloneData {
     clone_id: string;
     clone_name: string;
@@ -34,8 +34,29 @@ interface PersonalityProps {
 }
 
 export default function Personality({ cloneData, setCloneData }: PersonalityProps) {
+    console.log("Rendering Personality component with cloneData:", cloneData);
     const [saving, setSaving] = useState(false);
     const [newCatchphraseInput, setNewCatchphraseInput] = useState("");
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("folder", "clone-images");
+            formData.append("type", "image");
+
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+            setCloneData((prev) => ({ ...prev, image: data.url }));
+        } catch (err) {
+            console.error("❌ Image upload failed:", err);
+        }
+    };
     return (
         <>
             <form
@@ -53,6 +74,7 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
+                                    image: cloneData.image,
                                     tone: cloneData.tone,
                                     style: cloneData.style,
                                     catchphrases: cloneData.catchphrases,
@@ -81,6 +103,35 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
+                        <div className="flex flex-col items-center">
+                            <Label className="text-base font-semibold mb-2">
+                                Clone Image<span className="text-red-500 -ml-2">*</span>
+                            </Label>
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    id="clone-image-upload"
+                                />
+                                <label
+                                    htmlFor="clone-image-upload"
+                                    className="w-32 h-32 rounded-full bg-muted border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
+                                >
+                                    <div className="w-full h-full rounded-full overflow-hidden">
+                                        <Image
+                                            src={cloneData.image}
+                                            alt="Clone preview"
+                                            className="w-full h-full object-cover"
+                                            width={128}
+                                            height={128}
+                                        />
+                                    </div>
+
+                                </label>
+                            </div>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-8">
                             <div>
                                 <Label className="text-base font-semibold mb-4 block">Tone</Label>

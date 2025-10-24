@@ -101,7 +101,6 @@ export default function CloneCreatorDashboard({
         };
 
         setCloneData(parsedClone);
-        console.log("Fetched clone data:", parsedClone);
       } catch (err) {
         console.error("🚨 Error fetching clone info:", err);
       }
@@ -145,7 +144,7 @@ export default function CloneCreatorDashboard({
           {/* <QuickStatsGrid userType="clone-creator" /> */}
         </div>
 
-        <Tabs defaultValue="knowledge" className="space-y-6">
+        <Tabs defaultValue="profile" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile">Personal Details</TabsTrigger>
             <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>

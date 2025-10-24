@@ -24,12 +24,11 @@ function toArray(value: FormDataEntryValue | null): string[] {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-
+    console.log("Received formData:", formData);
     const userId = formData.get("userId")?.toString();
     if (!userId) {
       return NextResponse.json({ success: false, message: "UserId missing" }, { status: 400 });
     }
-
     const cloneName = formData.get("clone_name")?.toString() ?? "Untitled Clone";
     const cloneIntro = formData.get("clone_intro")?.toString() ?? "";
     const tone = toArray(formData.get("tone"));
@@ -43,16 +42,8 @@ export async function POST(req: NextRequest) {
     const otherLinks = toArray(formData.get("otherLinkUpload"));
 
     // Upload image
-    let imageUrl = `newPic.jpg`;
-    const imageFile = formData.get("image") as File | null;
+    const imageUrl = formData.get("image") as string;
 
-    if (imageFile) {
-      try {
-        imageUrl = await uploadFileToCloudinary(imageFile, "clone-images", "image");
-      } catch (err) {
-        console.error("❌ Image upload failed:", err);
-      }
-    }
 
     // Upload PDFs
     const uploadedFiles: UploadData[] = [];

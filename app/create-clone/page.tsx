@@ -33,6 +33,7 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { useUserStore } from "@/lib/useUserStore";
+
 interface UploadedFile {
   id: string;
   name: string;
@@ -57,9 +58,10 @@ export default function CreateClone() {
   // const [youtubeLinksDialogOpen, setYoutubeLinksDialogOpen] = useState(false);
   const [links] = useState<string[]>([""]);
   const [youtubeLinks] = useState<string[]>([""]);
-  const [cloneImage, setCloneImage] = useState<File | null>(null);
+  const [cloneImage, setCloneImage] = useState<File>(null!);
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const { userId, setUser } = useUserStore();
+  const { userId, setUser, name, image } = useUserStore();
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -131,12 +133,30 @@ export default function CreateClone() {
   //   setLinks(newLinks);
   // };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setCloneImage(file);
+    if (!file) return;
+
+    setCloneImage(file);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "clone-images");
+      formData.append("type", "image");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData, // no Content-Type header needed — browser sets it automatically
+      });
+
+      const data = await res.json();
+      setImageUrl(data.url);
+    } catch (err) {
+      console.error("❌ Image upload failed:", err);
     }
   };
+
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -187,14 +207,15 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!cloneImage || !cloneName || !cloneIntro || selectedTones.length === 0 || selectedStyles.length === 0 || selectedValues.length === 0 || !freeformDescription || !dos || !donts) {
+    if ((!cloneImage && !image) || !(cloneName || name) || !cloneIntro || selectedTones.length === 0 || selectedStyles.length === 0 || selectedValues.length === 0 || !freeformDescription || !dos || !donts) {
       toast.error("Please fill all required fields before submitting.");
       return;
     }
-    
+
+
     const formData = new FormData();
     formData.append("userId", userId);
-    formData.append("clone_name", cloneName);
+    formData.append("clone_name", cloneName ? cloneName : name);
     formData.append("clone_intro", cloneIntro);
     formData.append("tone", JSON.stringify(selectedTones));
     formData.append("style", JSON.stringify(selectedStyles));
@@ -203,7 +224,7 @@ export default function CreateClone() {
     formData.append("dos", dos);
     formData.append("donts", donts);
     formData.append("freeform_description", freeformDescription);
-
+    console.log(formData);
     formData.append(
       "youtubeLinkUpload",
       JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))
@@ -213,9 +234,7 @@ export default function CreateClone() {
       JSON.stringify(links.filter((link) => link.trim() !== ""))
     );
 
-    if (cloneImage) {
-      formData.append("image", cloneImage);
-    }
+    formData.append("image", imageUrl ? imageUrl : image);
 
     uploadedFiles.forEach((file) => {
       formData.append("fileUploads", file.file);
@@ -308,11 +327,12 @@ export default function CreateClone() {
                       </Label>
                       <Input
                         id="cloneName"
-                        value={cloneName}
-                        onChange={(e) => setCloneName(e.target.value)}
+                        value={cloneName || name || ""} // use cloneName if it exists, else fallback to name
+                        onChange={(e) => setCloneName(e.target.value)} // just set cloneName directly
                         placeholder="Enter your clone's name"
                         className="mt-2"
                       />
+
                     </div>
                   </div>
 
@@ -354,7 +374,17 @@ export default function CreateClone() {
                       {cloneImage ? (
                         <div className="w-full h-full rounded-full overflow-hidden">
                           <Image
-                            src={URL.createObjectURL(cloneImage)}
+                            src={imageUrl}
+                            alt="User image"
+                            className="w-full h-full object-cover"
+                            width={128}
+                            height={128}
+                          />
+                        </div>
+                      ) : image ? (
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          <Image
+                            src={image}
                             alt="Clone preview"
                             className="w-full h-full object-cover"
                             width={128}
@@ -546,7 +576,7 @@ export default function CreateClone() {
                 Share Your Content
               </CardTitle>
               <CardDescription>
-                Choose files to share your content. 
+                Choose files to share your content.
               </CardDescription>
             </CardHeader>
             <CardContent>
