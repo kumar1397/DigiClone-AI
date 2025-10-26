@@ -42,7 +42,6 @@ export default function AdminUsers() {
 
         if (data.success) {
           setUsers(data.data);
-          console.log("Fetched users:", data.data);
         } else {
           console.error("Failed to fetch users:", data.message);
         }

@@ -24,7 +24,6 @@ function toArray(value: FormDataEntryValue | null): string[] {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    console.log("Received formData:", formData);
     const userId = formData.get("userId")?.toString();
     if (!userId) {
       return NextResponse.json({ success: false, message: "UserId missing" }, { status: 400 });
@@ -40,7 +39,7 @@ export async function POST(req: NextRequest) {
     const description = formData.get("freeform_description")?.toString() ?? "";
     const youtubeLinks = toArray(formData.get("youtubeLinkUpload"));
     const otherLinks = toArray(formData.get("otherLinkUpload"));
-
+    const userEmail = formData.get("userEmail")?.toString();
     // Upload image
     const imageUrl = formData.get("image") as string;
 
@@ -70,6 +69,7 @@ export async function POST(req: NextRequest) {
       data: {
         clone_id: `clone_u_${Math.random().toString(16).substring(2, 14)}`,
         clone_name: cloneName,
+        user_email: userEmail || "",
         clone_intro: cloneIntro,
         tone,
         style,

@@ -61,7 +61,7 @@ export default function CreateClone() {
   const [cloneImage, setCloneImage] = useState<File>(null!);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const { userId, setUser, name, image } = useUserStore();
+  const { userId, setUser, name, image, email } = useUserStore();
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -215,6 +215,7 @@ export default function CreateClone() {
 
     const formData = new FormData();
     formData.append("userId", userId);
+    formData.append("userEmail", email);
     formData.append("clone_name", cloneName ? cloneName : name);
     formData.append("clone_intro", cloneIntro);
     formData.append("tone", JSON.stringify(selectedTones));
@@ -224,7 +225,6 @@ export default function CreateClone() {
     formData.append("dos", dos);
     formData.append("donts", donts);
     formData.append("freeform_description", freeformDescription);
-    console.log(formData);
     formData.append(
       "youtubeLinkUpload",
       JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))

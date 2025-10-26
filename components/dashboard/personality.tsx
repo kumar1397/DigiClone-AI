@@ -34,7 +34,6 @@ interface PersonalityProps {
 }
 
 export default function Personality({ cloneData, setCloneData }: PersonalityProps) {
-    console.log("Rendering Personality component with cloneData:", cloneData);
     const [saving, setSaving] = useState(false);
     const [newCatchphraseInput, setNewCatchphraseInput] = useState("");
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

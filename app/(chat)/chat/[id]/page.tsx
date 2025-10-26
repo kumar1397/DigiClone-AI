@@ -79,7 +79,6 @@ export default function CloneChat() {
       if (!userId || !id) return;
       try {
         const res = await getConversation({ userId, cloneId: id });
-        console.log("Fetched conversation data:", res);
 
         if (res?.length) {
           // Convert fetched messages to your { user, clone } structure
