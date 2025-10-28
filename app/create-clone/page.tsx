@@ -207,7 +207,7 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if ((!cloneImage && !image) || !(cloneName || name) || !cloneIntro || selectedTones.length === 0 || selectedStyles.length === 0 || selectedValues.length === 0 || !freeformDescription || !dos || !donts) {
+    if ((!cloneImage && !image) || !(cloneName || name) || !cloneIntro) {
       toast.error("Please fill all required fields before submitting.");
       return;
     }

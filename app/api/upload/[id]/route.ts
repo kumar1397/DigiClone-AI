@@ -1,17 +1,18 @@
 import { NextResponse, NextRequest } from "next/server";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import prisma from "@/prisma";
+import fileTraining from "@/app/actions/FileTraining";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ clone_id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { clone_id } = await params;
+    const { id } = await params;
     const formData = await req.formData();
     const files = formData.getAll("fileUploads") as File[];
 
-    if (!clone_id || files.length === 0) {
+    if (!id || files.length === 0) {
       return NextResponse.json(
         { error: "Missing file(s) or clone_id" },
         { status: 400 }
@@ -19,7 +20,7 @@ export async function POST(
     }
 
     const cloneProfile = await prisma.cloneProfile.findUnique({
-      where: { clone_id },
+      where: { clone_id: id },
     });
 
     if (!cloneProfile) {
@@ -53,6 +54,9 @@ export async function POST(
 
       uploadedFiles.push(newFile);
     }
+
+    const res = await fileTraining(id);
+    console.log("File training response:", res);
 
     return NextResponse.json({
       success: true,

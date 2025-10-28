@@ -18,8 +18,9 @@ model User {
   phone          String?
   linkedin       String?
   github         String?
+  company        String?
+  jobrole        String?
   website1       String?
-  website2       String?
   cloneId        String?  
   role           userRole @default(user)
 

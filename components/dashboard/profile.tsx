@@ -19,10 +19,11 @@ interface User {
   email: string;
   phone?: string | null;
   profilePicture: string;
+  company?: string;
+  jobrole?: string;
   linkedin?: string;
   github?: string;
   website1?: string;
-  website2?: string;
 }
 
 const ProfileSection = ({ userId }: ProfileSectionProps) => {
@@ -54,8 +55,9 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
     formData.append("phone", user.phone || "");
     formData.append("linkedin", user.linkedin || "");
     formData.append("github", user.github || "");
+    formData.append("company", user.company || "");
+    formData.append("jobrole", user.jobrole || "");
     formData.append("website1", user.website1 || "");
-    formData.append("website2", user.website2 || "");
 
     try {
       const response = await fetch(`/api/users/${userId}`, {
@@ -178,6 +180,27 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             />
           </div>
 
+          {/* company */}
+          <div className="space-y-2">
+            <Label>Company you work at</Label>
+            <Input
+              type="string"
+              placeholder="Company Name"
+              value={user.company ?? ""}
+              onChange={handleFieldChange("company")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Your position</Label>
+            <Input
+              type="string"
+              placeholder="Role name"
+              value={user.jobrole ?? ""}
+              onChange={handleFieldChange("jobrole")}
+            />
+          </div>
+
           {/* Website 1 */}
           <div className="space-y-2">
             <Label>Website 1</Label>
@@ -189,16 +212,6 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             />
           </div>
 
-          {/* Website 2 */}
-          <div className="space-y-2">
-            <Label>Website 2</Label>
-            <Input
-              type="url"
-              placeholder="https://portfolio.com"
-              value={user.website2 ?? ""}
-              onChange={handleFieldChange("website2")}
-            />
-          </div>
         </div>
 
         {/* Button below */}

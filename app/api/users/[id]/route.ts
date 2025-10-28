@@ -41,14 +41,13 @@ export async function PUT(
 
   try {
     const formData = await req.formData();
-
     const phone = formData.get("phone");
     const linkedin = formData.get("linkedin");
     const github = formData.get("github");
+    const company = formData.get("company");
+    const jobrole = formData.get("jobrole");
     const website1 = formData.get("website1");
-    const website2 = formData.get("website2");
 
-    // Validation (only basic checks for string type, you can add URL validation if needed)
     if (phone && typeof phone !== "string") {
       return NextResponse.json(
         { success: false, message: "Phone must be a string" },
@@ -58,6 +57,18 @@ export async function PUT(
     if (linkedin && typeof linkedin !== "string") {
       return NextResponse.json(
         { success: false, message: "LinkedIn must be a string" },
+        { status: 400 }
+      );
+    }
+    if (company && typeof company !== "string") {
+      return NextResponse.json(
+        { success: false, message: "Company must be a string" },
+        { status: 400 }
+      );
+    }
+    if (jobrole && typeof jobrole !== "string") {
+      return NextResponse.json(
+        { success: false, message: "Jobrole must be a string" },
         { status: 400 }
       );
     }
@@ -73,12 +84,6 @@ export async function PUT(
         { status: 400 }
       );
     }
-    if (website2 && typeof website2 !== "string") {
-      return NextResponse.json(
-        { success: false, message: "Website2 must be a string" },
-        { status: 400 }
-      );
-    }
 
     const user = await prisma.user.update({
       where: { id },
@@ -86,8 +91,9 @@ export async function PUT(
         phone: phone as string,
         linkedin: linkedin as string,
         github: github as string,
+        company: company as string,
+        jobrole: jobrole as string,
         website1: website1 as string,
-        website2: website2 as string,
       },
     });
 
