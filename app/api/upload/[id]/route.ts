@@ -56,14 +56,17 @@ export async function POST(
     }
 
     const res = await fileTraining(id);
-    console.log("File training response:", res);
+
+    if (res.status === 200) {
+      return NextResponse.json({ success: true, message: "Files uploaded and training started", files: uploadedFiles });
+    }
 
     return NextResponse.json({
       success: true,
+      message: "Files uploaded but training failed to start",
       files: uploadedFiles,
     });
-  } catch (error) {
-    console.error("File upload failed:", error);
+  } catch {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

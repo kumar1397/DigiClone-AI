@@ -92,7 +92,8 @@ const AdminClones = () => {
       });
 
       if (!res.ok) throw new Error("Upload failed");
-      toast.success("File uploaded successfully!");
+      const data = await res.json();
+      toast.success(data.message);
       await fetchClones();
 
     } catch (err) {

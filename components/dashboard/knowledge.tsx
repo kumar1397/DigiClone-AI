@@ -23,7 +23,8 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
-import { uploadPdfFiles,} from "@/app/actions/cloneAction";
+import { uploadPdfFiles, } from "@/app/actions/cloneAction";
+import fileTraining from "@/app/actions/FileTraining";
 interface UploadedFile {
     id: string;
     fileId: string;
@@ -136,19 +137,22 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
         const toastId = toast.loading("Uploading files...");
 
         try {
-            await uploadPdfFiles(cloneId, uploadedFiles.map(f => f.file));
-
-            // Update the toast to success
-            toast.success("Files uploaded successfully!", { id: toastId });
+            const res = await uploadPdfFiles(cloneId, uploadedFiles.map(f => f.file));
+            if (!res) {
+                throw new Error("Upload failed");
+            }
+            const response = await fileTraining(cloneId);
+            if (!response) {
+                toast.error(" Files uploaded succesfully but training failed", { id: toastId });
+                return;
+            }
+            toast.success("Files uploaded successfully and Files sent for training", { id: toastId });
             setUploadedFiles([]);
-        } catch (err) {
-            console.error(err);
-
-            // Update the toast to error
+        } catch {
             toast.error("Failed to upload files", { id: toastId });
         }
     };
- 
+
     //     setYoutubeLinksDialogOpen(false);
     //     const toastId = toast.loading("Uploading files...");
 
@@ -188,7 +192,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid md:grid-cols-1">   
+                    <div className="grid md:grid-cols-1">
                         <Dialog
                             open={uploadDialogOpen}
                             onOpenChange={setUploadDialogOpen}

@@ -33,6 +33,7 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { useUserStore } from "@/lib/useUserStore";
+import fileTraining from "../actions/FileTraining";
 
 interface UploadedFile {
   id: string;
@@ -229,6 +230,7 @@ export default function CreateClone() {
       "youtubeLinkUpload",
       JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))
     );
+
     formData.append(
       "otherLinkUpload",
       JSON.stringify(links.filter((link) => link.trim() !== ""))
@@ -240,21 +242,18 @@ export default function CreateClone() {
       formData.append("fileUploads", file.file);
     });
 
-    const url = `/api/clones`;
-
     await toast.promise(
       (async () => {
-        const response = await fetch(url, {
+        const response = await fetch(`/api/clones`, {
           method: "POST",
           body: formData,
         });
 
         if (!response.ok) {
-          let errorMsg = `Submission failed: ${response.status}`;
+          let errorMsg = `Submission failed:${response.status}`;
 
           try {
             const errorJson = await response.json();
-            console.error("Server error:", errorJson);
             errorMsg = errorJson.message || errorMsg;
           } catch {
             const errorText = await response.text();
@@ -265,12 +264,20 @@ export default function CreateClone() {
         }
 
         const data = await response.json();
+
         if (data.data) {
           setUser({ cloneId: data.data.clone_id });
         }
 
-        setTimeout(() => router.push("/explore"), 1000);
+        const res = await fileTraining(data.data.clone_id)
+        const data2 = await res.json();
 
+        if (data2.success && uploadedFiles.length > 0) {
+          setTimeout(() => router.push("/explore"), 1000);
+          return "Clone created successfully and file sent for training!";
+        }
+
+        setTimeout(() => router.push("/explore"), 1000);
         return "Clone created successfully!";
       })(),
       {

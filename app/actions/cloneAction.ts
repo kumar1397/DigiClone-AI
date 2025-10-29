@@ -32,7 +32,7 @@ export async function uploadPdfFiles(cloneId: string, files: File[]) {
 
   return prisma.cloneProfile.update({
     where: { clone_id: cloneId },
-    data: { fileUploads: { create: uploadedFiles } }, // append mode
+    data: { fileUploads: { create: uploadedFiles } }, 
   });
 }
 
