@@ -5,7 +5,8 @@ import { useUserStore } from "@/lib/useUserStore";
 const Dashboard = () => {
 
   const { userId, cloneId } = useUserStore();
-
+  console.log("Dashboard - userId:", userId, "cloneId:", cloneId);
+  
   if (!cloneId) {
     return <NonCloneUserDashboard userId={userId} />;
   }

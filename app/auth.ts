@@ -2,6 +2,9 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import db from "@/prisma";
 
+// session lifetime in seconds (7 days)
+const SESSION_MAX_AGE =  60;
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -42,6 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   session: {
     strategy: "jwt",
+    maxAge: SESSION_MAX_AGE,
+  },
+  jwt: {
+    maxAge: SESSION_MAX_AGE,
   },
   pages: {
     signIn: "/login",
@@ -68,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               name: user.name || "",
               profilePicture: user.image || "",
               role: "user",
-              cloneId: null, 
+              cloneId: null,
             },
           });
         }
@@ -80,6 +87,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.cloneId = dbUser.cloneId ?? null;
         token.role = dbUser.role;
       }
+
+      token.exp = Math.floor(Date.now() / 1000) + SESSION_MAX_AGE;
       return token;
     },
 
@@ -91,6 +100,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.image = token.image as string;
         session.user.cloneId = token.cloneId as string | null;
         session.user.role = token.role as string;
+        if (token.exp) {
+          session.expires = (new Date((token.exp as number) * 1000) as unknown) as Date & string;
+        }
       }
       return session;
     },

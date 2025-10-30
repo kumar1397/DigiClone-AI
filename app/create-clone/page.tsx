@@ -416,7 +416,7 @@ export default function CreateClone() {
           {/* Tone and Style */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-serif">Personality<span className="text-red-500">*</span></CardTitle>
+              <CardTitle className="text-xl font-serif"></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-[1fr_auto_1fr] gap-8">
@@ -476,7 +476,7 @@ export default function CreateClone() {
           {/* Catchphrases */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-serif">Catchphrases<span className="text-red-500">*</span></CardTitle>
+              <CardTitle className="text-xl font-serif">Catchphrases</CardTitle>
               <CardDescription>
                 Enter up to 5 signature phrases that the clone should use
                 (optional)
@@ -495,7 +495,7 @@ export default function CreateClone() {
           {/* Core Values */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-serif">Core Values<span className="text-red-500">*</span></CardTitle>
+              <CardTitle className="text-xl font-serif">Core Values</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 max-h-64 overflow-y-auto">
@@ -523,7 +523,7 @@ export default function CreateClone() {
           {/* Do's and Don'ts */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-serif">Guidelines<span className="text-red-500">*</span></CardTitle>
+              <CardTitle className="text-xl font-serif">Guidelines</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
@@ -559,7 +559,7 @@ export default function CreateClone() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-serif">
-                Freeform Description<span className="text-red-500">*</span>
+                Freeform Description
               </CardTitle>
               <CardDescription>
                 Describe in your own words how the clone should behave, think

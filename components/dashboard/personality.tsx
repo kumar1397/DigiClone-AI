@@ -104,7 +104,7 @@ export default function Personality({ cloneData, setCloneData }: PersonalityProp
                     <CardContent className="space-y-8">
                         <div className="flex flex-col items-center">
                             <Label className="text-base font-semibold mb-2">
-                                Clone Image<span className="text-red-500 -ml-2">*</span>
+                                Clone Image
                             </Label>
                             <div className="relative">
                                 <input

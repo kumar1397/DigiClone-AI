@@ -26,8 +26,6 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <InitUser session={safeSession} />
-
-      {/* Hero Section */}
       <section className="hero-gradient py-20 px-4">
         <div className="container max-w-6xl mx-auto text-center">
           <Badge variant="secondary" className="mb-6 animate-fade-in">
