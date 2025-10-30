@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
+import fileTraining from "@/app/actions/FileTraining";
 
 type UploadData = {
   url: string;
@@ -85,12 +86,17 @@ export async function POST(req: NextRequest) {
       },
       include: { fileUploads: true },
     });
-
     await prisma.user.update({
       where: { id: userId },
       data: { cloneId: newClone.clone_id },
     });
-    return NextResponse.json({ success: true, data: newClone }, { status: 201 });
+
+    const res = await fileTraining(newClone.clone_id);
+    const data = await res.json();
+    if (data.success) {
+      return NextResponse.json({ success: true, data: newClone, message: "Clone create successfully and File sent for training" }, { status: 201 });
+    }
+    return NextResponse.json({ success: true, data: newClone, message: "Clone create successfully but failed to send files" }, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });

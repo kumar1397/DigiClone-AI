@@ -33,7 +33,6 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { useUserStore } from "@/lib/useUserStore";
-import fileTraining from "../actions/FileTraining";
 
 interface UploadedFile {
   id: string;
@@ -269,16 +268,8 @@ export default function CreateClone() {
           setUser({ cloneId: data.data.clone_id });
         }
 
-        const res = await fileTraining(data.data.clone_id)
-        const data2 = await res.json();
-
-        if (data2.success && uploadedFiles.length > 0) {
-          setTimeout(() => router.push("/explore"), 1000);
-          return "Clone created successfully and file sent for training!";
-        }
-
         setTimeout(() => router.push("/explore"), 1000);
-        return "Clone created successfully!";
+        return `${data.message}`;
       })(),
       {
         loading: "Generating clone...",
