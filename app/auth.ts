@@ -2,8 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import db from "@/prisma";
 
-// session lifetime in seconds (7 days)
-const SESSION_MAX_AGE =  60;
+const SESSION_MAX_AGE =  60 * 60 * 4;
 
 declare module "next-auth" {
   interface Session {
