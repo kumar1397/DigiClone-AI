@@ -23,8 +23,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
-import { uploadPdfFiles, } from "@/app/actions/cloneAction";
-import fileTraining from "@/app/actions/FileTraining";
+
 interface UploadedFile {
     id: string;
     fileId: string;
@@ -78,6 +77,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
     //     newLinks[index] = value;
     //     setLinks(newLinks);
     // };
+
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newFiles = acceptedFiles.map((file) => {
             const uniqueId = Math.random().toString(36).substr(2, 9);
@@ -133,25 +133,32 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
 
     const handleFileUpload = async () => {
         setUploadDialogOpen(false);
-
         const toastId = toast.loading("Uploading files...");
 
         try {
-            const res = await uploadPdfFiles(cloneId, uploadedFiles.map(f => f.file));
-            if (!res) {
-                throw new Error("Upload failed");
-            }
-            const response = await fileTraining(cloneId);
-            if (!response) {
-                toast.error(" Files uploaded succesfully but training failed", { id: toastId });
+            const formData = new FormData();
+            formData.append("cloneId", cloneId);
+            uploadedFiles.forEach(f => formData.append("files", f.file));
+
+            const res = await fetch("/api/upload/files", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                toast.error(data.message, { id: toastId });
                 return;
             }
-            toast.success("Files uploaded successfully and Files sent for training", { id: toastId });
+
+            toast.success(data.message, { id: toastId });
             setUploadedFiles([]);
         } catch {
             toast.error("Failed to upload files", { id: toastId });
         }
     };
+
 
     //     setYoutubeLinksDialogOpen(false);
     //     const toastId = toast.loading("Uploading files...");
@@ -175,7 +182,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
     //         setLinks([]);
     //     } catch (err) {
     //         console.error(err);
-    //         toast.error("Failed to upload links", { id: toastId });
+    //         toast.error("oad links", { id: toastId });
     //     }
     // };
 

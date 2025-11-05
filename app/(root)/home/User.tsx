@@ -18,8 +18,6 @@ interface Session {
 
 export default function InitUser({ session }: { session: Session | null }) {
   const setUser = useUserStore((s) => s.setUser);
-
-  console.log("InitUser session:", session);
   useEffect(() => {
     if (!session?.user) return;
 

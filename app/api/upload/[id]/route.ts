@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import prisma from "@/prisma";
+import { Status } from "@prisma/client";
 import fileTraining from "@/app/actions/FileTraining";
 
 export async function POST(
@@ -58,6 +59,10 @@ export async function POST(
     const res = await fileTraining(id);
 
     if (res.status === 200) {
+      await prisma.cloneProfile.update({
+        where: { clone_id: id },
+        data: { status: Status.live },
+      });
       return NextResponse.json({ success: true, message: "Files uploaded and training started", files: uploadedFiles });
     }
 

@@ -5,7 +5,7 @@ export default async function fileTraining(clone_id: string) {
     try {
         const cloneProfile = await prisma.cloneProfile.findUnique({
             where: { clone_id: clone_id },
-            include: { fileUploads: { orderBy: { uploadDate: "asc" } } }, 
+            include: { fileUploads: { orderBy: { uploadDate: "asc" } } },
         });
 
         if (!cloneProfile) {
@@ -18,7 +18,7 @@ export default async function fileTraining(clone_id: string) {
             return NextResponse.json({ error: "No files uploaded yet" }, { status: 404 });
         }
 
-        await fetch(`${process.env.NEXT_PUBLIC_FILE_API_URL}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_FILE_API_URL}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -28,6 +28,19 @@ export default async function fileTraining(clone_id: string) {
                 url: firstFile.url,
             }),
         });
+        let apiResponse = null;
+        try {
+            apiResponse = await res.json();
+        } catch (err) {
+            console.error("Failed to parse file API response:", err);
+        }
+
+        if (!res.ok) {
+            return NextResponse.json(
+                { error: "File API request failed", details: apiResponse },
+                { status: 500 }
+            );
+        }
         return NextResponse.json({
             success: true,
             message: "First file sent successfully",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import fileTraining from "@/app/actions/FileTraining";
+import { Status } from "@prisma/client";
 
 type UploadData = {
   url: string;
@@ -69,8 +70,8 @@ export async function POST(req: NextRequest) {
     const newClone = await prisma.cloneProfile.create({
       data: {
         clone_id: `clone_u_${Math.random().toString(16).substring(2, 14)}`,
-        clone_name: cloneName,
         user_email: userEmail || "",
+        clone_name: cloneName,
         clone_intro: cloneIntro,
         tone,
         style,
@@ -83,6 +84,7 @@ export async function POST(req: NextRequest) {
         otherLinkUpload: otherLinks,
         image: imageUrl,
         fileUploads: { create: uploadedFiles },
+        status: Status.pending,
       },
       include: { fileUploads: true },
     });
@@ -94,7 +96,12 @@ export async function POST(req: NextRequest) {
     const res = await fileTraining(newClone.clone_id);
     const data = await res.json();
     if (data.success) {
-      return NextResponse.json({ success: true, data: newClone, message: "Clone create successfully and File sent for training" }, { status: 201 });
+      const updatedClone = await prisma.cloneProfile.update({
+        where: { clone_id: newClone.clone_id },
+        data: { status: Status.live },
+        include: { fileUploads: true },
+      });
+      return NextResponse.json({ success: true, data: updatedClone, message: "Clone create successfully and File sent for training" }, { status: 201 });
     }
     return NextResponse.json({ success: true, data: newClone, message: "Clone create successfully but failed to send files" }, { status: 201 });
   } catch (error: unknown) {
