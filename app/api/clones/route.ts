@@ -38,15 +38,12 @@ export async function POST(req: NextRequest) {
     const catchphrases = toArray(formData.get("catchphrases"));
     const dos = formData.get("dos")?.toString() ?? "";
     const donts = formData.get("donts")?.toString() ?? "";
+    const domain = formData.get("domain")?.toString() ?? "";
     const description = formData.get("freeform_description")?.toString() ?? "";
     const youtubeLinks = toArray(formData.get("youtubeLinkUpload"));
     const otherLinks = toArray(formData.get("otherLinkUpload"));
     const userEmail = formData.get("userEmail")?.toString();
-    // Upload image
     const imageUrl = formData.get("image") as string;
-
-
-    // Upload PDFs
     const uploadedFiles: UploadData[] = [];
     const pdfFiles = formData.getAll("fileUploads") as File[];
 
@@ -77,6 +74,7 @@ export async function POST(req: NextRequest) {
         style,
         values,
         catchphrases,
+        domain,
         dos,
         donts,
         freeform_description: description,
@@ -86,7 +84,6 @@ export async function POST(req: NextRequest) {
         fileUploads: { create: uploadedFiles },
         status: Status.pending,
       },
-      include: { fileUploads: true },
     });
     await prisma.user.update({
       where: { id: userId },

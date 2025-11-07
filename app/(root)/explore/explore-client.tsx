@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { useUserStore } from "@/lib/useUserStore"
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -16,6 +16,7 @@ interface Clone {
   clone_intro: string;
   image?: string;
   freeform_description: string;
+  domain: string;
   values: string[];
   status: string;
 }
@@ -23,6 +24,14 @@ interface CloneApiResponse {
   success: boolean;
   data: Clone[];
 }
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ExploreClient() {
   const fetcher = (url: string): Promise<CloneApiResponse> =>
@@ -30,11 +39,17 @@ export default function ExploreClient() {
   const { data, error, isLoading } = useSWR<CloneApiResponse>("/api/clones", fetcher);
   const { cloneId } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
+  const uniqueDomains = useMemo(() => {
+    const domains = (data?.data ?? []).map((c) => c.domain!.trim());
+    return Array.from(new Set(domains));
+  }, [data]);
+  
   const filteredClones = data?.data?.filter((clone: Clone) =>
-    // only show clones that are live and match the search query
     clone.status?.toLowerCase() === "live" &&
-    clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase())
+    clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (selectedDomain ? (clone.domain!.trim() === selectedDomain) : true)
   ) ?? [];
 
 
@@ -44,14 +59,37 @@ export default function ExploreClient() {
   return (
     <>
       <div className="text-center mb-12">
-        <div className="max-w-2xl mx-auto relative mb-8">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, expertise, or topic..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 pr-4 py-6 text-lg rounded-full border-2 focus:border-primary"
-          />
+        {/* keep search bar width (max-w-2xl) but place select to its right in the same row */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="max-w-2xl w-full">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, expertise, or topic..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-4 py-6 text-lg rounded-full border-2 focus:border-primary w-full"
+              />
+            </div>
+          </div>
+
+          <div className="flex-shrink-0">
+            <Select onValueChange={(val) => setSelectedDomain(val === "__all__" ? null : val)} value={selectedDomain ?? "__all__"}>
+              <SelectTrigger className="w-[280px]">
+                <SelectValue placeholder="Select a domain" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="__all__">All domains</SelectItem>
+                  {uniqueDomains.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -80,9 +118,12 @@ export default function ExploreClient() {
 
                 {/* Top row — clone name + chat button */}
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <CardTitle className="text-lg font-serif truncate">
-                    {clone.clone_name}
-                  </CardTitle>
+                  <div className="flex items-center gap-3 min-w-0">
+                    
+                    <CardTitle className="text-lg font-serif truncate min-w-0">
+                      {clone.clone_name}
+                    </CardTitle>
+                  </div>
                   <Link href={`/chat/${clone.clone_id}`}>
                     <Button
                       size="sm"
@@ -126,3 +167,5 @@ export default function ExploreClient() {
     </>
   );
 }
+
+

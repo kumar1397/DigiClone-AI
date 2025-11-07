@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,6 +62,26 @@ export default function CreateClone() {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const { userId, setUser, name, image, email } = useUserStore();
+  const [domain, setDomain] = useState("");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`/api/users/${userId}`);
+        if (response.ok) {
+          const data = await response.json(); 
+          setDomain(data.jobrole);
+        } else {
+          console.error("Failed to fetch user data");
+        }       
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } 
+
+    };
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId]);
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -212,12 +232,17 @@ export default function CreateClone() {
       return;
     }
 
+    if (!domain) {
+      toast.error("Please update your profile to create a clone");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("userEmail", email);
     formData.append("clone_name", cloneName ? cloneName : name);
     formData.append("clone_intro", cloneIntro);
+    formData.append("domain", domain)
     formData.append("tone", JSON.stringify(selectedTones));
     formData.append("style", JSON.stringify(selectedStyles));
     formData.append("values", JSON.stringify(selectedValues));
