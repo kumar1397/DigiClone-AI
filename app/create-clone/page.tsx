@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import {
   Brain,
   Upload,
@@ -42,10 +52,10 @@ interface UploadedFile {
   file: File;
 }
 
+
 export default function CreateClone() {
   const router = useRouter();
   const [cloneName, setCloneName] = useState("");
-  const [cloneIntro, setCloneIntro] = useState("");
   const [selectedTones, setSelectedTones] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
@@ -62,26 +72,12 @@ export default function CreateClone() {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const { userId, setUser, name, image, email } = useUserStore();
-  const [domain, setDomain] = useState("");
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`/api/users/${userId}`);
-        if (response.ok) {
-          const data = await response.json(); 
-          setDomain(data.jobrole);
-        } else {
-          console.error("Failed to fetch user data");
-        }       
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } 
+  const [linkedin, setLinkedin] = useState("");
+  const [company, setCompany] = useState("");
+  const [jobrole, setJobrole] = useState("");
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+  const uniqueDomains = ["AI/ML", "Data & Analytics", "Software", "Consulting", "Finance", "Marketing", "DevOps", "VC", "Higher Studies", "Core industries", "Product Designer(UI/UX)", "Product Manager", "Founder"];
 
-    };
-    if (userId) {
-      fetchUserData();
-    }
-  }, [userId]);
   const toneOptions = [
     "Friendly",
     "Professional",
@@ -227,13 +223,8 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if ((!cloneImage && !image) || !(cloneName || name) || !cloneIntro) {
+    if ((!cloneImage && !image) || !(cloneName || name)) {
       toast.error("Please fill all required fields before submitting.");
-      return;
-    }
-
-    if (!domain) {
-      toast.error("Please update your profile to create a clone");
       return;
     }
 
@@ -241,8 +232,7 @@ export default function CreateClone() {
     formData.append("userId", userId);
     formData.append("userEmail", email);
     formData.append("clone_name", cloneName ? cloneName : name);
-    formData.append("clone_intro", cloneIntro);
-    formData.append("domain", domain)
+    formData.append("domain", selectedDomain ? selectedDomain : "");
     formData.append("tone", JSON.stringify(selectedTones));
     formData.append("style", JSON.stringify(selectedStyles));
     formData.append("values", JSON.stringify(selectedValues));
@@ -254,17 +244,44 @@ export default function CreateClone() {
       "youtubeLinkUpload",
       JSON.stringify(youtubeLinks.filter((link) => link.trim() !== ""))
     );
-
     formData.append(
       "otherLinkUpload",
       JSON.stringify(links.filter((link) => link.trim() !== ""))
     );
-
     formData.append("image", imageUrl ? imageUrl : image);
-
     uploadedFiles.forEach((file) => {
       formData.append("fileUploads", file.file);
     });
+
+    // update user profile via FormData (separate request)
+    try {
+      const userForm = new FormData();
+      userForm.append("linkedin", linkedin || "");
+      userForm.append("company", company || "");
+      userForm.append("jobrole", jobrole || "");
+
+      const userUpdateRes = await fetch(`/api/users/${userId}`, {
+        method: "PUT",
+        body: userForm, // FormData - do not set Content-Type header
+      });
+
+      if (userUpdateRes.ok) {
+        toast.success("Profile updated successfully");
+      } else {
+        let errMsg = `Failed to update profile: ${userUpdateRes.status}`;
+        try {
+          const errJson = await userUpdateRes.json();
+          errMsg = errJson.message || errMsg;
+        } catch {
+          // ignore JSON parse errors
+        }
+        toast.error(errMsg);
+      }
+    } catch (err) {
+      console.error("Failed to update user profile request:", err);
+      toast.error("Failed to update profile. Please try again.");
+    }
+
 
     await toast.promise(
       (async () => {
@@ -350,8 +367,8 @@ export default function CreateClone() {
                       </Label>
                       <Input
                         id="cloneName"
-                        value={cloneName || name || ""} // use cloneName if it exists, else fallback to name
-                        onChange={(e) => setCloneName(e.target.value)} // just set cloneName directly
+                        value={cloneName || name || ""} 
+                        onChange={(e) => setCloneName(e.target.value)} 
                         placeholder="Enter your clone's name"
                         className="mt-2"
                       />
@@ -359,25 +376,7 @@ export default function CreateClone() {
                     </div>
                   </div>
 
-                  <div className="md:col-span-2 space-y-4">
-                    <div>
-                      <Label
-                        htmlFor="cloneName"
-                        className="text-base font-semibold"
-                      >
-                        Clone Description<span className="text-red-500 -ml-2">*</span>
-                      </Label>
-                      <Input
-                        id="cloneName"
-                        value={cloneIntro}
-                        onChange={(e) => setCloneIntro(e.target.value)}
-                        placeholder="Enter your clone's description in a sentence"
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
                 </div>
-
                 <div className="flex flex-col items-center">
                   <Label className="text-base font-semibold mb-2">
                     Clone Image<span className="text-red-500 -ml-2">*</span>
@@ -430,6 +429,63 @@ export default function CreateClone() {
           </Card>
 
           {/* Tone and Style */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-serif"></CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>LinkedIn</Label>
+                  <Input
+                    type="url"
+                    placeholder="https://linkedin.com/in/username"
+                    value={linkedin}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Working Company</Label>
+                  <Input
+                    type="string"
+                    placeholder="Company Name"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Input
+                    placeholder="Role at Company"
+                    value={jobrole}
+                    onChange={(e) => setJobrole(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Domain</Label>
+                  <Select onValueChange={(val) => setSelectedDomain(val === "__all__" ? null : val)} value={selectedDomain ?? "__all__"}>
+                    <SelectTrigger className="w-[280px]">
+                      <SelectValue placeholder="Select a domain" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="__all__">All domains</SelectItem>
+                        {uniqueDomains.map((d) => (
+                          <SelectItem key={d} value={d}>
+                            {d}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+              </div>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-serif"></CardTitle>

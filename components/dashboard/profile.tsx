@@ -141,19 +141,6 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         </CardDescription>
       </CardHeader>
 
-      {/* Banner: Require company & job role */}
-      {userId && (!user.company || !user.jobrole) && (
-        <div className="mx-6 -mt-4 mb-4 p-3 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800 flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
-          <div>
-            <p className="font-medium">Action required</p>
-            <p className="text-sm">
-              Please fill in your Company and Job Role before creating a clone.
-            </p>
-          </div>
-        </div>
-      )}
-
       <CardContent className="space-y-6">
         {/* Avatar + Name */}
         <div className="flex items-center gap-6">

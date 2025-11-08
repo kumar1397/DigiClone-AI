@@ -42,7 +42,6 @@ model CloneProfile {
   clone_id            String   @unique
   user_email          String
   clone_name          String
-  clone_intro         String
   tone                String[]
   style               String[]
   image               String

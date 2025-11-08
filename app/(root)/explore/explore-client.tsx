@@ -24,6 +24,7 @@ interface CloneApiResponse {
   success: boolean;
   data: Clone[];
 }
+
 import {
   Select,
   SelectContent,
@@ -41,16 +42,16 @@ export default function ExploreClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
-  const uniqueDomains = useMemo(() => {
-    const domains = (data?.data ?? []).map((c) => c.domain!.trim());
-    return Array.from(new Set(domains));
-  }, [data]);
-  
   const filteredClones = data?.data?.filter((clone: Clone) =>
     clone.status?.toLowerCase() === "live" &&
-    clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (selectedDomain ? (clone.domain!.trim() === selectedDomain) : true)
-  ) ?? [];
+  clone.clone_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+  (selectedDomain ? (clone.domain!.trim() === selectedDomain) : true)
+) ?? [];
+
+const uniqueDomains = useMemo(() => {
+  const domains = (filteredClones ?? []).map((c) => c.domain!.trim());
+  return Array.from(new Set(domains));
+}, [data]);
 
 
   if (isLoading) return <p>Loading...</p>;
@@ -75,7 +76,7 @@ export default function ExploreClient() {
 
           <div className="flex-shrink-0">
             <Select onValueChange={(val) => setSelectedDomain(val === "__all__" ? null : val)} value={selectedDomain ?? "__all__"}>
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger className="w-[280px] rounded-full border-2 focus:border-primary">
                 <SelectValue placeholder="Select a domain" />
               </SelectTrigger>
               <SelectContent>
