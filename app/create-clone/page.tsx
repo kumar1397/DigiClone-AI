@@ -223,7 +223,7 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if ((!cloneImage && !image) || !(cloneName || name)) {
+    if ((!cloneImage && !image) || !(cloneName || name) || (!selectedDomain) || (!company) || (!jobrole)) {
       toast.error("Please fill all required fields before submitting.");
       return;
     }
