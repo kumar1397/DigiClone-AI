@@ -223,7 +223,7 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if ((!cloneImage && !image) || !(cloneName || name) || (!selectedDomain) || (!company) || (!jobrole)) {
+    if ((!cloneImage && !image) || !(cloneName || name) || (!selectedDomain) || (!company) || (!jobrole) || (!linkedin)) {
       toast.error("Please fill all required fields before submitting.");
       return;
     }
@@ -436,7 +436,7 @@ export default function CreateClone() {
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>LinkedIn</Label>
+                  <Label>LinkedIn<span className="text-red-500 -ml-2">*</span></Label>
                   <Input
                     type="url"
                     placeholder="https://linkedin.com/in/username"
