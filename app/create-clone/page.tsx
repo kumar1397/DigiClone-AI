@@ -446,7 +446,7 @@ export default function CreateClone() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Working Company</Label>
+                  <Label>Working Company<span className="text-red-500 -ml-2">*</span></Label>
                   <Input
                     type="string"
                     placeholder="Company Name"
@@ -456,7 +456,7 @@ export default function CreateClone() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Role</Label>
+                  <Label>Role<span className="text-red-500 -ml-2">*</span></Label>
                   <Input
                     placeholder="Role at Company"
                     value={jobrole}
@@ -465,14 +465,13 @@ export default function CreateClone() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Domain</Label>
-                  <Select onValueChange={(val) => setSelectedDomain(val === "__all__" ? null : val)} value={selectedDomain ?? "__all__"}>
+                  <Label>Domain<span className="text-red-500 -ml-2">*</span></Label>
+                  <Select onValueChange={(val) => setSelectedDomain(val)} value={selectedDomain ?? ""}>
                     <SelectTrigger className="w-[280px]">
                       <SelectValue placeholder="Select a domain" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="__all__">All domains</SelectItem>
                         {uniqueDomains.map((d) => (
                           <SelectItem key={d} value={d}>
                             {d}
