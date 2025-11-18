@@ -71,7 +71,7 @@ export default function CreateClone() {
   const [cloneImage, setCloneImage] = useState<File>(null!);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const { userId, setUser, name, image, email } = useUserStore();
+  const { userId, setUser, name, email } = useUserStore();
   const [linkedin, setLinkedin] = useState("");
   const [company, setCompany] = useState("");
   const [jobrole, setJobrole] = useState("");
@@ -223,7 +223,7 @@ export default function CreateClone() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if ((!cloneImage && !image) || !(cloneName || name) || (!selectedDomain) || (!company) || (!jobrole) || (!linkedin)) {
+    if ((!cloneImage) || !(cloneName || name) || (!selectedDomain) || (!company) || (!jobrole) || (!linkedin)) {
       toast.error("Please fill all required fields before submitting.");
       return;
     }
@@ -248,7 +248,7 @@ export default function CreateClone() {
       "otherLinkUpload",
       JSON.stringify(links.filter((link) => link.trim() !== ""))
     );
-    formData.append("image", imageUrl ? imageUrl : image);
+    formData.append("image", imageUrl);
     uploadedFiles.forEach((file) => {
       formData.append("fileUploads", file.file);
     });
@@ -367,8 +367,8 @@ export default function CreateClone() {
                       </Label>
                       <Input
                         id="cloneName"
-                        value={cloneName || name || ""} 
-                        onChange={(e) => setCloneName(e.target.value)} 
+                        value={cloneName || name || ""}
+                        onChange={(e) => setCloneName(e.target.value)}
                         placeholder="Enter your clone's name"
                         className="mt-2"
                       />
@@ -389,39 +389,31 @@ export default function CreateClone() {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       id="clone-image-upload"
                     />
-                    <label
-                      htmlFor="clone-image-upload"
-                      className="w-32 h-32 rounded-full bg-muted border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
-                    >
-                      {cloneImage ? (
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          <Image
-                            src={imageUrl}
-                            alt="User image"
-                            className="w-full h-full object-cover"
-                            width={128}
-                            height={128}
-                          />
-                        </div>
-                      ) : image ? (
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          <Image
-                            src={image}
-                            alt="Clone preview"
-                            className="w-full h-full object-cover"
-                            width={128}
-                            height={128}
-                          />
-                        </div>
-                      ) : (
+                    {imageUrl ? (
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-muted-foreground/30">
+                        <Image
+                          src={imageUrl}
+                          alt="Clone Image"
+                          width={128}
+                          height={128}
+                          className="object-cover w-32 h-32"
+                        />
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="clone-image-upload"
+                        className="w-32 h-32 rounded-full bg-muted border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
+                      >
+
                         <div className="text-center">
                           <Upload className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground">
                             Upload Image
                           </span>
                         </div>
-                      )}
-                    </label>
+
+                      </label>
+                    )}
                   </div>
                 </div>
               </div>

@@ -24,7 +24,7 @@ interface User {
   name: string;
   email: string;
   phone?: string | null;
-  profilePicture: string;
+  profilePicture?: string;
   company?: string;
   jobrole?: string;
   linkedin?: string;
@@ -36,6 +36,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle profile field changes
@@ -52,6 +53,50 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
     fileInputRef.current?.click();
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "profile-pictures");
+      formData.append("type", "image");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        let errMsg = `Upload failed: ${res.status}`;
+        try {
+          const json = await res.json();
+          errMsg = json.message || errMsg;
+        } catch {}
+        toast.error(errMsg);
+        return;
+      }
+
+      const data = await res.json();
+      const url = data.url;
+      if (url) {
+        setUser((prev) => (prev ? { ...prev, profilePicture: url } : prev));
+        toast.success("Profile image uploaded");
+      } else {
+        toast.error("Upload succeeded but no URL returned");
+      }
+    } catch (err) {
+      console.error("Error uploading profile image:", err);
+      toast.error("Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+      // clear the input so same file can be reselected if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   // Submit profile updates
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +107,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
     formData.append("phone", user.phone || "");
     formData.append("linkedin", user.linkedin || "");
     formData.append("github", user.github || "");
+    formData.append("profilePicture", user.profilePicture || "");
     formData.append("company", user.company || "");
     formData.append("jobrole", user.jobrole || "");
     formData.append("website1", user.website1 || "");
@@ -159,7 +205,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               accept="image/*"
               ref={fileInputRef}
               style={{ display: "none" }}
-              readOnly
+              onChange={handleFileChange}
             />
           </div>
 
@@ -243,7 +289,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
 
         {/* Submit Button */}
         <Button
-          disabled={submitting}
+          disabled={submitting || uploading}
           onClick={handleSubmit}
           className="bg-primary hover:bg-[#3c3b3b] text-primary-foreground"
         >

@@ -44,6 +44,7 @@ export async function PUT(
     const phone = formData.get("phone");
     const linkedin = formData.get("linkedin");
     const github = formData.get("github");
+    const profilePicture = formData.get("profilePicture");
     const company = formData.get("company");
     const jobrole = formData.get("jobrole");
     const website1 = formData.get("website1");
@@ -84,6 +85,12 @@ export async function PUT(
         { status: 400 }
       );
     }
+    if (profilePicture && typeof profilePicture !== "string") {
+      return NextResponse.json(
+        { success: false, message: "profilePicture must be a string URL" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.update({
       where: { id },
@@ -91,6 +98,7 @@ export async function PUT(
         phone: phone as string,
         linkedin: linkedin as string,
         github: github as string,
+        profilePicture: profilePicture as string,
         company: company as string,
         jobrole: jobrole as string,
         website1: website1 as string,

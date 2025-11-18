@@ -159,6 +159,19 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
         }
     };
 
+    const handleFileDelete = (fileId: string) => async () => {
+        const res = await fetch(`/api/upload/files/${fileId}`, {
+            method: "DELETE",
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || "Failed to delete file");
+        }
+
+        return await res.json();
+    }
+
 
     //     setYoutubeLinksDialogOpen(false);
     //     const toastId = toast.loading("Uploading files...");
@@ -434,7 +447,7 @@ export default function Knowledge({ cloneId, cloneData }: KnowledgeProps) {
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium truncate">{source.originalName}</p>
                                 </div>
-
+                                <button onClick={handleFileDelete(source.id)}><Trash2 className="h-5 w-5 text-red-500" /></button>
                                 <a
                                     href={`${source.url}`}
                                     target="_blank"
