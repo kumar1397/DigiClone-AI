@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/prisma";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -20,12 +20,11 @@ function extractPublicId(url: string) {
 }
 
 export async function DELETE(
-    req: Request,
-    { params }: { params: { id: string } }
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
-
+        const { id } = await params;
         // Find file in DB
         const file = await prisma.file.findUnique({
             where: { id },
@@ -52,10 +51,9 @@ export async function DELETE(
             success: true,
             message: "File deleted successfully",
         });
-    } catch (error: any) {
-        console.error("Error deleting file:", error);
+    } catch {
         return NextResponse.json(
-            { error: "Failed to delete file", details: error.message },
+            { error: "Failed to delete file" },
             { status: 500 }
         );
     }
