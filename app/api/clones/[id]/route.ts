@@ -38,7 +38,6 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
     const updates = {
-      image: body.image,
       tone: body.tone,
       style: body.style,
       catchphrases: body.catchphrases,

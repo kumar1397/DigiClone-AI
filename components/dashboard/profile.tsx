@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, User, AlertTriangle, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "react-hot-toast";
-
+import { useUserStore } from "@/lib/useUserStore";
 interface ProfileSectionProps {
   userId: string;
 }
@@ -33,18 +33,18 @@ interface User {
 }
 
 const ProfileSection = ({ userId }: ProfileSectionProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const setUser = useUserStore((s) => s.setUser);
   // Handle profile field changes
   const handleFieldChange = useCallback(
     (field: keyof User) =>
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setUser((prev) => (prev ? { ...prev, [field]: value } : prev));
+        setUserData((prev) => (prev ? { ...prev, [field]: value } : prev));
       },
     []
   );
@@ -74,7 +74,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         try {
           const json = await res.json();
           errMsg = json.message || errMsg;
-        } catch {}
+        } catch { }
         toast.error(errMsg);
         return;
       }
@@ -82,17 +82,13 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
       const data = await res.json();
       const url = data.url;
       if (url) {
-        setUser((prev) => (prev ? { ...prev, profilePicture: url } : prev));
-        toast.success("Profile image uploaded");
-      } else {
-        toast.error("Upload succeeded but no URL returned");
+        setUserData((prev) => (prev ? { ...prev, profilePicture: url } : prev));
       }
     } catch (err) {
       console.error("Error uploading profile image:", err);
       toast.error("Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
-      // clear the input so same file can be reselected if needed
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
@@ -100,17 +96,17 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
   // Submit profile updates
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId || !user) return;
+    if (!userId || !userData) return;
 
     setSubmitting(true);
     const formData = new FormData();
-    formData.append("phone", user.phone || "");
-    formData.append("linkedin", user.linkedin || "");
-    formData.append("github", user.github || "");
-    formData.append("profilePicture", user.profilePicture || "");
-    formData.append("company", user.company || "");
-    formData.append("jobrole", user.jobrole || "");
-    formData.append("website1", user.website1 || "");
+    formData.append("phone", userData.phone || "");
+    formData.append("linkedin", userData.linkedin || "");
+    formData.append("github", userData.github || "");
+    formData.append("profilePicture", userData.profilePicture || "");
+    formData.append("company", userData.company || "");
+    formData.append("jobrole", userData.jobrole || "");
+    formData.append("website1", userData.website1 || "");
 
     try {
       const response = await fetch(`/api/users/${userId}`, {
@@ -127,7 +123,9 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
       }
 
       const updated = await response.json();
-      setUser(updated);
+      setUserData(updated);
+      setUser({ image: userData.profilePicture });
+
       toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Error updating user data:", err);
@@ -146,7 +144,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         const res = await fetch(`/api/users/${userId}`);
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
-        setUser(data);
+        setUserData(data);
       } catch (err) {
         console.error("Failed to fetch user data:", err);
         toast.error("Unable to load profile data.");
@@ -169,7 +167,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
   }
 
   // --- Fallback if no user data ---
-  if (!user) {
+  if (!userData) {
     return (
       <div className="flex items-center justify-center h-[60vh] text-gray-600">
         <AlertTriangle className="h-5 w-5 mr-2 text-yellow-500" />
@@ -192,9 +190,9 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         <div className="flex items-center gap-6">
           <div className="relative" onClick={handleImageClick}>
             <Avatar className="h-24 w-24 cursor-pointer hover:opacity-80 transition">
-              <AvatarImage src={user.profilePicture} loading="lazy" />
+              <AvatarImage src={userData.profilePicture} loading="lazy" />
               <AvatarFallback className="text-lg">
-                {user.name
+                {userData.name
                   ?.split(" ")
                   .map((n) => n[0])
                   .join("")}
@@ -211,7 +209,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
 
           <div className="space-y-2">
             <Label>Full Name</Label>
-            <Input value={user.name} readOnly />
+            <Input value={userData.name} readOnly />
           </div>
         </div>
 
@@ -219,7 +217,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Email Address</Label>
-            <Input type="email" value={user.email} readOnly />
+            <Input type="email" value={userData.email} readOnly />
           </div>
 
           <div className="space-y-2">
@@ -229,7 +227,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
               <Input
                 className="pl-10"
                 placeholder="don't use any country code"
-                value={user.phone ?? ""}
+                value={userData.phone ?? ""}
                 onChange={handleFieldChange("phone")}
               />
             </div>
@@ -243,7 +241,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Input
               type="url"
               placeholder="https://linkedin.com/in/username"
-              value={user.linkedin ?? ""}
+              value={userData.linkedin ?? ""}
               onChange={handleFieldChange("linkedin")}
             />
           </div>
@@ -253,7 +251,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Input
               type="url"
               placeholder="https://github.com/username"
-              value={user.github ?? ""}
+              value={userData.github ?? ""}
               onChange={handleFieldChange("github")}
             />
           </div>
@@ -262,7 +260,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Label>Company you work at</Label>
             <Input
               placeholder="Company Name"
-              value={user.company ?? ""}
+              value={userData.company ?? ""}
               onChange={handleFieldChange("company")}
             />
           </div>
@@ -271,7 +269,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Label>Your position</Label>
             <Input
               placeholder="Role name"
-              value={user.jobrole ?? ""}
+              value={userData.jobrole ?? ""}
               onChange={handleFieldChange("jobrole")}
             />
           </div>
@@ -281,7 +279,7 @@ const ProfileSection = ({ userId }: ProfileSectionProps) => {
             <Input
               type="url"
               placeholder="https://example.com"
-              value={user.website1 ?? ""}
+              value={userData.website1 ?? ""}
               onChange={handleFieldChange("website1")}
             />
           </div>
